@@ -1,0 +1,97 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { t, localePath, formatDate, type Lang } from '../i18n/ui';
+import { getSlugs, type Article } from '../i18n/insights';
+
+interface Props {
+  lang: Lang;
+  article: Article;
+}
+const { lang, article } = Astro.props;
+const d = t(lang);
+const other: Lang = lang === 'en' ? 'az' : 'en';
+const hasAlternate = (await getSlugs(other)).has(article.slug);
+const { Content } = await render(article);
+const path = `/insights/${article.slug}`;
+---
+
+<Base
+  lang={lang}
+  title={`${article.data.title} | Meridel Advisory`}
+  description={article.data.description}
+  path={path}
+  hasAlternate={hasAlternate}
+  type="article"
+>
+  <article>
+    <header class="article-head">
+      <div class="wrap narrow">
+        <a class="back" href={localePath(lang, '/insights')}>{d.insights.back}</a>
+        <h1>{article.data.title}</h1>
+        <p class="standfirst">{article.data.description}</p>
+        <p class="meta">
+          <span>{d.insights.by} {article.data.author}</span>
+          <time datetime={article.data.date.toISOString().slice(0, 10)}>{formatDate(article.data.date, lang)}</time>
+        </p>
+      </div>
+    </header>
+    <div class="wrap narrow body">
+      <div class="prose">
+        <Content />
+      </div>
+      {
+        hasAlternate && (
+          <p class="alt">
+            <a href={localePath(other, path)} hreflang={other} lang={other}>
+              {d.insights.otherLang}
+            </a>
+          </p>
+        )
+      }
+    </div>
+  </article>
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .narrow {
+    max-width: 42rem;
+  }
+  .article-head {
+    padding-block: clamp(3rem, 2rem + 4vw, 5rem) 2.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .back {
+    font-size: 0.925rem;
+  }
+  .article-head h1 {
+    font-size: clamp(2.1rem, 1.5rem + 2.6vw, 3.3rem);
+    margin-top: 1.5rem;
+  }
+  .standfirst {
+    font-family: var(--serif);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 1.25rem 0 1.5rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    font-size: 0.9rem;
+    color: var(--slate);
+    margin: 0;
+  }
+  .body {
+    padding-block: 3rem var(--space);
+  }
+  .alt {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.95rem;
+  }
+</style>

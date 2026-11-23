@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import { t, localePath, formatDate, type Lang } from '../i18n/ui';
+import { getArticles } from '../i18n/insights';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const articles = await getArticles(lang);
+---
+
+<Base lang={lang} title={d.insights.title} description={d.insights.description} path="/insights">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>{d.insights.h1}</h1>
+      <p>{d.insights.lead}</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <ul class="list">
+        {
+          articles.map((a) => (
+            <li>
+              <time datetime={a.data.date.toISOString().slice(0, 10)}>{formatDate(a.data.date, lang)}</time>
+              <div>
+                <h2>
+                  <a href={localePath(lang, `/insights/${a.slug}`)}>{a.data.title}</a>
+                </h2>
+                <p>{a.data.description}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--ink);
+  }
+  .list li {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: 0.5rem 2rem;
+    padding-block: 2rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .list time {
+    font-size: 0.9rem;
+    color: var(--slate);
+    padding-top: 0.35rem;
+  }
+  .list h2 {
+    font-size: var(--step-2);
+    font-weight: 460;
+    max-width: 30ch;
+  }
+  .list h2 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .list h2 a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  .list p {
+    color: var(--slate);
+    margin: 0.75rem 0 0;
+    max-width: 40rem;
+  }
+  @media (max-width: 44rem) {
+    .list li {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

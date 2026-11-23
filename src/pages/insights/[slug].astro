@@ -1,0 +1,13 @@
+---
+import View from '../../views/Article.astro';
+import { getArticles, type Article } from '../../i18n/insights';
+
+export async function getStaticPaths() {
+  const articles = await getArticles('en');
+  return articles.map((article) => ({ params: { slug: article.slug }, props: { article } }));
+}
+
+const { article } = Astro.props as { article: Article };
+---
+
+<View lang="en" article={article} />

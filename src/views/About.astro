@@ -1,0 +1,139 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { t, tools, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const a = d.about;
+---
+
+<Base lang={lang} title={a.title} description={a.description} path="/about">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>{a.h1}</h1>
+      <p>{a.lead}</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap about-grid">
+      <div class="prose bio">
+        {a.bio.map((para) => <p>{para}</p>)}
+      </div>
+      <aside class="facts">
+        <h2>{a.credentialsTitle}</h2>
+        <ul>
+          {a.credentials.map((c) => <li>{c}</li>)}
+        </ul>
+        <h2>{a.toolsTitle}</h2>
+        <ul class="tools">
+          {tools.map((x) => <li>{x}</li>)}
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section principles">
+    <div class="wrap">
+      <h2>{a.principlesTitle}</h2>
+      <div class="p-grid">
+        {
+          a.principles.map((p) => (
+            <div class="p">
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 3rem 5rem;
+    align-items: start;
+  }
+  .bio p:first-child {
+    font-family: var(--serif);
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+  .facts {
+    border-top: 1px solid var(--ink);
+    padding-top: 1.25rem;
+  }
+  .facts h2 {
+    font: 600 0.95rem / 1.3 var(--sans);
+    letter-spacing: 0;
+    margin-bottom: 0.75rem;
+  }
+  .facts h2:not(:first-child) {
+    margin-top: 2rem;
+  }
+  .facts ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .facts li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.95rem;
+  }
+  .facts .tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .facts .tools li {
+    border: 1px solid var(--rule);
+    border-radius: 1rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  @media (max-width: 52rem) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .principles {
+    background: var(--surface);
+  }
+  .principles h2 {
+    margin-bottom: 2.5rem;
+  }
+  .p-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+  .p {
+    border-top: 2px solid var(--madder);
+    padding-top: 1.25rem;
+  }
+  .p h3 {
+    font-size: var(--step-1);
+    margin-bottom: 0.6rem;
+  }
+  .p p {
+    color: var(--slate);
+    margin: 0;
+  }
+  @media (max-width: 52rem) {
+    .p-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

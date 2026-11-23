@@ -1,0 +1,285 @@
+@import '@fontsource-variable/newsreader/opsz.css';
+@import '@fontsource-variable/ibm-plex-sans/wght.css';
+
+:root {
+  --ink: #16243f;
+  --ink-soft: #2a3a5a;
+  --paper: #f4f6f9;
+  --surface: #ffffff;
+  --slate: #566177;
+  --rule: #d8dee8;
+  --lapis: #244c9a;
+  --madder: #a8322a;
+  --deep: #14213a;
+  --deep-text: #eef2f8;
+  --deep-muted: #b4c0d6;
+  --deep-line: rgba(220, 230, 248, 0.17);
+  --madder-bright: #e8655a;
+
+  --serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --sans: 'IBM Plex Sans Variable', 'Segoe UI', system-ui, sans-serif;
+
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3125rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(1.9rem, 1.4rem + 2vw, 2.75rem);
+  --step-4: clamp(2.5rem, 1.6rem + 4.2vw, 4.6rem);
+
+  --wrap: 72rem;
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --space: clamp(4rem, 3rem + 4vw, 7rem);
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ink: #e8edf6;
+    --ink-soft: #c9d3e5;
+    --paper: #0f1828;
+    --surface: #152136;
+    --slate: #9ba8bf;
+    --rule: #26354f;
+    --lapis: #93b2f2;
+    --madder: #ec7064;
+    --deep: #0b1322;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 var(--step-0) / 1.6 var(--sans);
+  font-feature-settings: 'kern';
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+  font-weight: 480;
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--step-4);
+  font-weight: 440;
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-size: var(--step-1);
+  font-weight: 560;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0 0 1em;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--lapis);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--madder);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--wrap));
+  margin-inline: auto;
+}
+
+.skip {
+  position: absolute;
+  left: var(--gutter);
+  top: -4rem;
+  z-index: 50;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0.6rem 1rem;
+}
+
+.skip:focus {
+  top: 0.75rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.7rem 1.4rem;
+  border: 1.5px solid transparent;
+  border-radius: 2rem;
+  font: 500 1rem / 1.2 var(--sans);
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.btn-solid {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn-solid:hover {
+  background: var(--ink-soft);
+}
+
+.btn-line {
+  border-color: currentColor;
+  color: var(--ink);
+}
+
+.btn-line:hover {
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+.on-deep .btn-solid {
+  background: var(--deep-text);
+  color: var(--deep);
+}
+
+.on-deep .btn-solid:hover {
+  background: #ffffff;
+}
+
+.on-deep .btn-line {
+  color: var(--deep-text);
+}
+
+.on-deep .btn-line:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Section scaffolding */
+.section {
+  padding-block: var(--space);
+}
+
+.section + .section {
+  border-top: 1px solid var(--rule);
+}
+
+.section-head {
+  max-width: 40rem;
+  margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+}
+
+.section-head p {
+  color: var(--slate);
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
+.page-head {
+  padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem) clamp(2.5rem, 2rem + 2vw, 4rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.page-head h1 {
+  font-size: clamp(2.4rem, 1.7rem + 3vw, 3.8rem);
+  max-width: 18ch;
+}
+
+.page-head p {
+  max-width: 40rem;
+  color: var(--slate);
+  font-size: var(--step-1);
+  line-height: 1.5;
+  margin: 1.25rem 0 0;
+}
+
+.prose {
+  max-width: 40rem;
+}
+
+.prose p,
+.prose li {
+  line-height: 1.7;
+}
+
+.prose h2 {
+  font-size: var(--step-2);
+  margin: 2.5rem 0 0.75rem;
+}
+
+.prose h3 {
+  margin: 2rem 0 0.5rem;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.25rem;
+  margin: 0 0 1em;
+}
+
+.prose li + li {
+  margin-top: 0.4em;
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+.prose code {
+  font-family: var(--sans);
+  font-weight: 500;
+  background: color-mix(in srgb, var(--lapis) 10%, transparent);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+.prose blockquote {
+  margin: 1.5rem 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--madder);
+  font-family: var(--serif);
+  font-size: var(--step-1);
+  line-height: 1.45;
+}

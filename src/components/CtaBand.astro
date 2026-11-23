@@ -1,0 +1,41 @@
+---
+import { t, localePath, type Lang } from '../i18n/ui';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<section class="cta on-deep">
+  <div class="wrap cta-inner">
+    <div>
+      <h2>{d.cta.title}</h2>
+      <p>{d.cta.text}</p>
+    </div>
+    <a class="btn btn-solid" href={localePath(lang, '/contact')}>{d.cta.button}</a>
+  </div>
+</section>
+
+<style>
+  .cta {
+    background: var(--deep);
+    color: var(--deep-text);
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 5.5rem);
+  }
+  .cta-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .cta h2 {
+    font-size: var(--step-3);
+  }
+  .cta p {
+    margin: 0.75rem 0 0;
+    color: var(--deep-muted);
+    font-size: var(--step-1);
+  }
+</style>

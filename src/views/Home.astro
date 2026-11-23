@@ -1,0 +1,406 @@
+---
+import Base from '../layouts/Base.astro';
+import Graticule from '../components/Graticule.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { t, localePath, formatDate, type Lang } from '../i18n/ui';
+import { getArticles } from '../i18n/insights';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const latest = (await getArticles(lang)).slice(0, 3);
+---
+
+<Base lang={lang} title={d.home.title} description={d.home.description} path="/">
+  <section class="hero on-deep">
+    <div class="hero-art"><Graticule /></div>
+    <div class="wrap hero-inner">
+      <h1>{d.home.h1}</h1>
+      <p class="hero-lead">{d.home.lead}</p>
+      <div class="hero-actions">
+        <a class="btn btn-solid" href={localePath(lang, '/contact')}>{d.home.ctaPrimary}</a>
+        <a class="btn btn-line" href={localePath(lang, '/services')}>{d.home.ctaSecondary}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>{d.home.practicesTitle}</h2>
+        <p>{d.home.practicesLead}</p>
+      </div>
+      <div class="practices">
+        {
+          d.practices.map((p) => (
+            <article class="practice">
+              <h3>{p.title}</h3>
+              <div>
+                <p>{p.text}</p>
+                <h4 class="visually-hidden">{d.home.questionsLabel}</h4>
+                <ul class="questions">
+                  {p.questions.map((q) => (
+                    <li>{q}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section approach">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>{d.home.approachTitle}</h2>
+        <p>{d.home.approachLead}</p>
+      </div>
+      <ol class="steps">
+        {
+          d.steps.map((s, i) => (
+            <li class="step">
+              <span class="step-n" aria-hidden="true">
+                {i + 1}
+              </span>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section engagements">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>{d.home.engagementsTitle}</h2>
+        <p>{d.home.engagementsLead}</p>
+      </div>
+      <div class="eng-grid">
+        {
+          d.engagements.map((e) => (
+            <div class="eng">
+              <div class="eng-top">
+                <h3>{e.title}</h3>
+                <span class="eng-len">{e.length}</span>
+              </div>
+              <p>{e.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    latest.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="insights-head">
+            <h2>{d.home.insightsTitle}</h2>
+            <a href={localePath(lang, '/insights')}>{d.home.insightsAll}</a>
+          </div>
+          <ul class="article-list">
+            {latest.map((a) => (
+              <li>
+                <time datetime={a.data.date.toISOString().slice(0, 10)}>{formatDate(a.data.date, lang)}</time>
+                <h3>
+                  <a href={localePath(lang, `/insights/${a.slug}`)}>{a.data.title}</a>
+                </h3>
+                <p>{a.data.description}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section founder">
+    <div class="wrap founder-inner">
+      <h2>{d.home.founderTitle}</h2>
+      <div>
+        <p class="founder-text">{d.home.founderText}</p>
+        <a href={localePath(lang, '/about')}>{d.home.founderMore}</a>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--deep);
+    color: var(--deep-text);
+    padding-block: clamp(4.5rem, 3rem + 7vw, 9rem) clamp(4rem, 3rem + 5vw, 7.5rem);
+    isolation: isolate;
+  }
+  .hero-art {
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    right: max(-14rem, calc((100vw - var(--wrap)) / 2 - 12rem));
+    width: min(48rem, 70vw);
+    transform: translateY(-50%);
+  }
+  .hero-inner {
+    position: relative;
+  }
+  .hero h1 {
+    max-width: 13ch;
+    color: #ffffff;
+  }
+  .hero-lead {
+    max-width: 34rem;
+    margin: 1.75rem 0 2.25rem;
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--deep-muted);
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  @media (max-width: 52rem) {
+    .hero-art {
+      width: 34rem;
+      right: -16rem;
+      top: 48%;
+      opacity: 0.55;
+    }
+  }
+
+  .practices {
+    border-top: 1px solid var(--rule);
+  }
+  .practice {
+    display: grid;
+    grid-template-columns: minmax(12rem, 1fr) 1.6fr;
+    gap: 1rem 3rem;
+    padding-block: 2rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .practice h3 {
+    font-size: var(--step-2);
+    font-weight: 460;
+    line-height: 1.15;
+  }
+  .practice p {
+    max-width: 38rem;
+    margin-bottom: 0.9rem;
+  }
+  .questions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: var(--slate);
+    font-size: 0.95rem;
+  }
+  .questions li {
+    position: relative;
+    padding-left: 1.1rem;
+  }
+  .questions li + li {
+    margin-top: 0.3rem;
+  }
+  .questions li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 0.45rem;
+    height: 1px;
+    background: var(--madder);
+  }
+  @media (max-width: 44rem) {
+    .practice {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+    position: relative;
+  }
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 1px;
+    background: var(--rule);
+  }
+  .step {
+    position: relative;
+  }
+  .step-n {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    font: 500 1.1rem / 1 var(--serif);
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .step:last-child .step-n {
+    background: var(--madder);
+    border-color: var(--madder);
+    color: #ffffff;
+  }
+  .step h3 {
+    font-size: var(--step-2);
+    font-weight: 460;
+    margin-bottom: 0.75rem;
+  }
+  .step p {
+    color: var(--slate);
+    max-width: 22rem;
+  }
+  @media (max-width: 52rem) {
+    .steps {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding-left: 3.75rem;
+    }
+    .steps::before {
+      display: none;
+    }
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: -2.5rem;
+      top: 2.15rem;
+      bottom: -2.35rem;
+      width: 1px;
+      background: var(--rule);
+    }
+    .step-n {
+      position: absolute;
+      left: -3.75rem;
+      top: -0.35rem;
+      margin: 0;
+    }
+  }
+
+  .engagements {
+    background: var(--surface);
+  }
+  .eng-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+  .eng {
+    padding: 2rem clamp(1.25rem, 1rem + 1.5vw, 2.25rem);
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .eng-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+  }
+  .eng-len {
+    font-size: 0.875rem;
+    color: var(--slate);
+    white-space: nowrap;
+  }
+  .eng p {
+    margin: 0;
+    color: var(--slate);
+    max-width: 30rem;
+  }
+  @media (max-width: 44rem) {
+    .eng-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .insights-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .article-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+  .article-list li {
+    border-top: 1px solid var(--ink);
+    padding-top: 1.25rem;
+  }
+  .article-list time {
+    font-size: 0.875rem;
+    color: var(--slate);
+  }
+  .article-list h3 {
+    margin: 0.6rem 0 0.75rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+  }
+  .article-list h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .article-list h3 a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  .article-list p {
+    color: var(--slate);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  @media (max-width: 52rem) {
+    .article-list {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  .founder-inner {
+    display: grid;
+    grid-template-columns: minmax(12rem, 1fr) 1.6fr;
+    gap: 1.5rem 3rem;
+  }
+  .founder-text {
+    font-family: var(--serif);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    max-width: 38rem;
+  }
+  @media (max-width: 44rem) {
+    .founder-inner {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

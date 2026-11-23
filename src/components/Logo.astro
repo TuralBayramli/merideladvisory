@@ -1,0 +1,48 @@
+---
+interface Props {
+  href: string;
+}
+const { href } = Astro.props;
+---
+
+<a class="logo" href={href} aria-label="Meridel Advisory, home">
+  <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+    <circle cx="16" cy="16" r="13.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+    <path d="M16 2.5 A6.5 13.5 0 0 0 16 29.5" fill="none" stroke="currentColor" stroke-width="1" opacity="0.55"></path>
+    <path d="M16 2.5 A6.5 13.5 0 0 1 16 29.5" fill="none" stroke="var(--madder)" stroke-width="1.75"></path>
+    <circle cx="21.6" cy="11" r="1.9" fill="var(--madder)"></circle>
+  </svg>
+  <span class="word">Meridel</span>
+  <span class="sub">Advisory</span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  .mark {
+    width: 1.9rem;
+    height: 1.9rem;
+    flex: none;
+  }
+  .word {
+    font: 520 1.5rem / 1 var(--serif);
+    letter-spacing: -0.01em;
+  }
+  .sub {
+    font: 400 0.95rem / 1 var(--sans);
+    color: var(--slate);
+    padding-left: 0.55rem;
+    border-left: 1px solid var(--rule);
+    margin-left: 0.05rem;
+  }
+  @media (max-width: 380px) {
+    .sub {
+      display: none;
+    }
+  }
+</style>
