@@ -50,6 +50,7 @@ export interface Dict {
     videoPause: string;
     videoPlay: string;
     bandText: string;
+    bandCta: string;
   };
   practices: Practice[];
   steps: Step[];
@@ -154,6 +155,7 @@ const en: Dict = {
     videoPause: 'Pause background video',
     videoPlay: 'Play background video',
     bandText: 'Every container, ship and truck is a line in your data. We turn those lines into decisions.',
+    bandCta: 'Start with a free 30-minute call.',
   },
   practices: [
     {
@@ -365,6 +367,7 @@ const az: Dict = {
     videoPause: 'Fon videosunu dayandırın',
     videoPlay: 'Fon videosunu oynadın',
     bandText: 'Hər konteyner, gəmi və yük maşını məlumatlarınızda bir sətirdir. Biz bu sətirləri qərarlara çeviririk.',
+    bandCta: 'Ödənişsiz 30 dəqiqəlik görüşlə başlayın.',
   },
   practices: [
     {
