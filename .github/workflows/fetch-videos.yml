@@ -1,0 +1,61 @@
+name: Fetch background videos
+
+# Run by hand from the Actions tab. Downloads the two Pexels clips,
+# cuts them to a short loop, compresses them for the web and saves
+# them in public/videos/. Pexels videos are free to use without credit:
+# https://www.pexels.com/license/
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install ffmpeg
+        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+
+      - name: Download from Pexels
+        run: |
+          mkdir -p /tmp/src
+          # "Aerial View of Container Yard at Busy Port" (pexels.com/video/30281178)
+          curl -fsSL -o /tmp/src/hero.mp4 https://videos.pexels.com/video-files/30281178/12980613_1920_1080_60fps.mp4
+          # "Aerial View of Shipping Containers and Trucks" (pexels.com/video/6585382)
+          curl -fsSL -o /tmp/src/band.mp4 https://videos.pexels.com/video-files/6585382/6585382-hd_1920_1080_30fps.mp4
+          for f in /tmp/src/*.mp4; do echo "$f: $(ffprobe -v error -show_entries format=duration -of csv=p=0 "$f") s"; done
+
+      - name: Compress for the web
+        run: |
+          mkdir -p public/videos
+          # args: input output width start-seconds length-seconds quality(crf)
+          enc() {
+            ffmpeg -y -loglevel error -ss "$4" -t "$5" -i "$1" -an \
+              -vf "scale=$3:-2:flags=lanczos,fps=30,format=yuv420p" \
+              -c:v libx264 -preset slow -crf "$6" -profile:v high -movflags +faststart "$2"
+          }
+          enc /tmp/src/hero.mp4 public/videos/hero.mp4     1920 1 14 28
+          enc /tmp/src/hero.mp4 public/videos/hero-720.mp4  960 1 14 30
+          enc /tmp/src/band.mp4 public/videos/band.mp4     1920 0 14 28
+          enc /tmp/src/band.mp4 public/videos/band-720.mp4  960 0 14 30
+          ffmpeg -y -loglevel error -i public/videos/hero.mp4 -frames:v 1 -vf "scale=1600:-2" -q:v 5 public/videos/hero.jpg
+          ffmpeg -y -loglevel error -i public/videos/band.mp4 -frames:v 1 -vf "scale=1600:-2" -q:v 5 public/videos/band.jpg
+          ls -la public/videos
+
+      - name: Save to the repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/videos
+          git commit -m "Add compressed background videos from Pexels"
+          git push
+
+      - name: Publish the site with the videos
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main
