@@ -34,7 +34,7 @@ Set `draft: true` in the header to keep an article unpublished.
 
 ## Background videos
 
-The home page shows a background video at the top (`public/videos/hero.mp4`) and a video band further down (`public/videos/band.mp4`). Each switches on automatically when its file exists; without it, the page falls back to the globe drawing or leaves the band out. Optional extras per video: `-720.mp4` for phones and `.jpg` as the still frame.
+The home page shows a background video at the top (`public/videos/hero.mp4`) and a video band at the end, with the call to action (`public/videos/band.mp4`). Each switches on automatically when its file exists; without it, the page falls back to the globe drawing or leaves the band out. Optional extras per video: `-720.mp4` for phones and `.jpg` as the still frame.
 
 The current clips come from Pexels (free to use without credit) and are prepared by the **Fetch background videos** workflow in the Actions tab, which downloads, trims and compresses them.
 

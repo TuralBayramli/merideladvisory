@@ -153,7 +153,7 @@ const en: Dict = {
     },
     videoPause: 'Pause background video',
     videoPlay: 'Play background video',
-    bandText: 'Every container, truck and pallet is a line in your data. We turn those lines into decisions.',
+    bandText: 'Every container, ship and truck is a line in your data. We turn those lines into decisions.',
   },
   practices: [
     {
@@ -364,7 +364,7 @@ const az: Dict = {
     },
     videoPause: 'Fon videosunu dayandırın',
     videoPlay: 'Fon videosunu oynadın',
-    bandText: 'Hər konteyner, hər yük maşını və hər palet məlumatlarınızda bir sətirdir. Biz bu sətirləri qərarlara çeviririk.',
+    bandText: 'Hər konteyner, gəmi və yük maşını məlumatlarınızda bir sətirdir. Biz bu sətirləri qərarlara çeviririk.',
   },
   practices: [
     {

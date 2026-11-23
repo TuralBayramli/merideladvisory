@@ -126,17 +126,6 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
   </section>
 
   {
-    bandVideo && (
-      <section class="band on-deep">
-        <BgVideo name="band" pauseLabel={d.home.videoPause} playLabel={d.home.videoPlay} />
-        <div class="wrap band-inner">
-          <p class="band-text">{d.home.bandText}</p>
-        </div>
-      </section>
-    )
-  }
-
-  {
     latest.length > 0 && (
       <section class="section">
         <div class="wrap">
@@ -170,7 +159,22 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     </div>
   </section>
 
-  <CtaBand lang={lang} />
+  {
+    bandVideo ? (
+      <section class="band on-deep">
+        <BgVideo name="band" pauseLabel={d.home.videoPause} playLabel={d.home.videoPlay} />
+        <div class="wrap band-inner">
+          <p class="band-text">{d.home.bandText}</p>
+          <div class="band-cta">
+            <p>{d.cta.text}</p>
+            <a class="btn btn-solid" href={localePath(lang, '/contact')}>{d.cta.button}</a>
+          </div>
+        </div>
+      </section>
+    ) : (
+      <CtaBand lang={lang} />
+    )
+  }
 </Base>
 
 <style>
@@ -217,6 +221,18 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     position: relative;
     z-index: 1;
     padding-block: 4rem;
+  }
+  .band-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 2rem;
+  }
+  .band-cta p {
+    margin: 0;
+    color: var(--deep-muted);
+    font-size: var(--step-1);
   }
   .band-text {
     margin: 0;
