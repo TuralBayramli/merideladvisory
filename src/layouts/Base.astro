@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
-import { t, localePath, type Lang, EMAIL } from '../i18n/ui';
+import { t, localePath, type Lang, EMAIL, LINKEDIN } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
@@ -117,6 +117,7 @@ const isActive = (key: string) => path.startsWith(`/${key}`);
         <div class="foot-brand">
           <Logo href={localePath(lang, '/')} />
           <p><a href={`mailto:${EMAIL}`}>{EMAIL}</a></p>
+          <p><a href={LINKEDIN} rel="noopener">LinkedIn</a></p>
         </div>
         <ul class="foot-links">
           {
@@ -130,7 +131,6 @@ const isActive = (key: string) => path.startsWith(`/${key}`);
             <a href={altHref} hreflang={other} lang={other}>{d.switchLabel}</a>
           </li>
         </ul>
-        <p class="legal">{d.footer.legal}</p>
         <p class="copy">© {year} Meridel Advisory. {d.footer.rights}</p>
       </div>
     </footer>
@@ -272,7 +272,10 @@ const isActive = (key: string) => path.startsWith(`/${key}`);
     color: var(--ink);
   }
   .foot-brand p {
-    margin: 1rem 0 0;
+    margin: 0.75rem 0 0;
+  }
+  .foot-brand p:first-of-type {
+    margin-top: 1rem;
   }
   .foot-links {
     list-style: none;
@@ -290,16 +293,11 @@ const isActive = (key: string) => path.startsWith(`/${key}`);
   .foot-links a:hover {
     text-decoration: underline;
   }
-  .legal {
-    grid-column: 1 / -1;
-    max-width: 46rem;
-    margin: 0;
-    padding-top: 2rem;
-    border-top: 1px solid var(--rule);
-  }
   .copy {
     grid-column: 1 / -1;
     margin: 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
   }
   @media (max-width: 40rem) {
     .foot {

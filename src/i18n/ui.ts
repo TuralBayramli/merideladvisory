@@ -4,12 +4,13 @@ export const defaultLang: Lang = 'en';
 
 export const EMAIL = 'hello@merideladvisory.com';
 export const FOUNDER = 'Tural Bayramli';
+export const LINKEDIN = 'https://www.linkedin.com/in/turalbayramli/';
 
 /** Build a URL for a language-neutral path such as "/services". */
 export function localePath(lang: Lang, path = '/'): string {
   const clean = path === '/' ? '' : path.replace(/\/$/, '');
   if (lang === defaultLang) return clean || '/';
-  return `/${lang}${clean}` || `/${lang}`;
+  return `/${lang}${clean}`;
 }
 
 type Practice = { title: string; text: string; questions: string[] };
@@ -42,6 +43,12 @@ export interface Dict {
     founderTitle: string;
     founderText: string;
     founderMore: string;
+    mapTitle: string;
+    mapLead: string;
+    lanes: string[];
+    cities: Record<string, string>;
+    videoPause: string;
+    videoPlay: string;
   };
   practices: Practice[];
   steps: Step[];
@@ -75,6 +82,8 @@ export interface Dict {
     credentialsTitle: string;
     credentials: string[];
     toolsTitle: string;
+    languagesTitle: string;
+    languages: string;
     principlesTitle: string;
     principles: Step[];
   };
@@ -88,9 +97,10 @@ export interface Dict {
     what: string[];
     locationTitle: string;
     location: string;
+    linkedinLabel: string;
   };
   cta: { title: string; text: string; button: string };
-  footer: { legal: string; rights: string };
+  footer: { rights: string };
   notFound: { title: string; text: string; home: string };
 }
 
@@ -102,16 +112,16 @@ const en: Dict = {
   switchLabel: 'Azərbaycanca',
   switchShort: 'AZ',
   home: {
-    title: 'Meridel Advisory | Supply chain, data and finance advisory',
+    title: 'Meridel Advisory | Supply chain consulting',
     description:
-      'Meridel Advisory helps operations and finance leaders find hidden cost in their supply chain and data, model the alternatives and choose the course that pays.',
+      'Meridel Advisory is a supply chain consultancy. We find hidden cost in transport, inventory and logistics networks, model the alternatives and recommend the course that pays.',
     h1: 'Find your position. Choose your direction.',
     lead:
-      'Meridel Advisory helps operations and finance leaders see where cost hides in their supply chain and data, model the alternatives, and commit to the course that pays.',
+      'Meridel Advisory is a supply chain consultancy. We help operations and logistics leaders find the cost hidden in their network, model the alternatives, and commit to the course that pays.',
     ctaPrimary: 'Book an intro call',
     ctaSecondary: 'See our services',
     practicesTitle: 'What we work on',
-    practicesLead: 'Four areas, one method: get the facts straight, model the choices, recommend one direction.',
+    practicesLead: 'Four parts of the supply chain, one method: get the facts straight, model the choices, recommend one direction.',
     questionsLabel: 'Questions we answer',
     approachTitle: 'How an engagement runs',
     approachLead: 'Every project follows the same three stages, so you always know where we are and what comes next.',
@@ -121,55 +131,74 @@ const en: Dict = {
     insightsAll: 'All insights',
     founderTitle: 'Who you work with',
     founderText:
-      'Meridel Advisory is led by Tural Bayramli, a data analytics engineer with experience in global banking, healthcare manufacturing and building materials. He has built liquidity reporting, cost-to-serve models and automated planning data pipelines for international companies.',
+      'Meridel Advisory is led by Tural Bayramli, a supply chain finance and network optimisation specialist with more than six years of work across European markets. His logistics network, cost-to-serve and inventory models have delivered over €700,000 in annual savings for multinational companies.',
     founderMore: 'More about Tural',
+    mapTitle: 'Between Europe, the Caucasus and the Gulf',
+    mapLead:
+      'Our home markets, Warsaw and Baku, sit on the trade lanes that link Europe with the Caspian, Central Asia and the Gulf. That is the region our work is built around.',
+    lanes: [
+      'Europe to the Caucasus, by rail and road through Türkiye',
+      'Trans-Caspian, from Baku across to Central Asia',
+      'North–South, from the Caspian to the Gulf',
+    ],
+    cities: {
+      warsaw: 'Warsaw',
+      istanbul: 'Istanbul',
+      tbilisi: 'Tbilisi',
+      baku: 'Baku',
+      aktau: 'Aktau',
+      almaty: 'Almaty',
+      dubai: 'Dubai',
+    },
+    videoPause: 'Pause background video',
+    videoPlay: 'Play background video',
   },
   practices: [
     {
-      title: 'Supply chain and logistics',
-      text: 'Network, freight, inventory and cost-to-serve analysis that shows where margin is lost between order and delivery.',
+      title: 'Transport and freight',
+      text: 'Freight spend, carrier performance and route analysis, so you pay the right rate for the right service.',
+      questions: [
+        'Are we paying the right freight rates?',
+        'Which lanes should we re-tender, and with whom?',
+        'Is full truckload, groupage or rail cheaper for this flow?',
+      ],
+    },
+    {
+      title: 'Inventory and warehousing',
+      text: 'Stock policies, safety stock and warehouse flows that balance service levels against cash.',
+      questions: [
+        'How much stock do we actually need?',
+        'Which items tie up cash without protecting service?',
+        'Do we have the right warehouse capacity in the right place?',
+      ],
+    },
+    {
+      title: 'Cost-to-serve and network design',
+      text: 'Cost-to-serve by customer, product and channel, and network models for where to hold stock and how to ship it.',
       questions: [
         'Which customers and routes cost more than they earn?',
-        'How much stock do we actually need?',
-        'Are we paying the right freight rates?',
+        'Where should our warehouses be?',
+        'Should we serve this region directly or through a 3PL partner?',
       ],
     },
     {
-      title: 'Data analysis and modelling',
-      text: 'Clean data pipelines, scenario models and dashboards that your team can trust and keep using.',
+      title: 'Supply chain data and planning',
+      text: 'Clean planning data, demand forecasts, scenario models and dashboards that your team trusts and keeps using.',
       questions: [
-        'Can we trust the numbers in our reports?',
-        'What happens to cost if volume moves by 20%?',
+        'Can we trust the numbers in our supply chain reports?',
+        'What happens to logistics cost if volume moves by 20%?',
         'How do we stop rebuilding the same spreadsheet every month?',
-      ],
-    },
-    {
-      title: 'Finance and cost',
-      text: 'Cost structure, working capital and budgeting models that connect operations to the profit and loss statement.',
-      questions: [
-        'Where does our cost base go each month?',
-        'How much cash is tied up in stock and receivables?',
-        'Which savings are real, and which exist only on paper?',
-      ],
-    },
-    {
-      title: 'Compliance and contract data',
-      text: 'Structured review of contracts, invoices and regulatory data, so obligations and leakage become visible. For legal advice we work alongside licensed lawyers.',
-      questions: [
-        'Are suppliers billing what the contract says?',
-        'Which terms expose us to penalties or price changes?',
-        'Is our reporting data ready for an audit?',
       ],
     },
   ],
   steps: [
     {
       title: 'Fix the position',
-      text: 'We collect your data, map how cost and service really move today, and agree on the facts.',
+      text: 'We collect your data, map how goods, cost and service really move today, and agree on the facts.',
     },
     {
       title: 'Model the options',
-      text: 'We build scenarios for the choices in front of you, with cost, risk and timing side by side.',
+      text: 'We build scenarios for the choices in front of you, with cost, service and timing side by side.',
     },
     {
       title: 'Set the course',
@@ -180,7 +209,7 @@ const en: Dict = {
     {
       title: 'Cost-to-serve review',
       length: '4–6 weeks',
-      text: 'Profitability by customer, product and channel, with a ranked list of actions.',
+      text: 'Profitability by customer, product and channel after logistics cost, with a ranked list of actions.',
     },
     {
       title: 'Freight spend audit',
@@ -193,23 +222,23 @@ const en: Dict = {
       text: 'Safety stock and reorder points by item, tested against your service targets and cash limits.',
     },
     {
-      title: 'Reporting rebuild',
+      title: 'Network study',
       length: '6–10 weeks',
-      text: 'One reliable data pipeline and dashboard set to replace manual monthly reporting.',
+      text: 'Warehouse locations, flows and 3PL options compared on total cost and service, ready for an investment decision.',
     },
   ],
   services: {
     title: 'Services | Meridel Advisory',
     description:
-      'Supply chain and logistics analysis, data modelling, finance and cost models, and compliance and contract-data review.',
+      'Supply chain consulting: transport and freight, inventory and warehousing, cost-to-serve and network design, supply chain data and planning.',
     h1: 'Services',
-    lead: 'We take on focused questions where better data changes the decision. Each engagement ends with a recommendation and tools your team keeps using.',
+    lead: 'We take on focused supply chain questions where better data changes the decision. Each engagement ends with a recommendation and tools your team keeps using.',
     deliverablesLabel: 'What you receive',
     deliverables: [
-      ['Cost-to-serve model by customer, product and route', 'Inventory and safety stock policy', 'Freight and carrier performance review'],
-      ['Automated data pipelines from ERP and planning systems', 'Scenario and forecasting models', 'Dashboards built around your weekly decisions'],
-      ['Cost structure and margin bridge', 'Working capital and cash model', 'Budget and forecast templates'],
-      ['Contract terms in a structured, searchable form', 'Invoice-to-contract checks', 'Audit-ready reporting data'],
+      ['Freight invoice audit against contracted rates', 'Carrier scorecards and tender analysis', 'Mode and route cost comparison'],
+      ['Safety stock and reorder policy by item', 'ABC-XYZ segmentation of your range', 'Warehouse capacity and flow review'],
+      ['Cost-to-serve model by customer, product and route', 'Network and centre-of-gravity scenarios', '3PL evaluation on total cost'],
+      ['Automated data pipelines from ERP and planning systems', 'Demand forecasting and scenario models', 'Dashboards for service, stock and logistics cost'],
     ],
     pricingTitle: 'How we price',
     pricingText:
@@ -217,9 +246,9 @@ const en: Dict = {
   },
   insights: {
     title: 'Insights | Meridel Advisory',
-    description: 'Practical articles on supply chain, cost and data, written for the people who run the numbers.',
+    description: 'Practical articles on supply chain cost, inventory and logistics data, written for the people who run the numbers.',
     h1: 'Insights',
-    lead: 'Practical articles on supply chain, cost and data, written for the people who run the numbers.',
+    lead: 'Practical articles on supply chain cost, inventory and logistics data, written for the people who run the numbers.',
     readMore: 'Read the article',
     by: 'By',
     back: 'All insights',
@@ -227,23 +256,26 @@ const en: Dict = {
   },
   about: {
     title: 'About | Meridel Advisory',
-    description: 'Meridel Advisory is an independent advisory practice founded by Tural Bayramli, based in Warsaw.',
+    description: 'Meridel Advisory is an independent supply chain consultancy founded by Tural Bayramli, based in Warsaw.',
     h1: 'About Meridel',
-    lead: 'A meridian is the line navigators use to fix their position. We do the same for your business: establish where you stand, then set a clear direction.',
+    lead: 'A meridian is the line navigators use to fix their position. We do the same for your supply chain: establish where you stand, then set a clear direction.',
     bio: [
-      'Meridel Advisory is an independent practice founded by Tural Bayramli. Tural is a data analytics engineer whose work spans financial planning and analysis, supply chain finance, treasury risk analytics and data engineering.',
-      'He has built regulatory liquidity reporting in global banking, cost-to-serve analysis and automated data pipelines in healthcare manufacturing, and supply chain models in building materials. That mix lets him speak with the planners who use the data and the finance teams who sign it off.',
-      'Based in Warsaw, working with companies in Azerbaijan, Poland and the wider region, in English and Azerbaijani.',
+      'Meridel Advisory is an independent supply chain consultancy founded by Tural Bayramli. Tural specialises in supply chain finance and network optimisation, with more than six years of work across Benelux, DACH, Iberia, Italy and the wider EMEA region.',
+      'He has led logistics network and cost-to-serve modelling, inventory risk simulations and warehouse location studies for multinational manufacturers, and built the KPI dashboards that track them. Together these models have delivered over €700,000 in annual savings. Earlier, he worked on treasury analytics in global banking and on retail supply chain and logistics planning in Azerbaijan.',
+      'His background in finance means every recommendation is tied to the profit and loss statement, not only to operational metrics. Based in Warsaw, working with companies in Poland, Azerbaijan and the wider region.',
     ],
     credentialsTitle: 'Education and certifications',
     credentials: [
-      'Master’s degree in Data Science',
-      'Master’s degree in Accounting and Audit',
-      'Bachelor’s degree in Finance',
+      'Master’s degree in Data Science (WSB University, Poland), with distinction',
+      'Master’s degree in Accounting and Audit (UNEC, Azerbaijan)',
+      'Bachelor’s degree in Finance (UNEC, Azerbaijan)',
       'Alteryx Designer Core certification',
-      'Green Belt in process improvement',
+      'J.P. Morgan Greenbelt certificate in Alteryx, Tableau and Python',
+      'CFA Institute Investment Foundations',
     ],
     toolsTitle: 'Tools we work with',
+    languagesTitle: 'Languages',
+    languages: 'English, Azerbaijani and Turkish',
     principlesTitle: 'How we work',
     principles: [
       { title: 'Facts before opinions', text: 'Every recommendation traces back to your own data, and we show the working.' },
@@ -260,20 +292,19 @@ const en: Dict = {
     whatTitle: 'Useful to include',
     what: [
       'The decision or problem in one or two sentences',
-      'Which systems your data lives in (ERP, planning tools, spreadsheets)',
+      'Which systems your data lives in (ERP, TMS, planning tools, spreadsheets)',
       'Any deadline you are working to',
     ],
     locationTitle: 'Where we are',
     location: 'Warsaw, Poland. Meetings in person or online.',
+    linkedinLabel: 'Tural Bayramli on LinkedIn',
   },
   cta: {
-    title: 'Have a decision to make?',
+    title: 'Have a supply chain decision to make?',
     text: 'Tell us about it. The first call is free.',
     button: 'Book an intro call',
   },
   footer: {
-    legal:
-      'Meridel Advisory provides analytical and advisory services. It does not provide legal advice; legal opinions are given only by the licensed lawyers we work with.',
     rights: 'All rights reserved.',
   },
   notFound: {
@@ -291,16 +322,16 @@ const az: Dict = {
   switchLabel: 'English',
   switchShort: 'EN',
   home: {
-    title: 'Meridel Advisory | Təchizat zənciri, məlumat və maliyyə məsləhəti',
+    title: 'Meridel Advisory | Təchizat zənciri üzrə konsaltinq',
     description:
-      'Meridel Advisory əməliyyat və maliyyə rəhbərlərinə təchizat zənciri və məlumatlarda gizlənən xərcləri tapmağa, alternativləri modelləşdirməyə və ən sərfəli yolu seçməyə kömək edir.',
+      'Meridel Advisory təchizat zənciri üzrə konsaltinq şirkətidir. Daşıma, ehtiyat və logistika şəbəkələrində gizlənən xərcləri tapır, alternativləri modelləşdirir və ən sərfəli yolu tövsiyə edirik.',
     h1: 'Mövqeyinizi müəyyən edin. İstiqamətinizi seçin.',
     lead:
-      'Meridel Advisory əməliyyat və maliyyə rəhbərlərinə təchizat zənciri və məlumatlarda gizlənən xərcləri görməyə, alternativləri modelləşdirməyə və ən sərfəli yolu seçməyə kömək edir.',
+      'Meridel Advisory təchizat zənciri üzrə konsaltinq şirkətidir. Əməliyyat və logistika rəhbərlərinə şəbəkələrində gizlənən xərcləri tapmağa, alternativləri modelləşdirməyə və ən sərfəli yolu seçməyə kömək edirik.',
     ctaPrimary: 'Tanışlıq görüşü təyin edin',
     ctaSecondary: 'Xidmətlərimizə baxın',
     practicesTitle: 'Nə üzərində işləyirik',
-    practicesLead: 'Dörd sahə, bir metod: faktları dəqiqləşdiririk, seçimləri modelləşdiririk, bir istiqamət tövsiyə edirik.',
+    practicesLead: 'Təchizat zəncirinin dörd sahəsi, bir metod: faktları dəqiqləşdiririk, seçimləri modelləşdiririk, bir istiqamət tövsiyə edirik.',
     questionsLabel: 'Cavab verdiyimiz suallar',
     approachTitle: 'Layihə necə gedir',
     approachLead: 'Hər layihə eyni üç mərhələdən keçir, ona görə harada olduğumuzu və növbəti addımı həmişə bilirsiniz.',
@@ -310,55 +341,74 @@ const az: Dict = {
     insightsAll: 'Bütün məqalələr',
     founderTitle: 'Kiminlə işləyirsiniz',
     founderText:
-      'Meridel Advisory-yə qlobal bankçılıq, səhiyyə məhsulları istehsalı və tikinti materialları sahələrində təcrübəsi olan data analitika mühəndisi Tural Bayramli rəhbərlik edir. O, beynəlxalq şirkətlər üçün likvidlik hesabatları, xidmət xərci modelləri və avtomatlaşdırılmış planlaşdırma məlumat axınları qurub.',
+      'Meridel Advisory-yə Avropa bazarlarında altı ildən artıq təcrübəsi olan təchizat zənciri maliyyəsi və şəbəkə optimallaşdırılması üzrə mütəxəssis Tural Bayramli rəhbərlik edir. Onun logistika şəbəkəsi, xidmət xərci və ehtiyat modelləri beynəlxalq şirkətlərə illik 700 000 avrodan çox qənaət gətirib.',
     founderMore: 'Tural haqqında ətraflı',
+    mapTitle: 'Avropa, Qafqaz və Körfəz arasında',
+    mapLead:
+      'Əsas bazarlarımız olan Varşava və Bakı Avropanı Xəzər, Mərkəzi Asiya və Körfəzlə birləşdirən ticarət yolları üzərindədir. İşimiz məhz bu region üzərində qurulub.',
+    lanes: [
+      'Avropadan Qafqaza, Türkiyə üzərindən dəmir yolu və avtomobil yolu ilə',
+      'Transxəzər marşrutu, Bakıdan Mərkəzi Asiyaya',
+      'Şimal–Cənub, Xəzərdən Körfəzə',
+    ],
+    cities: {
+      warsaw: 'Varşava',
+      istanbul: 'İstanbul',
+      tbilisi: 'Tbilisi',
+      baku: 'Bakı',
+      aktau: 'Aktau',
+      almaty: 'Almatı',
+      dubai: 'Dubay',
+    },
+    videoPause: 'Fon videosunu dayandırın',
+    videoPlay: 'Fon videosunu oynadın',
   },
   practices: [
     {
-      title: 'Təchizat zənciri və logistika',
-      text: 'Sifarişdən çatdırılmaya qədər marjanın harada itdiyini göstərən şəbəkə, daşıma, ehtiyat və xidmət xərci (cost-to-serve) təhlili.',
+      title: 'Daşıma və yükdaşıma',
+      text: 'Daşıma xərcləri, daşıyıcıların performansı və marşrut təhlili ki, düzgün xidmətə düzgün tarif ödəyəsiniz.',
+      questions: [
+        'Daşımaya düzgün tarif ödəyirikmi?',
+        'Hansı marşrutları yenidən tenderə çıxarmalıyıq və kiminlə?',
+        'Bu axın üçün tam yük, yığma yük, yoxsa dəmir yolu ucuzdur?',
+      ],
+    },
+    {
+      title: 'Ehtiyat və anbar',
+      text: 'Xidmət səviyyəsi ilə pul vəsaitləri arasında balans yaradan ehtiyat siyasəti, sığorta ehtiyatı və anbar axınları.',
+      questions: [
+        'Əslində nə qədər ehtiyat saxlamalıyıq?',
+        'Hansı məhsullar xidməti qorumadan pulu dondurur?',
+        'Doğru yerdə doğru anbar tutumumuz varmı?',
+      ],
+    },
+    {
+      title: 'Xidmət xərci və şəbəkə dizaynı',
+      text: 'Müştəri, məhsul və kanal üzrə xidmət xərci, ehtiyatın harada saxlanacağı və necə daşınacağı üçün şəbəkə modelləri.',
       questions: [
         'Hansı müştərilər və marşrutlar gətirdiyindən çox xərc yaradır?',
-        'Əslində nə qədər ehtiyat saxlamalıyıq?',
-        'Daşımaya düzgün tarif ödəyirikmi?',
+        'Anbarlarımız harada olmalıdır?',
+        'Bu regiona birbaşa, yoxsa 3PL tərəfdaşı vasitəsilə xidmət göstərməliyik?',
       ],
     },
     {
-      title: 'Məlumat təhlili və modelləşdirmə',
-      text: 'Komandanızın etibar edib davamlı istifadə edəcəyi təmiz məlumat axınları, ssenari modelləri və hesabat panelləri.',
+      title: 'Təchizat zənciri məlumatları və planlaşdırma',
+      text: 'Komandanızın etibar edib davamlı istifadə edəcəyi təmiz planlaşdırma məlumatları, tələb proqnozları, ssenari modelləri və panellər.',
       questions: [
-        'Hesabatlardakı rəqəmlərə etibar edə bilərikmi?',
-        'Həcm 20% dəyişsə, xərclər necə dəyişər?',
+        'Təchizat zənciri hesabatlarındakı rəqəmlərə etibar edə bilərikmi?',
+        'Həcm 20% dəyişsə, logistika xərcləri necə dəyişər?',
         'Hər ay eyni cədvəli yenidən qurmağı necə dayandıraq?',
-      ],
-    },
-    {
-      title: 'Maliyyə və xərclər',
-      text: 'Əməliyyatları mənfəət və zərər hesabatı ilə əlaqələndirən xərc strukturu, dövriyyə kapitalı və büdcə modelləri.',
-      questions: [
-        'Xərc bazamız hər ay hara gedir?',
-        'Ehtiyatlarda və debitor borclarında nə qədər pul donub?',
-        'Hansı qənaətlər realdır, hansılar yalnız kağız üzərindədir?',
-      ],
-    },
-    {
-      title: 'Uyğunluq və müqavilə məlumatları',
-      text: 'Öhdəliklərin və itkilərin görünməsi üçün müqavilələrin, hesab-fakturaların və tənzimləyici məlumatların strukturlaşdırılmış yoxlanışı. Hüquqi məsləhət üçün lisenziyalı hüquqşünaslarla birgə işləyirik.',
-      questions: [
-        'Təchizatçılar müqavilədə yazılan qiymətlə hesab kəsirmi?',
-        'Hansı şərtlər bizi cərimə və ya qiymət dəyişikliyi riskinə salır?',
-        'Hesabat məlumatlarımız auditə hazırdırmı?',
       ],
     },
   ],
   steps: [
     {
       title: 'Mövqeyi müəyyən edirik',
-      text: 'Məlumatlarınızı toplayır, xərc və xidmətin bu gün necə hərəkət etdiyini xəritələyir və faktlar üzərində razılaşırıq.',
+      text: 'Məlumatlarınızı toplayır, malların, xərcin və xidmətin bu gün necə hərəkət etdiyini xəritələyir və faktlar üzərində razılaşırıq.',
     },
     {
       title: 'Variantları modelləşdiririk',
-      text: 'Qarşınızdakı seçimlər üçün ssenarilər qurur, onların xərcini, riskini və vaxtını yan-yana qoyuruq.',
+      text: 'Qarşınızdakı seçimlər üçün ssenarilər qurur, onların xərcini, xidmət səviyyəsini və vaxtını yan-yana qoyuruq.',
     },
     {
       title: 'İstiqaməti təyin edirik',
@@ -369,7 +419,7 @@ const az: Dict = {
     {
       title: 'Xidmət xərcinin təhlili',
       length: '4–6 həftə',
-      text: 'Müştəri, məhsul və kanal üzrə gəlirlilik və prioritetə görə sıralanmış addımlar siyahısı.',
+      text: 'Logistika xərcləri nəzərə alınmaqla müştəri, məhsul və kanal üzrə gəlirlilik və prioritetə görə sıralanmış addımlar siyahısı.',
     },
     {
       title: 'Daşıma xərclərinin auditi',
@@ -382,23 +432,23 @@ const az: Dict = {
       text: 'Hər məhsul üzrə sığorta ehtiyatı və sifariş nöqtələri, xidmət hədəfləriniz və pul limitləriniz əsasında yoxlanılmış.',
     },
     {
-      title: 'Hesabatlılığın yenidən qurulması',
+      title: 'Şəbəkə tədqiqatı',
       length: '6–10 həftə',
-      text: 'Əl ilə hazırlanan aylıq hesabatları əvəz edən vahid etibarlı məlumat axını və panellər.',
+      text: 'Anbar yerləri, axınlar və 3PL variantlarının ümumi xərc və xidmət baxımından müqayisəsi, investisiya qərarına hazır şəkildə.',
     },
   ],
   services: {
     title: 'Xidmətlər | Meridel Advisory',
     description:
-      'Təchizat zənciri və logistika təhlili, məlumat modelləşdirməsi, maliyyə və xərc modelləri, uyğunluq və müqavilə məlumatlarının yoxlanışı.',
+      'Təchizat zənciri üzrə konsaltinq: daşıma və yükdaşıma, ehtiyat və anbar, xidmət xərci və şəbəkə dizaynı, təchizat zənciri məlumatları və planlaşdırma.',
     h1: 'Xidmətlər',
-    lead: 'Daha yaxşı məlumatın qərarı dəyişdirdiyi konkret suallar üzərində işləyirik. Hər layihə bir tövsiyə və komandanızın istifadə etməyə davam edəcəyi alətlərlə bitir.',
+    lead: 'Daha yaxşı məlumatın qərarı dəyişdirdiyi konkret təchizat zənciri sualları üzərində işləyirik. Hər layihə bir tövsiyə və komandanızın istifadə etməyə davam edəcəyi alətlərlə bitir.',
     deliverablesLabel: 'Nə əldə edirsiniz',
     deliverables: [
-      ['Müştəri, məhsul və marşrut üzrə xidmət xərci modeli', 'Ehtiyat və sığorta ehtiyatı siyasəti', 'Daşıma və daşıyıcı performansının təhlili'],
-      ['ERP və planlaşdırma sistemlərindən avtomatlaşdırılmış məlumat axınları', 'Ssenari və proqnoz modelləri', 'Həftəlik qərarlarınıza uyğun qurulmuş panellər'],
-      ['Xərc strukturu və marja körpüsü', 'Dövriyyə kapitalı və pul vəsaitləri modeli', 'Büdcə və proqnoz şablonları'],
-      ['Strukturlaşdırılmış və axtarıla bilən müqavilə şərtləri', 'Hesab-fakturaların müqavilə ilə tutuşdurulması', 'Auditə hazır hesabat məlumatları'],
+      ['Hesab-fakturaların müqavilə tarifləri ilə auditi', 'Daşıyıcı reytinqləri və tender təhlili', 'Daşıma növü və marşrut xərclərinin müqayisəsi'],
+      ['Hər məhsul üzrə sığorta ehtiyatı və sifariş siyasəti', 'Çeşidinizin ABC-XYZ seqmentasiyası', 'Anbar tutumu və axınlarının təhlili'],
+      ['Müştəri, məhsul və marşrut üzrə xidmət xərci modeli', 'Şəbəkə və ağırlıq mərkəzi ssenariləri', '3PL variantlarının ümumi xərc üzrə qiymətləndirilməsi'],
+      ['ERP və planlaşdırma sistemlərindən avtomatlaşdırılmış məlumat axınları', 'Tələb proqnozu və ssenari modelləri', 'Xidmət, ehtiyat və logistika xərcləri üzrə panellər'],
     ],
     pricingTitle: 'Qiymətləndirmə',
     pricingText:
@@ -406,9 +456,9 @@ const az: Dict = {
   },
   insights: {
     title: 'Məqalələr | Meridel Advisory',
-    description: 'Təchizat zənciri, xərclər və məlumatlar haqqında rəqəmlərlə işləyən insanlar üçün praktik məqalələr.',
+    description: 'Təchizat zənciri xərcləri, ehtiyat və logistika məlumatları haqqında rəqəmlərlə işləyən insanlar üçün praktik məqalələr.',
     h1: 'Məqalələr',
-    lead: 'Təchizat zənciri, xərclər və məlumatlar haqqında rəqəmlərlə işləyən insanlar üçün praktik məqalələr.',
+    lead: 'Təchizat zənciri xərcləri, ehtiyat və logistika məlumatları haqqında rəqəmlərlə işləyən insanlar üçün praktik məqalələr.',
     readMore: 'Məqaləni oxuyun',
     by: 'Müəllif:',
     back: 'Bütün məqalələr',
@@ -416,23 +466,26 @@ const az: Dict = {
   },
   about: {
     title: 'Haqqımızda | Meridel Advisory',
-    description: 'Meridel Advisory Tural Bayramli tərəfindən təsis edilmiş, Varşavada yerləşən müstəqil məsləhət şirkətidir.',
+    description: 'Meridel Advisory Tural Bayramli tərəfindən təsis edilmiş, Varşavada yerləşən müstəqil təchizat zənciri konsaltinq şirkətidir.',
     h1: 'Meridel haqqında',
-    lead: 'Meridian dənizçilərin öz mövqelərini müəyyən etmək üçün istifadə etdiyi xətdir. Biz də biznesiniz üçün eyni şeyi edirik: harada dayandığınızı dəqiqləşdirir, sonra aydın istiqamət təyin edirik.',
+    lead: 'Meridian dənizçilərin öz mövqelərini müəyyən etmək üçün istifadə etdiyi xətdir. Biz də təchizat zənciriniz üçün eyni şeyi edirik: harada dayandığınızı dəqiqləşdirir, sonra aydın istiqamət təyin edirik.',
     bio: [
-      'Meridel Advisory Tural Bayramli tərəfindən təsis edilmiş müstəqil məsləhət şirkətidir. Tural maliyyə planlaşdırması və təhlili, təchizat zənciri maliyyəsi, xəzinədarlıq risklərinin analitikası və data mühəndisliyi sahələrində çalışmış data analitika mühəndisidir.',
-      'O, qlobal bankçılıqda tənzimləyici likvidlik hesabatları, səhiyyə məhsulları istehsalında xidmət xərci təhlili və avtomatlaşdırılmış məlumat axınları, tikinti materialları sahəsində isə təchizat zənciri modelləri qurub. Bu təcrübə ona həm məlumatdan istifadə edən planlaşdırıcılarla, həm də onu təsdiqləyən maliyyə komandaları ilə eyni dildə danışmağa imkan verir.',
-      'Varşavada yerləşir, Azərbaycan, Polşa və regiondakı şirkətlərlə ingilis və Azərbaycan dillərində işləyir.',
+      'Meridel Advisory Tural Bayramli tərəfindən təsis edilmiş müstəqil təchizat zənciri konsaltinq şirkətidir. Tural təchizat zənciri maliyyəsi və şəbəkə optimallaşdırılması üzrə ixtisaslaşıb və Benilüks, DACH, İberiya, İtaliya və daha geniş EMEA regionunda altı ildən artıq təcrübəyə malikdir.',
+      'O, beynəlxalq istehsalçılar üçün logistika şəbəkəsi və xidmət xərci modelləşdirməsinə, ehtiyat risklərinin simulyasiyasına və anbar yerləşdirmə tədqiqatlarına rəhbərlik edib, onları izləyən KPI panellərini qurub. Bu modellər birlikdə illik 700 000 avrodan çox qənaət gətirib. Daha əvvəl qlobal bankçılıqda xəzinədarlıq analitikası, Azərbaycanda isə pərakəndə təchizat zənciri və logistika planlaşdırması üzərində çalışıb.',
+      'Maliyyə təhsili sayəsində hər tövsiyə yalnız əməliyyat göstəriciləri ilə deyil, mənfəət və zərər hesabatı ilə də əlaqələndirilir. Varşavada yerləşir, Polşa, Azərbaycan və regiondakı şirkətlərlə işləyir.',
     ],
     credentialsTitle: 'Təhsil və sertifikatlar',
     credentials: [
-      'Data Elmi üzrə magistr dərəcəsi',
-      'Mühasibat uçotu və audit üzrə magistr dərəcəsi',
-      'Maliyyə üzrə bakalavr dərəcəsi',
+      'Data Elmi üzrə magistr dərəcəsi (WSB Universiteti, Polşa), fərqlənmə ilə',
+      'Mühasibat uçotu və audit üzrə magistr dərəcəsi (UNEC, Azərbaycan)',
+      'Maliyyə üzrə bakalavr dərəcəsi (UNEC, Azərbaycan)',
       'Alteryx Designer Core sertifikatı',
-      'Proseslərin təkmilləşdirilməsi üzrə Green Belt',
+      'J.P. Morgan Greenbelt sertifikatı (Alteryx, Tableau, Python)',
+      'CFA Institute Investment Foundations',
     ],
     toolsTitle: 'İstifadə etdiyimiz alətlər',
+    languagesTitle: 'Dillər',
+    languages: 'İngilis, Azərbaycan və türk dilləri',
     principlesTitle: 'Necə işləyirik',
     principles: [
       { title: 'Əvvəl faktlar, sonra fikirlər', text: 'Hər tövsiyə sizin öz məlumatlarınıza əsaslanır və hesablamaları açıq göstəririk.' },
@@ -449,20 +502,19 @@ const az: Dict = {
     whatTitle: 'Yazmağınız faydalı olar',
     what: [
       'Qərar və ya problem bir-iki cümlə ilə',
-      'Məlumatlarınızın hansı sistemlərdə olduğu (ERP, planlaşdırma alətləri, cədvəllər)',
+      'Məlumatlarınızın hansı sistemlərdə olduğu (ERP, TMS, planlaşdırma alətləri, cədvəllər)',
       'Əgər varsa, son tarix',
     ],
     locationTitle: 'Harada yerləşirik',
     location: 'Varşava, Polşa. Görüşlər əyani və ya onlayn.',
+    linkedinLabel: 'Tural Bayramli LinkedIn-də',
   },
   cta: {
-    title: 'Qarşınızda qərar var?',
+    title: 'Təchizat zəncirinizdə qərar verməlisiniz?',
     text: 'Bizə danışın. İlk görüş ödənişsizdir.',
     button: 'Tanışlıq görüşü təyin edin',
   },
   footer: {
-    legal:
-      'Meridel Advisory analitik və məsləhət xidmətləri göstərir. Hüquqi məsləhət vermir; hüquqi rəylər yalnız birgə işlədiyimiz lisenziyalı hüquqşünaslar tərəfindən verilir.',
     rights: 'Bütün hüquqlar qorunur.',
   },
   notFound: {
@@ -472,7 +524,7 @@ const az: Dict = {
   },
 };
 
-export const tools = ['Python', 'SQL', 'Power BI', 'Alteryx', 'SAP', 'Blue Yonder', 'Databricks', 'Excel'];
+export const tools = ['SAP S/4HANA', 'SAP Analytics Cloud', 'Blue Yonder', 'Alteryx', 'Python', 'SQL', 'Power BI', 'Tableau', 'Looker'];
 
 export const ui: Record<Lang, Dict> = { en, az };
 export const t = (lang: Lang): Dict => ui[lang];

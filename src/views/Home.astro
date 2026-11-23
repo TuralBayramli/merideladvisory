@@ -1,6 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
+import fs from 'node:fs';
+import path from 'node:path';
 import Graticule from '../components/Graticule.astro';
+import RouteMap from '../components/RouteMap.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { t, localePath, formatDate, type Lang } from '../i18n/ui';
 import { getArticles } from '../i18n/insights';
@@ -11,11 +14,30 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const latest = (await getArticles(lang)).slice(0, 3);
+
+// Drop hero.mp4 (and optionally hero.webm and hero.jpg as the still frame) into
+// public/videos/ to turn on the background video. Without it, the globe is shown.
+const videoDir = path.join(process.cwd(), 'public', 'videos');
+const has = (f: string) => fs.existsSync(path.join(videoDir, f));
+const video = has('hero.mp4') ? { webm: has('hero.webm'), poster: has('hero.jpg') } : null;
 ---
 
 <Base lang={lang} title={d.home.title} description={d.home.description} path="/">
-  <section class="hero on-deep">
-    <div class="hero-art"><Graticule /></div>
+  <section class:list={['hero', 'on-deep', { 'has-video': video }]}>
+    {
+      video ? (
+        <div class="hero-media" aria-hidden="true">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto" poster={video.poster ? '/videos/hero.jpg' : undefined}>
+            {video.webm && <source src="/videos/hero.webm" type="video/webm" />}
+            <source src="/videos/hero.mp4" type="video/mp4" />
+          </video>
+        </div>
+      ) : (
+        <div class="hero-art">
+          <Graticule />
+        </div>
+      )
+    }
     <div class="wrap hero-inner">
       <h1>{d.home.h1}</h1>
       <p class="hero-lead">{d.home.lead}</p>
@@ -24,6 +46,14 @@ const latest = (await getArticles(lang)).slice(0, 3);
         <a class="btn btn-line" href={localePath(lang, '/services')}>{d.home.ctaSecondary}</a>
       </div>
     </div>
+    {
+      video && (
+        <button class="video-toggle" type="button" aria-label={d.home.videoPause} data-pause={d.home.videoPause} data-play={d.home.videoPlay}>
+          <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4h3v12H6zM11 4h3v12h-3z" fill="currentColor" /></svg>
+          <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4l10 6-10 6z" fill="currentColor" /></svg>
+        </button>
+      )
+    }
   </section>
 
   <section class="section">
@@ -50,6 +80,16 @@ const latest = (await getArticles(lang)).slice(0, 3);
           ))
         }
       </div>
+    </div>
+  </section>
+
+  <section class="lanes on-deep">
+    <div class="wrap">
+      <div class="lanes-head">
+        <h2>{d.home.mapTitle}</h2>
+        <p>{d.home.mapLead}</p>
+      </div>
+      <RouteMap lang={lang} />
     </div>
   </section>
 
@@ -134,6 +174,31 @@ const latest = (await getArticles(lang)).slice(0, 3);
   <CtaBand lang={lang} />
 </Base>
 
+<script>
+  const video = document.querySelector<HTMLVideoElement>('.hero-video');
+  const toggle = document.querySelector<HTMLButtonElement>('.video-toggle');
+  if (video && toggle) {
+    const setState = (playing: boolean) => {
+      toggle.classList.toggle('paused', !playing);
+      toggle.setAttribute('aria-label', (playing ? toggle.dataset.pause : toggle.dataset.play) ?? '');
+    };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      video.removeAttribute('autoplay');
+      video.pause();
+      setState(false);
+    }
+    toggle.addEventListener('click', () => {
+      if (video.paused) {
+        video.play();
+        setState(true);
+      } else {
+        video.pause();
+        setState(false);
+      }
+    });
+  }
+</script>
+
 <style>
   .hero {
     position: relative;
@@ -153,6 +218,74 @@ const latest = (await getArticles(lang)).slice(0, 3);
   }
   .hero-inner {
     position: relative;
+  }
+  .hero.has-video {
+    min-height: min(46rem, 88vh);
+    display: flex;
+    align-items: center;
+  }
+  .hero.has-video .hero-inner {
+    width: min(100% - 2 * var(--gutter), var(--wrap));
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(14, 23, 41, 0.92) 0%, rgba(14, 23, 41, 0.72) 45%, rgba(14, 23, 41, 0.35) 100%),
+      linear-gradient(0deg, rgba(14, 23, 41, 0.55), transparent 40%);
+  }
+  .video-toggle {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 1.5rem;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    background: rgba(14, 23, 41, 0.4);
+    color: #ffffff;
+    cursor: pointer;
+  }
+  .video-toggle svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .video-toggle .i-play,
+  .video-toggle.paused .i-pause {
+    display: none;
+  }
+  .video-toggle.paused .i-play {
+    display: block;
+  }
+
+  .lanes {
+    background: var(--deep);
+    color: var(--deep-text);
+    padding-block: var(--space);
+  }
+  .lanes-head {
+    max-width: 40rem;
+    margin-bottom: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  }
+  .lanes-head h2 {
+    color: #ffffff;
+  }
+  .lanes-head p {
+    color: var(--deep-muted);
+    margin: 1rem 0 0;
   }
   .hero h1 {
     max-width: 13ch;

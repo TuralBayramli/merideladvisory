@@ -29,6 +29,8 @@ const a = d.about;
         <ul>
           {a.credentials.map((c) => <li>{c}</li>)}
         </ul>
+        <h2>{a.languagesTitle}</h2>
+        <p class="langs">{a.languages}</p>
         <h2>{a.toolsTitle}</h2>
         <ul class="tools">
           {tools.map((x) => <li>{x}</li>)}
@@ -86,6 +88,12 @@ const a = d.about;
     padding: 0;
   }
   .facts li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.95rem;
+  }
+  .langs {
+    margin: 0;
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--rule);
     font-size: 0.95rem;

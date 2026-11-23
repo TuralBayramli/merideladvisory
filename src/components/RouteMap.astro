@@ -1,0 +1,328 @@
+---
+// Animated map of the trade lanes between Europe, the Caucasus and the Gulf.
+// The map is projected at build time, so visitors download plain SVG, no map library.
+import fs from 'node:fs';
+import path from 'node:path';
+import { feature, mesh } from 'topojson-client';
+import { presimplify, simplify, quantile } from 'topojson-simplify';
+import { geoConicConformal, geoPath } from 'd3-geo';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+
+const W = 1000;
+const H = 600;
+const raw = JSON.parse(
+  fs.readFileSync(path.join(process.cwd(), 'node_modules/world-atlas/countries-50m.json'), 'utf-8'),
+);
+const topo = simplify(presimplify(raw as any), quantile(presimplify(raw as any), 0.45)) as any;
+const land = feature(topo, topo.objects.land);
+const borders = mesh(topo, topo.objects.countries, (a: unknown, b: unknown) => a !== b);
+const frame = {
+  type: 'Feature',
+  properties: {},
+  geometry: { type: 'Polygon', coordinates: [[[13, 21], [13, 56], [80, 56], [80, 21], [13, 21]]] },
+} as any;
+const projection = geoConicConformal()
+  .parallels([30, 50])
+  .rotate([-47, 0])
+  .fitExtent([[0, 0], [W, H]], frame)
+  .clipExtent([[0, 0], [W, H]]);
+const toPath = geoPath(projection).digits(1);
+const landPath = toPath(land as any) ?? '';
+const borderPath = toPath(borders as any) ?? '';
+
+const P = (lon: number, lat: number) => projection([lon, lat]) as [number, number];
+
+// Smooth line through points (Catmull-Rom converted to cubic Bézier).
+function smooth(pts: [number, number][]): string {
+  const f = (n: number) => n.toFixed(1);
+  let dStr = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? p2;
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    dStr += ` C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`;
+  }
+  return dStr;
+}
+
+const city = {
+  warsaw: [21.01, 52.23],
+  istanbul: [28.98, 41.01],
+  tbilisi: [44.79, 41.72],
+  baku: [49.87, 40.41],
+  aktau: [51.2, 43.65],
+  almaty: [76.95, 43.25],
+  dubai: [55.27, 25.2],
+} as const;
+type CityKey = keyof typeof city;
+
+const lanes: { id: string; pts: [number, number][]; dur: number }[] = [
+  {
+    id: 'lane-west',
+    dur: 14,
+    pts: [P(...city.warsaw), P(26.1, 44.43), P(...city.istanbul), P(36.5, 40.4), P(43.1, 40.6), P(...city.tbilisi), P(...city.baku)],
+  },
+  {
+    id: 'lane-east',
+    dur: 13,
+    pts: [P(...city.baku), P(...city.aktau), P(58.5, 45.2), P(66.5, 44.6), P(71.4, 42.9), P(...city.almaty)],
+  },
+  {
+    id: 'lane-south',
+    dur: 12,
+    pts: [P(...city.baku), P(48.87, 38.43), P(49.6, 37.2), P(52.6, 32.6), P(56.27, 27.18), P(...city.dubai)],
+  },
+].map((l) => ({ ...l, d: smooth(l.pts) })) as any;
+
+const home: CityKey[] = ['warsaw', 'baku'];
+// Label placement relative to the city dot.
+const place: Record<CityKey, 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'> = {
+  warsaw: 'e',
+  istanbul: 'sw',
+  tbilisi: 'nw',
+  baku: 'se',
+  aktau: 'ne',
+  almaty: 'n',
+  dubai: 'w',
+};
+const cities = (Object.keys(city) as CityKey[]).map((k) => {
+  const [x, y] = P(...city[k]);
+  return { key: k, x, y, left: (x / W) * 100, top: (y / H) * 100, home: home.includes(k), place: place[k] };
+});
+---
+
+<figure class="routemap">
+  <div class="stage">
+    <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="fade-x" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"></stop>
+          <stop offset="0.14" stop-color="#fff" stop-opacity="1"></stop>
+          <stop offset="0.86" stop-color="#fff" stop-opacity="1"></stop>
+          <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+        </linearGradient>
+        <linearGradient id="fade-y" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#000"></stop>
+          <stop offset="0.16" stop-color="#fff"></stop>
+          <stop offset="0.84" stop-color="#fff"></stop>
+          <stop offset="1" stop-color="#000"></stop>
+        </linearGradient>
+        <mask id="mask-y"><rect width={W} height={H} fill="url(#fade-y)"></rect></mask>
+        <mask id="map-mask"><rect width={W} height={H} fill="url(#fade-x)" mask="url(#mask-y)"></rect></mask>
+      </defs>
+      <g mask="url(#map-mask)">
+        <path class="land" d={landPath}></path>
+        <path class="borders" d={borderPath}></path>
+      </g>
+      {
+        lanes.map((l: any) => (
+          <g class="lane">
+            <path id={l.id} class="lane-base" d={l.d} />
+            <path class="lane-flow" d={l.d} />
+            {[0, 1, 2].map((i) => (
+              <circle class="cargo" r="4">
+                <animateMotion dur={`${l.dur}s`} begin={`-${(l.dur / 3) * i}s`} repeatCount="indefinite" rotate="auto">
+                  <mpath href={`#${l.id}`} />
+                </animateMotion>
+              </circle>
+            ))}
+          </g>
+        ))
+      }
+      {
+        cities.map((c) => (
+          <g class:list={['city', { home: c.home }]}>
+            {c.home && <circle class="pulse" cx={c.x.toFixed(1)} cy={c.y.toFixed(1)} r="16" />}
+            <circle class="dot" cx={c.x.toFixed(1)} cy={c.y.toFixed(1)} r={c.home ? 6 : 4.5} />
+          </g>
+        ))
+      }
+    </svg>
+    {
+      cities.map((c) => (
+        <span class:list={['label', `p-${c.place}`, { home: c.home }]} style={`left:${c.left.toFixed(2)}%;top:${c.top.toFixed(2)}%`}>
+          {d.home.cities[c.key]}
+        </span>
+      ))
+    }
+  </div>
+  <figcaption>
+    <ul class="legend">
+      {d.home.lanes.map((lane) => <li>{lane}</li>)}
+    </ul>
+  </figcaption>
+</figure>
+
+<script>
+  // Respect reduced-motion preferences and pause animation when the map is off screen.
+  const svgs = document.querySelectorAll<SVGSVGElement>('.routemap svg');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  svgs.forEach((svg) => {
+    if (reduce.matches) {
+      svg.pauseAnimations();
+      return;
+    }
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) svg.unpauseAnimations();
+        else svg.pauseAnimations();
+      });
+      io.observe(svg);
+    }
+  });
+</script>
+
+<style>
+  .routemap {
+    margin: 0;
+  }
+  .stage {
+    position: relative;
+    aspect-ratio: 1000 / 600;
+  }
+  .stage svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .land {
+    fill: rgba(205, 218, 240, 0.075);
+  }
+  .borders {
+    fill: none;
+    stroke: rgba(205, 218, 240, 0.16);
+    stroke-width: 0.7;
+    vector-effect: non-scaling-stroke;
+  }
+  .lane-base {
+    fill: none;
+    stroke: rgba(232, 101, 90, 0.32);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+  .lane-flow {
+    fill: none;
+    stroke: var(--madder-bright);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-dasharray: 1 11;
+    vector-effect: non-scaling-stroke;
+    animation: flow 1.6s linear infinite;
+  }
+  .cargo {
+    fill: #ffffff;
+    stroke: var(--madder-bright);
+    stroke-width: 1.5;
+  }
+  .city .dot {
+    fill: var(--deep);
+    stroke: rgba(230, 238, 250, 0.85);
+    stroke-width: 1.5;
+  }
+  .city.home .dot {
+    fill: var(--madder-bright);
+    stroke: #ffffff;
+  }
+  .pulse {
+    fill: none;
+    stroke: var(--madder-bright);
+    stroke-width: 1.25;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse 2.8s ease-out infinite;
+  }
+  @keyframes flow {
+    to {
+      stroke-dashoffset: -12;
+    }
+  }
+  @keyframes pulse {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.35);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.4);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lane-flow,
+    .pulse {
+      animation: none;
+    }
+    .pulse {
+      opacity: 0.5;
+    }
+  }
+
+  .label {
+    position: absolute;
+    font-size: clamp(0.7rem, 0.55rem + 0.5vw, 0.95rem);
+    line-height: 1;
+    color: var(--deep-muted);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .label.home {
+    color: #ffffff;
+    font-weight: 500;
+  }
+  .p-e {
+    transform: translate(0.9em, -50%);
+  }
+  .p-w {
+    transform: translate(calc(-100% - 0.9em), -50%);
+  }
+  .p-n {
+    transform: translate(-50%, calc(-100% - 0.8em));
+  }
+  .p-s {
+    transform: translate(-50%, 0.8em);
+  }
+  .p-ne {
+    transform: translate(0.6em, calc(-100% - 0.5em));
+  }
+  .p-nw {
+    transform: translate(calc(-100% - 0.6em), calc(-100% - 0.5em));
+  }
+  .p-se {
+    transform: translate(0.7em, 0.55em);
+  }
+  .p-sw {
+    transform: translate(calc(-100% - 0.6em), 0.5em);
+  }
+
+  .legend {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+    color: var(--deep-muted);
+    font-size: 0.925rem;
+  }
+  .legend li {
+    position: relative;
+    padding-left: 1.6rem;
+  }
+  .legend li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 1.1rem;
+    border-top: 2px dotted var(--madder-bright);
+  }
+</style>
