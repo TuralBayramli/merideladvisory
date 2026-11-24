@@ -8,3 +8,4 @@ All tracks are from Pixabay under the [Pixabay Content License](https://pixabay.
 | `slide-deck.mp3` | Presentation Clean Slide Deck | alex-morgan | https://pixabay.com/music/corporate-presentation-clean-slide-deck-578492/ |
 | `elegant.mp3` | Elegant Corporate | AtlasAudio | https://pixabay.com/music/corporate-elegant-corporate-613515/ |
 | `digital.mp3` | Digital Technology | AtlasAudio | https://pixabay.com/music/corporate-digital-technology-617560/ |
+| `elegant-mountain.mp3` | Elegant | The_Mountain | https://pixabay.com/music/epic-classical-elegant-elegant-music-508012/ |
