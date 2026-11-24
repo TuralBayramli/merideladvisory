@@ -1,7 +1,0 @@
-# Test: three ways to write the letter c for the multilingual voices (one paragraph each).
-
-Bir. Xidmət xərci. Nəticə. Necə? Zəncir. Həcmi.
-
-İki. Xidmət xərdci. Nətidcə. Nedcə? Zəndcir. Hədcmi.
-
-Üç. Xidmət xərdji. Nətidjə. Nedjə? Zəndjir. Hədjmi.
