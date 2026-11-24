@@ -9,6 +9,7 @@ are skipped, since they can get videos claimed.
 import json
 import os
 import re
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -44,7 +45,12 @@ def main():
         if not NAME.fullmatch(name) or not (URL.fullmatch(url) or PAGE.fullmatch(url)):
             raise SystemExit(f'Bad track: {pair}')
         if PAGE.fullmatch(url):
-            url, claimed = from_page(url)
+            try:
+                url, claimed = from_page(url)
+            except urllib.error.HTTPError as e:
+                # Pixabay often blocks build machines from its pages; use the cdn link instead.
+                print(f'{name}: page refused ({e.code}), give the cdn.pixabay.com link instead', flush=True)
+                continue
             if claimed:
                 print(f'{name}: skipped, registered with Content ID', flush=True)
                 continue
