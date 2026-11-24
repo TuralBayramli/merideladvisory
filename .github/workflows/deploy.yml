@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - 'social/**'
       - '.github/workflows/voiceover.yml'
+      - '.github/workflows/fetch-music.yml'
   workflow_dispatch:
 
 permissions:
