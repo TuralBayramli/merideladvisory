@@ -1,17 +1,18 @@
 # Voiceover for social/video/xidmet-xerci.html
 # One paragraph per scene, separated by a blank line. Lines starting with # are ignored.
 # Write words as they should be pronounced (numbers in words, English names spelled phonetically).
+# Questions and exclamation marks make the voice rise and fall more, so use them where they fit.
 
-Eyni məhsul. Eyni qiymət. Amma fərqli mənfəət. Niyə? Cavab: xidmət xərci.
+Eyni məhsul. Eyni qiymət. Amma mənfəət tamam fərqlidir! Niyə? Çünki xidmət xərci fərqlidir.
 
-Xidmət xərci, bir müştəriyə xidmət göstərməyin real xərcidir: sifarişin qəbulundan pulun hesabınıza daxil olmasına qədər.
+Bəs xidmət xərci nədir? Bu, bir müştəriyə xidmət göstərməyin real xərcidir: sifarişin qəbulundan pulun hesabınıza daxil olmasına qədər.
 
-İki müştəriyə baxaq. Müştəri A ayda bir dəfə tam paletlə sifariş verir və otuz günə ödəyir. Müştəri B ayda səkkiz dəfə kiçik qutularla sifariş verir və doxsan günə ödəyir. Hesab-fakturada isə hər ikisi eynidir: on min manat satış, üç min manat ümumi marja.
+Gəlin iki müştəriyə baxaq. Müştəri A ayda cəmi bir dəfə, tam paletlə sifariş verir və otuz günə ödəyir. Müştəri B isə ayda səkkiz dəfə, kiçik qutularla sifariş verir və doxsan günə ödəyir. Amma hesab-fakturada hər ikisi eynidir: on min manat satış, üç min manat ümumi marja.
 
-İndi xərcləri çıxaq: sifarişlərin emalı, anbar əməliyyatları, daşıma, qaytarmalar və ödəniş müddəti. Nəticədə Müştəri A iki min dörd yüz iyirmi manat qazandırır. Müştəri B isə yüz əlli manat zərər gətirir.
+İndi xərcləri bir-bir çıxaq: sifarişlərin emalı, anbar əməliyyatları, daşıma, qaytarmalar və ödəniş müddəti. Nəticə? Müştəri A iki min dörd yüz iyirmi manat qazandırır. Müştəri B isə yüz əlli manat zərər gətirir!
 
-Yəni Müştəri B zərərlidir. Amma nə hesab-faktura, nə də ümumi marja bunu göstərir.
+Yəni Müştəri B sizə zərər gətirir. Amma nə hesab-faktura, nə də ümumi marja bunu göstərir!
 
-Həll yolu müştərini itirmək deyil. Minimum sifariş həcmi, daha dolu çatdırılmalar, xidmət səviyyəsinə görə qiymət və həcmə bağlı ödəniş şərtləri kömək edir.
+Bəs nə etməli? Həll yolu müştərini itirmək deyil. Minimum sifariş həcmi, daha dolu çatdırılmalar, xidmət səviyyəsinə görə qiymət və həcmə bağlı ödəniş şərtləri kömək edir.
 
-Müştərilərinizin real mənfəətini bilmək istəyirsinizsə, Meridel Ədvayzori ilə əlaqə saxlayın.
+Müştərilərinizin real mənfəətini bilmək istəyirsiniz? Meridel Ədvayzori ilə əlaqə saxlayın!

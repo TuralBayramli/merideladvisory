@@ -5,8 +5,10 @@ repository secrets. Settings come from environment variables:
   AZURE_SPEECH_KEY, AZURE_SPEECH_REGION   (secrets)
   SCRIPTS  comma-separated names in social/voice/ without .txt
   VOICES   comma-separated Azure voice names, e.g. az-AZ-BabekNeural
-  RATE     speaking rate, e.g. 0% or -8%
-Output: social/audio/<script>/<voice>/p01.mp3, p02.mp3, ...
+  RATE     speaking rate, e.g. 0% or +8%
+  PITCH    voice pitch, e.g. 0% or +8%
+  LABEL    optional suffix for the output folder, to keep variants apart
+Output: social/audio/<script>/<voice>[-<label>]/p01.mp3, p02.mp3, ...
 """
 import os
 import re
@@ -21,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 NAME = re.compile(r'^[a-z0-9-]+$')
 VOICE = re.compile(r'^[a-z]{2,3}-[A-Z]{2}-[A-Za-z]+Neural$')
 RATE = re.compile(r'^[+-]?\d{1,2}%$')
+LABEL = re.compile(r'^[a-z0-9-]{0,20}$')
 
 
 def paragraphs(text: str) -> list[str]:
@@ -29,10 +32,10 @@ def paragraphs(text: str) -> list[str]:
     return [' '.join(b.split()) for b in blocks if b.strip()]
 
 
-def synth(text: str, voice: str, rate: str, key: str, region: str) -> bytes:
+def synth(text: str, voice: str, rate: str, pitch: str, key: str, region: str) -> bytes:
     ssml = (
         '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="az-AZ">'
-        f'<voice name="{voice}"><prosody rate="{rate}">{escape(text)}</prosody></voice></speak>'
+        f'<voice name="{voice}"><prosody rate="{rate}" pitch="{pitch}">{escape(text)}</prosody></voice></speak>'
     )
     req = urllib.request.Request(
         f'https://{region}.tts.speech.microsoft.com/cognitiveservices/v1',
@@ -64,27 +67,31 @@ def main():
     scripts = [s.strip() for s in os.environ.get('SCRIPTS', '').split(',') if s.strip()]
     voices = [v.strip() for v in os.environ.get('VOICES', '').split(',') if v.strip()]
     rate = os.environ.get('RATE', '0%').strip()
+    pitch = os.environ.get('PITCH', '0%').strip() or '0%'
+    label = os.environ.get('LABEL', '').strip()
     for s in scripts:
         if not NAME.fullmatch(s):
             raise SystemExit(f'Bad script name: {s}')
     for v in voices:
         if not VOICE.fullmatch(v):
             raise SystemExit(f'Bad voice name: {v}')
-    if not RATE.fullmatch(rate):
-        raise SystemExit(f'Bad rate: {rate}')
+    if not RATE.fullmatch(rate) or not RATE.fullmatch(pitch):
+        raise SystemExit(f'Bad rate or pitch: {rate} {pitch}')
+    if not LABEL.fullmatch(label):
+        raise SystemExit(f'Bad label: {label}')
 
     chars = 0
     for s in scripts:
         paras = paragraphs((ROOT / 'social/voice' / f'{s}.txt').read_text(encoding='utf-8'))
         for v in voices:
-            out = ROOT / 'social/audio' / s / v
+            out = ROOT / 'social/audio' / s / (f'{v}-{label}' if label else v)
             out.mkdir(parents=True, exist_ok=True)
             for old in out.glob('p*.mp3'):
                 old.unlink()
             for i, p in enumerate(paras, 1):
-                (out / f'p{i:02d}.mp3').write_bytes(synth(p, v, rate, key, region))
+                (out / f'p{i:02d}.mp3').write_bytes(synth(p, v, rate, pitch, key, region))
                 chars += len(p)
-            print(f'{s} / {v}: {len(paras)} paragraphs', flush=True)
+            print(f'{s} / {out.name}: {len(paras)} paragraphs (rate {rate}, pitch {pitch})', flush=True)
     print(f'about {chars} characters used', flush=True)
 
 

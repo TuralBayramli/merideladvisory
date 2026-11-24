@@ -13,12 +13,20 @@ on:
         required: true
       voices:
         description: Azure voices (comma separated)
-        default: az-AZ-BabekNeural,az-AZ-BanuNeural
+        default: az-AZ-BabekNeural
         required: true
       rate:
-        description: Speaking rate, for example 0% or -8%
-        default: '-5%'
+        description: Speaking rate, for example 0% or +8%
+        default: '+6%'
         required: true
+      pitch:
+        description: Voice pitch, for example 0% or +8%
+        default: '+6%'
+        required: true
+      label:
+        description: Optional name for this version (keeps it apart from others)
+        default: ''
+        required: false
 
 permissions:
   contents: write
@@ -40,6 +48,8 @@ jobs:
           SCRIPTS: ${{ inputs.scripts }}
           VOICES: ${{ inputs.voices }}
           RATE: ${{ inputs.rate }}
+          PITCH: ${{ inputs.pitch }}
+          LABEL: ${{ inputs.label }}
         run: python3 social/voice/tts.py
 
       - name: Save to the repository
