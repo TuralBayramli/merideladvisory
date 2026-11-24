@@ -5,3 +5,4 @@ dist/
 *.log
 social/video/fonts.css
 social/out/
+__pycache__/
