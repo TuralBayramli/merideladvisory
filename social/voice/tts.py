@@ -8,8 +8,6 @@ repository secrets. Settings come from environment variables:
   RATE     speaking rate, e.g. 0% or +8%
   PITCH    voice pitch, e.g. 0% or +8%
   LABEL    optional suffix for the output folder, to keep variants apart
-  INTONATION  plain, or expressive: each sentence gets its own rise and fall,
-              *starred* words are stressed and questions get a short pause
 Output: social/audio/<script>/<voice>[-<label>]/p01.mp3, p02.mp3, ...
 """
 import os
@@ -34,80 +32,11 @@ def paragraphs(text: str) -> list[str]:
     return [' '.join(b.split()) for b in blocks if b.strip()]
 
 
-SENT = re.compile(r'(?<=[.!?:])\s+')
-WORD = re.compile(r'\S+')
-# Azerbaijani question words: in a question that has one, the voice peaks on it and then falls.
-QWORD = re.compile(r'\b(nə|nədir|niyə|necə|harada|hara|haradan|haraya|kim|kimdir|hansı|neçə|nəyə|nəyi)\b', re.IGNORECASE)
-# Words between *stars* in a script are said higher, a little louder and slower, as a speaker stresses them.
-STAR = re.compile(r'\*([^*]+)\*')
-STRESSED = r'<prosody pitch="+18%" volume="+15%" rate="-8%">\1</prosody>'
-UNSTAR = r'\1'
-
-
-def contour(sentence: str) -> str:
-    """Pitch path for one long sentence.
-
-    Statements peak on the word before the final verb (where Azerbaijani puts
-    the stress) and fall at the end; exclamations do the same, higher. Questions
-    peak on their question word, or rise at the end when they have none. Each
-    item in a comma list ends a little higher, as when someone lists things.
-    """
-    n = len(sentence)
-    words = list(WORD.finditer(sentence))
-    end = sentence.rstrip()[-1:]
-    at = lambda i: round(i / n * 100)
-    if end == '?':
-        q = QWORD.search(sentence)
-        if q:
-            peak = min(max(at(q.start() + len(q.group()) // 3), 10), 90)
-            pts = [(0, 0), (peak, 24), (100, -4)]
-        else:
-            pts = [(0, 0), (70, 4), (100, 26)]
-    else:
-        high, start, fall = (22, 8, -8) if end == '!' else (16, 5, -10)
-        peak = min(max(at(words[-2].start()), 40), 85) if len(words) > 2 else 50
-        pts = [(0, start)]
-        for c in re.finditer(',', sentence):
-            p = at(c.start())
-            if 8 < p < peak - 10:
-                pts += [(p - 1, start + 8), (p + 2, start - 2)]
-        pts += [(peak, high), (100, fall)]
-    return ' '.join(f'({x}%,{y:+d}%)' for x, y in pts)
-
-
-def shape(sentence: str, i: int) -> str:
-    """One sentence with its own pitch path (Azure ignores contours on very short phrases)."""
-    plain = STAR.sub(UNSTAR, sentence)
-    text = STAR.sub(STRESSED, escape(sentence))
-    end = plain.rstrip()[-1:]
-    if len(plain.split()) < 4:
-        # Lift short questions and exclamations; alternate short statements high, low.
-        lift = {'?': '+16%', '!': '+12%'}.get(end, '+6%' if i % 2 == 0 else '-3%')
-        return f'<prosody pitch="{lift}">{text}</prosody>'
-    return f'<prosody contour="{contour(plain)}">{text}</prosody>'
-
-
-def build_ssml(text: str, voice: str, rate: str, pitch: str, intonation: str) -> str:
-    base = f'rate="{rate}" pitch="{pitch}"'
-    if intonation == 'plain':
-        body = f'<prosody {base}>{escape(STAR.sub(UNSTAR, text))}</prosody>'
-    else:
-        sentences = SENT.split(text)
-        parts = []
-        for i, s in enumerate(sentences):
-            parts.append(f'<prosody {base}>{shape(s, i)}</prosody>')
-            if s.endswith('?') and i < len(sentences) - 1:
-                # A beat after a question before the answer (break is not allowed inside prosody).
-                parts.append(f'<break time="{300 if len(s.split()) < 4 else 200}ms"/>')
-        body = ' '.join(parts)
-    return (
+def synth(text: str, voice: str, rate: str, pitch: str, key: str, region: str) -> bytes:
+    ssml = (
         '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="az-AZ">'
-        f'<voice name="{voice}">{body}</voice></speak>'
+        f'<voice name="{voice}"><prosody rate="{rate}" pitch="{pitch}">{escape(text)}</prosody></voice></speak>'
     )
-
-
-def synth(text: str, voice: str, rate: str, pitch: str, intonation: str, key: str, region: str) -> bytes:
-    ssml = build_ssml(text, voice, rate, pitch, intonation)
     req = urllib.request.Request(
         f'https://{region}.tts.speech.microsoft.com/cognitiveservices/v1',
         data=ssml.encode('utf-8'),
@@ -140,9 +69,6 @@ def main():
     rate = os.environ.get('RATE', '0%').strip()
     pitch = os.environ.get('PITCH', '0%').strip() or '0%'
     label = os.environ.get('LABEL', '').strip()
-    intonation = os.environ.get('INTONATION', 'plain').strip() or 'plain'
-    if intonation not in ('plain', 'expressive'):
-        raise SystemExit(f'Bad intonation: {intonation}')
     for s in scripts:
         if not NAME.fullmatch(s):
             raise SystemExit(f'Bad script name: {s}')
@@ -163,9 +89,9 @@ def main():
             for old in out.glob('p*.mp3'):
                 old.unlink()
             for i, p in enumerate(paras, 1):
-                (out / f'p{i:02d}.mp3').write_bytes(synth(p, v, rate, pitch, intonation, key, region))
+                (out / f'p{i:02d}.mp3').write_bytes(synth(p, v, rate, pitch, key, region))
                 chars += len(p)
-            print(f'{s} / {out.name}: {len(paras)} paragraphs (rate {rate}, pitch {pitch}, {intonation})', flush=True)
+            print(f'{s} / {out.name}: {len(paras)} paragraphs (rate {rate}, pitch {pitch})', flush=True)
     print(f'about {chars} characters used', flush=True)
 
 
