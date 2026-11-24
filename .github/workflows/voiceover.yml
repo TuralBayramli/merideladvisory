@@ -27,6 +27,10 @@ on:
         description: Optional name for this version (keeps it apart from others)
         default: ''
         required: false
+      list_voices:
+        description: Only list the voices that can speak Azerbaijani (no speech is made)
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -41,7 +45,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: List voices that speak Azerbaijani
+        if: ${{ inputs.list_voices }}
+        env:
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
+        run: python3 social/voice/voices.py
+
       - name: Turn scripts into speech
+        if: ${{ !inputs.list_voices }}
         env:
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
@@ -58,7 +70,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add social/audio
+          git add social/audio social/voice/azerbaijani-voices.md 2>/dev/null || git add social/audio
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -m "Voiceover: $SCRIPTS"
           git pull --rebase origin main
