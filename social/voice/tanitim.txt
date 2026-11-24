@@ -1,14 +1,15 @@
 # Voiceover for social/video/tanitim.html
 # One paragraph per scene, separated by a blank line. Lines starting with # are ignored.
+# Put *stars* around the one or two words per sentence a speaker would stress.
 
-Təchizat zəncirinizdə pul harada itir? Çox vaxt, rəqəmlərin arasında!
+Təchizat zəncirinizdə pul harada itir? Çox vaxt, *rəqəmlərin arasında*!
 
-Meridel Ədvayzori təchizat zənciri üzrə konsaltinq şirkətidir. Biz logistika şəbəkənizdə gizlənən xərcləri tapır, alternativləri modelləşdirir və bir aydın istiqamət tövsiyə edirik.
+Meridel Ədvayzori təchizat zənciri üzrə konsaltinq şirkətidir. Biz logistika şəbəkənizdə *gizlənən xərcləri* tapır, alternativləri modelləşdirir və *bir aydın istiqamət* tövsiyə edirik.
 
-Dörd sahədə işləyirik: daşıma və yükdaşıma, ehtiyat və anbar, xidmət xərci və şəbəkə dizaynı, məlumat və planlaşdırma.
+*Dörd sahədə* işləyirik: daşıma və yükdaşıma, ehtiyat və anbar, xidmət xərci və şəbəkə dizaynı, məlumat və planlaşdırma.
 
-Necə işləyirik? Üç addımla. Əvvəlcə məlumatlarınızla mövqeyi müəyyən edirik. Sonra variantları modelləşdiririk. Və sonda bir aydın istiqamət təyin edirik.
+Necə işləyirik? *Üç addımla*. Əvvəlcə məlumatlarınızla mövqeyi müəyyən edirik. Sonra variantları modelləşdiririk. Və sonda *bir aydın istiqamət* təyin edirik.
 
 Varşava və Bakıdan Avropa, Qafqaz, Mərkəzi Asiya və Körfəz şirkətləri ilə işləyirik.
 
-İlk görüş ödənişsizdir. Bizimlə əlaqə saxlayın!
+İlk görüş *ödənişsizdir*. Bizimlə əlaqə saxlayın!

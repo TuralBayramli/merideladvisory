@@ -28,9 +28,9 @@ on:
         default: ''
         required: false
       intonation:
-        description: plain, wide (bigger rises and falls) or expressive (also shapes each sentence and pauses after questions)
+        description: expressive (each sentence rises and falls, *starred* words stressed) or plain
         type: choice
-        options: [plain, wide, expressive]
+        options: [expressive, plain]
         default: expressive
 
 permissions:
