@@ -1,0 +1,36 @@
+name: Fetch photos
+
+# Run by hand from the Actions tab. Downloads Pexels photos into social/photos/raw/.
+
+on:
+  workflow_dispatch:
+    inputs:
+      photos:
+        description: Comma-separated name|pexels-id pairs
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: voiceover
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Download
+        env:
+          PHOTOS: ${{ inputs.photos }}
+        run: python3 social/photos/fetch.py
+      - name: Save to the repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add social/photos
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Photos: add candidates"
+          git pull --rebase origin main
+          git push

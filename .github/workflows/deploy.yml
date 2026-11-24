@@ -7,6 +7,7 @@ on:
       - 'social/**'
       - '.github/workflows/voiceover.yml'
       - '.github/workflows/fetch-music.yml'
+      - '.github/workflows/fetch-photos.yml'
   workflow_dispatch:
 
 permissions:
