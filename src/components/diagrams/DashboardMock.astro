@@ -1,0 +1,177 @@
+---
+// A small example of a delivery-performance dashboard: KPI tiles, order funnel, failure reasons.
+import { t, type Lang } from '../../i18n/ui';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang).diagrams;
+const L = d.dash;
+const funnel = [100, 97, 95, 94];
+const fails = [46, 31, 23];
+const pct = (n: number) => (lang === 'az' ? `${n}%` : `${n}%`);
+---
+
+<figure class="figure dash">
+  <figcaption><strong>{L.title}</strong><span>{d.example}</span></figcaption>
+  <div class="kpis">
+    {
+      L.kpis.map((k, i) => (
+        <div class:list={['kpi', { main: i === 0 }]}>
+          <span class="kv">{k.value}</span>
+          <span class="kl">{k.label}</span>
+        </div>
+      ))
+    }
+  </div>
+  <div class="panels">
+    <div class="panel">
+      <h4>{L.funnelTitle}</h4>
+      <ul class="funnel">
+        {
+          L.stages.map((s, i) => (
+            <li>
+              <span class="fl">{s}</span>
+              <span class="ft">
+                <span class="fb" style={`width:${funnel[i]}%`} />
+              </span>
+              <span class="fv">{pct(funnel[i])}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>{L.failTitle}</h4>
+      <ul class="cols">
+        {
+          L.fails.map((f, i) => (
+            <li>
+              <span class="cb-wrap">
+                <span class="cb" style={`height:${fails[i] * 1.8}%`} />
+              </span>
+              <span class="cv">{pct(fails[i])}</span>
+              <span class="cl">{f}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  .kpi {
+    background: var(--mist);
+    border-radius: 10px;
+    padding: 0.7rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .kpi.main {
+    background: var(--signal);
+    color: #ffffff;
+  }
+  .kv {
+    font: 500 1.35rem / 1.1 var(--serif);
+  }
+  .kl {
+    font-size: 0.75rem;
+    opacity: 0.85;
+  }
+  .panels {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 0.9rem;
+    margin-top: 0.9rem;
+  }
+  .panel h4 {
+    margin: 0 0 0.6rem;
+    font: 600 0.78rem / 1.2 var(--sans);
+    color: var(--ink-2);
+  }
+  .funnel,
+  .cols {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .funnel li {
+    display: grid;
+    grid-template-columns: 4.9rem 1fr 2.2rem;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    margin-bottom: 0.4rem;
+  }
+  .fl {
+    color: var(--ink-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ft {
+    background: var(--mist);
+    border-radius: 3px;
+    height: 0.7rem;
+  }
+  .fb {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--ink);
+  }
+  .funnel li:last-child .fb {
+    background: var(--signal);
+  }
+  .fv {
+    text-align: right;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+    align-items: end;
+  }
+  .cols li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    text-align: center;
+  }
+  .cb-wrap {
+    height: 4.6rem;
+    width: 1.5rem;
+    display: flex;
+    align-items: flex-end;
+  }
+  .cb {
+    display: block;
+    width: 100%;
+    border-radius: 3px 3px 0 0;
+    background: var(--gold);
+  }
+  .cv {
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .cl {
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 1.2;
+  }
+  @media (max-width: 26rem) {
+    .panels {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

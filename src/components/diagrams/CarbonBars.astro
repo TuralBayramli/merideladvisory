@@ -1,0 +1,73 @@
+---
+// Relative transport emissions for three ways to move the same tonne (illustrative index).
+import { t, type Lang } from '../../i18n/ui';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang).diagrams;
+const L = d.carbon;
+const cls = ['c-road', 'c-rail', 'c-sea'];
+---
+
+<figure class="figure">
+  <figcaption><strong>{L.title}</strong><span>{d.example}</span></figcaption>
+  <ul class="bars">
+    {
+      L.rows.map((r, i) => (
+        <li>
+          <span class="lab">{r.label}</span>
+          <span class="track">
+            <span class:list={['bar', cls[i]]} style={`width:${r.value}%`} />
+            <span class="v">{r.value}</span>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="note">{L.note}</p>
+</figure>
+
+<style>
+  .bars {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .lab {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+  }
+  .track {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .bar {
+    height: 1.35rem;
+    border-radius: 4px;
+    min-width: 0.5rem;
+  }
+  .c-road {
+    background: var(--ink);
+  }
+  .c-rail {
+    background: var(--signal-mid);
+  }
+  .c-sea {
+    background: var(--signal);
+  }
+  .v {
+    font: 600 0.95rem / 1 var(--sans);
+    color: var(--ink);
+  }
+  .note {
+    margin: 1.1rem 0 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,175 @@
+---
+// Home page: one tab per service, each with its questions and a diagram.
+import Diagram from './diagrams/Diagram.astro';
+import { t, localePath, type Lang } from '../i18n/ui';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const servicesHref = localePath(lang, '/services');
+---
+
+<div class="tabs" data-tabs>
+  <div class="tablist" role="tablist" aria-label={d.home.servicesTitle}>
+    {
+      d.services.map((s, i) => (
+        <button type="button" role="tab" id={`tab-${s.id}`} aria-controls={`panel-${s.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
+          {s.tab}
+        </button>
+      ))
+    }
+  </div>
+  {
+    d.services.map((s, i) => (
+      <div class="panel" role="tabpanel" id={`panel-${s.id}`} aria-labelledby={`tab-${s.id}`} hidden={i !== 0}>
+        <div class="panel-text">
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+          <h4>{d.questionsLabel}</h4>
+          <ul class="qs">
+            {s.questions.map((q) => (
+              <li>{q}</li>
+            ))}
+          </ul>
+          <a class="more" href={`${servicesHref}#${s.id}`}>
+            {d.home.servicesMore}
+          </a>
+        </div>
+        <div class="panel-fig">
+          <Diagram lang={lang} id={s.id} />
+        </div>
+      </div>
+    ))
+  }
+</div>
+<noscript>
+  <style>
+    .panel[hidden] {
+      display: grid !important;
+    }
+    .tablist {
+      display: none !important;
+    }
+  </style>
+</noscript>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const select = (tab: HTMLButtonElement, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        const panel = document.getElementById(t.getAttribute('aria-controls') ?? '');
+        if (panel) panel.hidden = !on;
+      });
+      if (focus) tab.focus();
+      tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (e) => {
+        const k = e.key;
+        let n = -1;
+        if (k === 'ArrowRight') n = (i + 1) % tabs.length;
+        else if (k === 'ArrowLeft') n = (i - 1 + tabs.length) % tabs.length;
+        else if (k === 'Home') n = 0;
+        else if (k === 'End') n = tabs.length - 1;
+        if (n >= 0) {
+          e.preventDefault();
+          select(tabs[n], true);
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .tablist {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    margin-bottom: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    scrollbar-width: none;
+  }
+  .tablist::-webkit-scrollbar {
+    display: none;
+  }
+  .tablist button {
+    flex: none;
+    padding: 0.65rem 1.15rem;
+    border-radius: 2rem;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    font: 500 0.95rem / 1.2 var(--sans);
+    cursor: pointer;
+    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+  .tablist button:hover {
+    border-color: var(--signal);
+    color: var(--signal-ink);
+  }
+  .tablist button[aria-selected='true'] {
+    background: var(--signal);
+    border-color: var(--signal);
+    color: #ffffff;
+  }
+  .panel {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(1.75rem, 1rem + 3vw, 4rem);
+    align-items: start;
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  .panel h3 {
+    font-size: var(--step-3);
+    font-weight: 420;
+  }
+  .panel-text > p {
+    margin: 1rem 0 1.5rem;
+    font-size: 1.1rem;
+    color: var(--ink-2);
+    max-width: 34rem;
+  }
+  .panel h4 {
+    margin: 0 0 0.6rem;
+    font: 600 0.9rem / 1.3 var(--sans);
+    color: var(--ink);
+  }
+  .qs {
+    list-style: none;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    max-width: 34rem;
+  }
+  .qs li {
+    position: relative;
+    padding: 0.6rem 0 0.6rem 1.6rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink-2);
+  }
+  .qs li::before {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    top: 1.12rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--gold);
+  }
+  .more {
+    font-weight: 500;
+  }
+  @media (max-width: 56rem) {
+    .panel {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

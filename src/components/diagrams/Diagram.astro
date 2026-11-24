@@ -1,0 +1,23 @@
+---
+// The diagram that explains each service.
+import type { Lang, ServiceId } from '../../i18n/ui';
+import ModesChart from './ModesChart.astro';
+import NetworkCog from './NetworkCog.astro';
+import AbcXyz from './AbcXyz.astro';
+import CostToServe from './CostToServe.astro';
+import CarbonBars from './CarbonBars.astro';
+import DashboardMock from './DashboardMock.astro';
+
+interface Props {
+  lang: Lang;
+  id: ServiceId;
+}
+const { lang, id } = Astro.props;
+---
+
+{id === 'transport' && <ModesChart lang={lang} />}
+{id === 'network' && <NetworkCog lang={lang} />}
+{id === 'inventory' && <AbcXyz lang={lang} />}
+{id === 'cost-to-serve' && <CostToServe lang={lang} />}
+{id === 'carbon' && <CarbonBars lang={lang} />}
+{id === 'data' && <DashboardMock lang={lang} />}

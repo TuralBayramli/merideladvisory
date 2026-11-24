@@ -1,0 +1,91 @@
+---
+// Transport modes placed by speed and cost per tonne (illustrative, no figures).
+import { t, type Lang } from '../../i18n/ui';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang).diagrams;
+const L = d.modes;
+// plot area
+const X0 = 34, X1 = 326, Y0 = 18, Y1 = 196;
+const at = (speed: number, cheap: number) => [X0 + speed * (X1 - X0), Y1 - cheap * (Y1 - Y0)];
+const pts = [
+  { key: 'river', label: L.river, s: 0.07, c: 0.74, cls: 'm-sea', anchor: 'start', dx: 13, dy: 4 },
+  { key: 'sea', label: L.sea, s: 0.17, c: 0.92, cls: 'm-sea', anchor: 'start', dx: 13, dy: 4 },
+  { key: 'rail', label: L.rail, s: 0.5, c: 0.62, cls: 'm-rail', anchor: 'start', dx: 13, dy: 4 },
+  { key: 'multi', label: L.multimodal, s: 0.64, c: 0.43, cls: 'm-multi', anchor: 'end', dx: -13, dy: 4 },
+  { key: 'road', label: L.road, s: 0.9, c: 0.14, cls: 'm-road', anchor: 'end', dx: -13, dy: 4 },
+].map((p) => ({ ...p, xy: at(p.s, p.c) }));
+const curve = `M${at(0.04, 0.97).join(' ')} C${at(0.45, 0.85).join(' ')} ${at(0.62, 0.55).join(' ')} ${at(0.97, 0.06).join(' ')}`;
+---
+
+<figure class="figure">
+  <figcaption><strong>{L.title}</strong><span>{d.example}</span></figcaption>
+  <svg class="chart" viewBox="0 0 340 236" role="img" aria-label={L.title}>
+    <defs>
+      <marker id="arrow-modes" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0L8 4L0 8z" fill="currentColor"></path>
+      </marker>
+    </defs>
+    <path class="frontier" d={curve}></path>
+    <line class="axis" x1={X0} y1={Y1 + 12} x2={X1} y2={Y1 + 12} marker-end="url(#arrow-modes)"></line>
+    <line class="axis" x1={X0 - 12} y1={Y1} x2={X0 - 12} y2={Y0} marker-end="url(#arrow-modes)"></line>
+    <text class="ax" x={X1} y={Y1 + 30} text-anchor="end">{L.x}</text>
+    <text class="ax" x={X0 - 4} y={Y0 - 4}>{L.y}</text>
+    {
+      pts.map((p) => (
+        <g class={p.cls}>
+          <circle cx={p.xy[0].toFixed(1)} cy={p.xy[1].toFixed(1)} r="8.5" />
+          <text x={(p.xy[0] + p.dx).toFixed(1)} y={(p.xy[1] + p.dy).toFixed(1)} text-anchor={p.anchor}>
+            {p.label}
+          </text>
+        </g>
+      ))
+    }
+  </svg>
+</figure>
+
+<style>
+  .chart {
+    width: 100%;
+    max-width: 30rem;
+    margin-inline: auto;
+    overflow: visible;
+    color: var(--muted);
+    font-family: var(--sans);
+  }
+  .frontier {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 10;
+    stroke-linecap: round;
+  }
+  .axis {
+    stroke: var(--muted);
+    stroke-width: 1;
+  }
+  .ax {
+    font-size: 11.5px;
+    fill: var(--muted);
+  }
+  g text {
+    font-size: 13px;
+    font-weight: 500;
+    fill: var(--ink);
+  }
+  .m-sea circle {
+    fill: var(--paper);
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+  .m-rail circle {
+    fill: var(--signal);
+  }
+  .m-multi circle {
+    fill: var(--signal-mid);
+  }
+  .m-road circle {
+    fill: var(--gold);
+  }
+</style>

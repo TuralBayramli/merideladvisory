@@ -1,20 +1,41 @@
 @import '@fontsource-variable/newsreader/opsz.css';
 @import '@fontsource-variable/ibm-plex-sans/wght.css';
 
+/* Light theme only: white pages with navy text, a gold brand accent and one
+   bright blue for things people click and for highlights in diagrams. */
 :root {
-  --ink: #16243f;
-  --ink-soft: #2a3a5a;
-  --paper: #f4f6f9;
-  --surface: #ffffff;
-  --slate: #566177;
-  --rule: #d8dee8;
-  --lapis: #244c9a;
-  --madder: #a8322a;
-  --deep: #14213a;
-  --deep-text: #eef2f8;
-  --deep-muted: #b4c0d6;
+  --ink: #14213a;
+  --ink-2: #33415c;
+  --muted: #5d6882;
+  --paper: #ffffff;
+  --mist: #f1f4f8;
+  --mist-2: #e4eaf2;
+  --line: #dde3ec;
+  --navy: #14213a;
+  --navy-2: #1d2d4d;
+  --ivory: #efe9dd;
+  --ivory-muted: #b9c2d3;
+  --gold: #b08a50;
+  --gold-ink: #8a6a37;
+  --gold-light: #c2a574;
+  --signal: #1f5fff;
+  --signal-ink: #1748d6;
+  --signal-soft: #e9efff;
+  --signal-mid: #a9c0ff;
+  --neg: #c8453c;
+  --logo-gold: #9a7a48;
+
+  /* Older names still used by some pages */
+  --rule: var(--line);
+  --slate: var(--muted);
+  --surface: var(--paper);
+  --deep: var(--navy);
+  --deep-text: #ffffff;
+  --deep-muted: var(--ivory-muted);
   --deep-line: rgba(220, 230, 248, 0.17);
-  --madder-bright: #e8655a;
+  --madder: var(--gold);
+  --madder-bright: var(--gold-light);
+  --lapis: var(--signal-ink);
 
   --serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
   --sans: 'IBM Plex Sans Variable', 'Segoe UI', system-ui, sans-serif;
@@ -23,27 +44,14 @@
   --step-0: 1.0625rem;
   --step-1: 1.3125rem;
   --step-2: 1.75rem;
-  --step-3: clamp(1.9rem, 1.4rem + 2vw, 2.75rem);
-  --step-4: clamp(2.5rem, 1.6rem + 4.2vw, 4.6rem);
+  --step-3: clamp(1.9rem, 1.4rem + 2vw, 2.8rem);
+  --step-4: clamp(2.6rem, 1.6rem + 4.4vw, 4.8rem);
 
-  --wrap: 72rem;
+  --wrap: 74rem;
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
   --space: clamp(4rem, 3rem + 4vw, 7rem);
-  color-scheme: light dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --ink: #e8edf6;
-    --ink-soft: #c9d3e5;
-    --paper: #0f1828;
-    --surface: #152136;
-    --slate: #9ba8bf;
-    --rule: #26354f;
-    --lapis: #93b2f2;
-    --madder: #ec7064;
-    --deep: #0b1322;
-  }
+  --radius: 14px;
+  color-scheme: light;
 }
 
 *,
@@ -55,13 +63,14 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  scroll-padding-top: 5.5rem;
 }
 
 body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font: 400 var(--step-0) / 1.6 var(--sans);
+  font: 400 var(--step-0) / 1.62 var(--sans);
   font-feature-settings: 'kern';
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -77,7 +86,7 @@ h1,
 h2,
 h3 {
   font-family: var(--serif);
-  font-weight: 480;
+  font-weight: 440;
   line-height: 1.1;
   letter-spacing: -0.012em;
   margin: 0;
@@ -86,7 +95,7 @@ h3 {
 
 h1 {
   font-size: var(--step-4);
-  font-weight: 440;
+  font-weight: 400;
 }
 
 h2 {
@@ -95,7 +104,7 @@ h2 {
 
 h3 {
   font-size: var(--step-1);
-  font-weight: 560;
+  font-weight: 520;
   line-height: 1.25;
 }
 
@@ -105,7 +114,7 @@ p {
 }
 
 a {
-  color: var(--lapis);
+  color: var(--signal-ink);
   text-underline-offset: 0.18em;
   text-decoration-thickness: 1px;
 }
@@ -115,7 +124,7 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 3px solid var(--madder);
+  outline: 3px solid var(--signal);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -130,7 +139,7 @@ a:hover {
   left: var(--gutter);
   top: -4rem;
   z-index: 50;
-  background: var(--surface);
+  background: var(--paper);
   color: var(--ink);
   padding: 0.6rem 1rem;
 }
@@ -152,6 +161,7 @@ a:hover {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   min-height: 3rem;
   padding: 0.7rem 1.4rem;
@@ -163,12 +173,12 @@ a:hover {
 }
 
 .btn-solid {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--signal);
+  color: #ffffff;
 }
 
 .btn-solid:hover {
-  background: var(--ink-soft);
+  background: var(--signal-ink);
 }
 
 .btn-line {
@@ -177,24 +187,21 @@ a:hover {
 }
 
 .btn-line:hover {
-  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
 }
 
-.on-deep .btn-solid {
-  background: var(--deep-text);
-  color: var(--deep);
-}
-
-.on-deep .btn-solid:hover {
-  background: #ffffff;
+.btn-sm {
+  min-height: 2.5rem;
+  padding: 0.45rem 1.05rem;
+  font-size: 0.925rem;
 }
 
 .on-deep .btn-line {
-  color: var(--deep-text);
+  color: #ffffff;
 }
 
 .on-deep .btn-line:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* Section scaffolding */
@@ -202,37 +209,93 @@ a:hover {
   padding-block: var(--space);
 }
 
-.section + .section {
-  border-top: 1px solid var(--rule);
+.section.tint {
+  background: var(--mist);
 }
 
 .section-head {
-  max-width: 40rem;
-  margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  max-width: 44rem;
+  margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.25rem);
 }
 
 .section-head p {
-  color: var(--slate);
+  color: var(--muted);
   margin-top: 1rem;
   margin-bottom: 0;
+  font-size: 1.1rem;
 }
 
 .page-head {
-  padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem) clamp(2.5rem, 2rem + 2vw, 4rem);
-  border-bottom: 1px solid var(--rule);
+  padding-block: clamp(3.25rem, 2.5rem + 4vw, 5.5rem) clamp(2.5rem, 2rem + 2vw, 3.75rem);
+  background: var(--mist);
 }
 
 .page-head h1 {
-  font-size: clamp(2.4rem, 1.7rem + 3vw, 3.8rem);
+  font-size: clamp(2.5rem, 1.7rem + 3.2vw, 4rem);
   max-width: 18ch;
 }
 
 .page-head p {
-  max-width: 40rem;
-  color: var(--slate);
+  max-width: 42rem;
+  color: var(--ink-2);
   font-size: var(--step-1);
   line-height: 1.5;
   margin: 1.25rem 0 0;
+}
+
+/* A thin gold rule used above card titles and figures */
+.rule-gold {
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--gold);
+  border: 0;
+  margin: 0 0 1rem;
+}
+
+/* Diagram cards */
+.figure {
+  margin: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(1.1rem, 0.8rem + 1.2vw, 1.75rem);
+}
+
+.figure figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.figure figcaption strong {
+  font: 520 1.05rem / 1.3 var(--serif);
+}
+
+.figure figcaption span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chips li {
+  font-size: 0.9rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 2rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
 }
 
 .prose {
@@ -270,7 +333,7 @@ a:hover {
 .prose code {
   font-family: var(--sans);
   font-weight: 500;
-  background: color-mix(in srgb, var(--lapis) 10%, transparent);
+  background: var(--signal-soft);
   padding: 0.1em 0.35em;
   border-radius: 3px;
 }
@@ -278,8 +341,19 @@ a:hover {
 .prose blockquote {
   margin: 1.5rem 0;
   padding-left: 1.25rem;
-  border-left: 2px solid var(--madder);
+  border-left: 2px solid var(--gold);
   font-family: var(--serif);
   font-size: var(--step-1);
   line-height: 1.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

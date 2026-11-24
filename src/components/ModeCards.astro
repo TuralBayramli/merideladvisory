@@ -1,0 +1,85 @@
+---
+// Four ways goods move and sit, each with a photo.
+import { t, type Lang } from '../i18n/ui';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<ul class="modes">
+  {
+    d.modes.map((m) => (
+      <li class="mode">
+        <img
+          src={`/images/${m.key}-tall-480.webp`}
+          srcset={`/images/${m.key}-tall-480.webp 480w, /images/${m.key}-tall-960.webp 960w`}
+          sizes="(max-width: 40rem) 78vw, (max-width: 64rem) 46vw, 24vw"
+          width="480"
+          height="600"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="mode-text">
+          <h3>{m.title}</h3>
+          <p>{m.text}</p>
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .modes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(1rem, 0.6rem + 1.2vw, 1.75rem);
+  }
+  .mode img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius);
+    background: var(--mist-2);
+  }
+  .mode-text {
+    padding-top: 1rem;
+  }
+  .mode h3 {
+    font-size: 1.4rem;
+    font-weight: 460;
+  }
+  .mode p {
+    margin: 0.5rem 0 0;
+    color: var(--muted);
+    font-size: 0.975rem;
+  }
+  @media (max-width: 64rem) {
+    .modes {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 40rem) {
+    .modes {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      margin-inline: calc(-1 * var(--gutter));
+      padding-inline: var(--gutter);
+      scroll-padding-inline: var(--gutter);
+      scrollbar-width: none;
+    }
+    .modes::-webkit-scrollbar {
+      display: none;
+    }
+    .mode {
+      flex: 0 0 76%;
+      scroll-snap-align: start;
+    }
+  }
+</style>

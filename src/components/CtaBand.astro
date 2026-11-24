@@ -7,21 +7,37 @@ const { lang } = Astro.props;
 const d = t(lang);
 ---
 
-<section class="cta on-deep">
+<section class="cta">
   <div class="wrap cta-inner">
     <div>
       <h2>{d.cta.title}</h2>
       <p>{d.cta.text}</p>
     </div>
-    <a class="btn btn-solid" href={localePath(lang, '/contact')}>{d.cta.button}</a>
+    <a class="btn cta-btn" href={localePath(lang, '/contact')}>{d.cta.button}</a>
   </div>
 </section>
 
 <style>
   .cta {
-    background: var(--deep);
-    color: var(--deep-text);
+    background: var(--signal);
+    color: #ffffff;
     padding-block: clamp(3.5rem, 2.5rem + 4vw, 5.5rem);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .cta::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    right: -8rem;
+    top: 50%;
+    width: 34rem;
+    aspect-ratio: 1;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 0 0 3.2rem rgba(255, 255, 255, 0.05), inset 0 0 0 3.3rem rgba(255, 255, 255, 0.22);
   }
   .cta-inner {
     display: flex;
@@ -32,10 +48,18 @@ const d = t(lang);
   }
   .cta h2 {
     font-size: var(--step-3);
+    color: #ffffff;
   }
   .cta p {
     margin: 0.75rem 0 0;
-    color: var(--deep-muted);
+    color: rgba(255, 255, 255, 0.88);
     font-size: var(--step-1);
+  }
+  .cta-btn {
+    background: #ffffff;
+    color: var(--signal-ink);
+  }
+  .cta-btn:hover {
+    background: var(--signal-soft);
   }
 </style>

@@ -1,5 +1,5 @@
 ---
-// Animated map of the trade lanes between Europe, the Caucasus and the Gulf.
+// Animated map of the trade routes between Europe, the Caucasus, Central Asia, China and the Gulf.
 // The map is projected at build time, so visitors download plain SVG, no map library.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,22 +15,28 @@ const { lang } = Astro.props;
 const d = t(lang);
 
 const W = 1000;
-const H = 600;
+const H = 500;
 const raw = JSON.parse(
   fs.readFileSync(path.join(process.cwd(), 'node_modules/world-atlas/countries-50m.json'), 'utf-8'),
 );
-const topo = simplify(presimplify(raw as any), quantile(presimplify(raw as any), 0.45)) as any;
+const topo = simplify(presimplify(raw as any), quantile(presimplify(raw as any), 0.5)) as any;
 const land = feature(topo, topo.objects.land);
 const borders = mesh(topo, topo.objects.countries, (a: unknown, b: unknown) => a !== b);
-const frame = {
-  type: 'Feature',
-  properties: {},
-  geometry: { type: 'Polygon', coordinates: [[[13, 21], [13, 56], [80, 56], [80, 21], [13, 21]]] },
-} as any;
+// The area to show. Edges follow parallels and meridians (many points), because
+// d3 draws polygon edges as great circles, which would bow north over this width.
+const [LON0, LON1, LAT0, LAT1] = [0, 112, 19.5, 55.5];
+const edge = (a: number, b: number, n: number) => Array.from({ length: n + 1 }, (_, i) => a + ((b - a) * i) / n);
+const ring = [
+  ...edge(LON0, LON1, 56).map((lon) => [lon, LAT0]),
+  ...edge(LAT0, LAT1, 18).map((lat) => [LON1, lat]),
+  ...edge(LON1, LON0, 56).map((lon) => [lon, LAT1]),
+  ...edge(LAT1, LAT0, 18).map((lat) => [LON0, lat]),
+];
+const frame = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring.reverse()] } } as any;
 const projection = geoConicConformal()
   .parallels([30, 50])
-  .rotate([-47, 0])
-  .fitExtent([[0, 0], [W, H]], frame)
+  .rotate([-56, 0])
+  .fitExtent([[10, 10], [W - 10, H - 10]], frame)
   .clipExtent([[0, 0], [W, H]]);
 const toPath = geoPath(projection).digits(1);
 const landPath = toPath(land as any) ?? '';
@@ -55,82 +61,95 @@ function smooth(pts: [number, number][]): string {
 }
 
 const city = {
+  rotterdam: [4.48, 51.92],
   warsaw: [21.01, 52.23],
   istanbul: [28.98, 41.01],
   tbilisi: [44.79, 41.72],
   baku: [49.87, 40.41],
   aktau: [51.2, 43.65],
   almaty: [76.95, 43.25],
+  xian: [108.94, 34.34],
   dubai: [55.27, 25.2],
 } as const;
 type CityKey = keyof typeof city;
 
-const lanes: { id: string; pts: [number, number][]; dur: number }[] = [
+const lanes = [
   {
-    id: 'lane-west',
-    dur: 14,
-    pts: [P(...city.warsaw), P(26.1, 44.43), P(...city.istanbul), P(36.5, 40.4), P(43.1, 40.6), P(...city.tbilisi), P(...city.baku)],
+    id: 'lane-middle',
+    kind: 'middle',
+    dur: 30,
+    cargo: 5,
+    // Xi'an – Urumqi – Khorgos – Almaty – Aktau – Caspian – Baku – Tbilisi – Kars – Istanbul – Balkans – Warsaw
+    pts: [
+      P(...city.xian), P(103.83, 36.06), P(98.29, 39.77), P(87.62, 43.83), P(80.41, 44.21), P(...city.almaty),
+      P(69.6, 42.3), P(65.51, 44.85), P(55.2, 45.3), P(...city.aktau), P(...city.baku), P(46.36, 40.68),
+      P(...city.tbilisi), P(43.1, 40.6), P(41.27, 39.9), P(32.86, 39.93), P(...city.istanbul), P(23.32, 42.7),
+      P(20.46, 44.79), P(19.04, 47.5), P(19.0, 50.26), P(...city.warsaw),
+    ],
   },
   {
-    id: 'lane-east',
-    dur: 13,
-    pts: [P(...city.baku), P(...city.aktau), P(58.5, 45.2), P(66.5, 44.6), P(71.4, 42.9), P(...city.almaty)],
+    id: 'lane-europe',
+    kind: 'europe',
+    dur: 10,
+    cargo: 2,
+    pts: [P(...city.warsaw), P(16.93, 52.41), P(13.4, 52.52), P(9.73, 52.37), P(6.76, 51.43), P(...city.rotterdam)],
   },
   {
     id: 'lane-south',
+    kind: 'south',
     dur: 12,
+    cargo: 3,
     pts: [P(...city.baku), P(48.87, 38.43), P(49.6, 37.2), P(52.6, 32.6), P(56.27, 27.18), P(...city.dubai)],
   },
-].map((l) => ({ ...l, d: smooth(l.pts) })) as any;
+].map((l) => ({ ...l, d: smooth(l.pts as [number, number][]) }));
 
 const home: CityKey[] = ['warsaw', 'baku'];
+const minor: CityKey[] = ['istanbul', 'tbilisi', 'aktau'];
 // Label placement relative to the city dot.
 const place: Record<CityKey, 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'> = {
-  warsaw: 'e',
+  rotterdam: 'w',
+  warsaw: 'n',
   istanbul: 'sw',
   tbilisi: 'nw',
   baku: 'se',
   aktau: 'ne',
-  almaty: 'n',
+  almaty: 's',
+  xian: 's',
   dubai: 'w',
 };
 const cities = (Object.keys(city) as CityKey[]).map((k) => {
   const [x, y] = P(...city[k]);
-  return { key: k, x, y, left: (x / W) * 100, top: (y / H) * 100, home: home.includes(k), place: place[k] };
+  return { key: k, x, y, left: (x / W) * 100, top: (y / H) * 100, home: home.includes(k), minor: minor.includes(k), place: place[k] };
+});
+
+const regionAt: Record<string, [number, number]> = {
+  europe: [5.5, 46.6],
+  turkiye: [34.5, 38.4],
+  caucasus: [41.8, 44.6],
+  centralAsia: [63.5, 47.2],
+  china: [96, 39.4],
+  gulf: [60.5, 22.2],
+};
+const regions = Object.entries(regionAt).map(([k, [lon, lat]]) => {
+  const [x, y] = P(lon, lat);
+  return { key: k, left: (x / W) * 100, top: (y / H) * 100, minor: k === 'turkiye' || k === 'caucasus' };
 });
 ---
 
 <figure class="routemap">
+  <div class="scroller">
   <div class="stage">
     <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <linearGradient id="fade-x" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stop-color="#fff" stop-opacity="0"></stop>
-          <stop offset="0.14" stop-color="#fff" stop-opacity="1"></stop>
-          <stop offset="0.86" stop-color="#fff" stop-opacity="1"></stop>
-          <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
-        </linearGradient>
-        <linearGradient id="fade-y" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stop-color="#000"></stop>
-          <stop offset="0.16" stop-color="#fff"></stop>
-          <stop offset="0.84" stop-color="#fff"></stop>
-          <stop offset="1" stop-color="#000"></stop>
-        </linearGradient>
-        <mask id="mask-y"><rect width={W} height={H} fill="url(#fade-y)"></rect></mask>
-        <mask id="map-mask"><rect width={W} height={H} fill="url(#fade-x)" mask="url(#mask-y)"></rect></mask>
-      </defs>
-      <g mask="url(#map-mask)">
-        <path class="land" d={landPath}></path>
-        <path class="borders" d={borderPath}></path>
-      </g>
+      <path class="land" d={landPath}></path>
+      <path class="borders" d={borderPath}></path>
       {
-        lanes.map((l: any) => (
-          <g class="lane">
+        lanes.map((l) => (
+          <g class:list={['lane', `lane-${l.kind}`]}>
             <path id={l.id} class="lane-base" d={l.d} />
             <path class="lane-flow" d={l.d} />
-            {[0, 1, 2].map((i) => (
-              <circle class="cargo" r="4">
-                <animateMotion dur={`${l.dur}s`} begin={`-${(l.dur / 3) * i}s`} repeatCount="indefinite" rotate="auto">
+            {Array.from({ length: l.cargo }, (_, i) => (
+              <circle class="cargo" r="4.2">
+                <animateMotion dur={`${l.dur}s`} begin={`-${((l.dur / l.cargo) * i).toFixed(2)}s`} repeatCount="indefinite" rotate="auto">
                   <mpath href={`#${l.id}`} />
                 </animateMotion>
               </circle>
@@ -142,22 +161,32 @@ const cities = (Object.keys(city) as CityKey[]).map((k) => {
         cities.map((c) => (
           <g class:list={['city', { home: c.home }]}>
             {c.home && <circle class="pulse" cx={c.x.toFixed(1)} cy={c.y.toFixed(1)} r="16" />}
-            <circle class="dot" cx={c.x.toFixed(1)} cy={c.y.toFixed(1)} r={c.home ? 6 : 4.5} />
+            <circle class="dot" cx={c.x.toFixed(1)} cy={c.y.toFixed(1)} r={c.home ? 6.5 : 4.5} />
           </g>
         ))
       }
     </svg>
     {
+      regions.map((r) => (
+        <span class:list={['region', { minor: r.minor }]} style={`left:${r.left.toFixed(2)}%;top:${r.top.toFixed(2)}%`}>
+          {d.home.regions[r.key]}
+        </span>
+      ))
+    }
+    {
       cities.map((c) => (
-        <span class:list={['label', `p-${c.place}`, { home: c.home }]} style={`left:${c.left.toFixed(2)}%;top:${c.top.toFixed(2)}%`}>
+        <span class:list={['label', `p-${c.place}`, { home: c.home, minor: c.minor }]} style={`left:${c.left.toFixed(2)}%;top:${c.top.toFixed(2)}%`}>
           {d.home.cities[c.key]}
         </span>
       ))
     }
   </div>
+  </div>
   <figcaption>
     <ul class="legend">
-      {d.home.lanes.map((lane) => <li>{lane}</li>)}
+      <li class="lg-middle">{d.home.lanes.middle}</li>
+      <li class="lg-south">{d.home.lanes.south}</li>
+      <li class="lg-europe">{d.home.lanes.europe}</li>
     </ul>
   </figcaption>
 </figure>
@@ -187,7 +216,7 @@ const cities = (Object.keys(city) as CityKey[]).map((k) => {
   }
   .stage {
     position: relative;
-    aspect-ratio: 1000 / 600;
+    aspect-ratio: 1000 / 500;
   }
   .stage svg {
     position: absolute;
@@ -196,54 +225,74 @@ const cities = (Object.keys(city) as CityKey[]).map((k) => {
     height: 100%;
   }
   .land {
-    fill: rgba(205, 218, 240, 0.075);
+    fill: #dfe6f0;
   }
   .borders {
     fill: none;
-    stroke: rgba(205, 218, 240, 0.16);
-    stroke-width: 0.7;
+    stroke: #ffffff;
+    stroke-width: 0.8;
     vector-effect: non-scaling-stroke;
   }
   .lane-base {
     fill: none;
-    stroke: rgba(232, 101, 90, 0.32);
-    stroke-width: 1.5;
+    stroke-width: 2.2;
     vector-effect: non-scaling-stroke;
+    opacity: 0.3;
   }
   .lane-flow {
     fill: none;
-    stroke: var(--madder-bright);
-    stroke-width: 1.75;
+    stroke-width: 2.4;
     stroke-linecap: round;
-    stroke-dasharray: 1 11;
+    stroke-dasharray: 1 10;
     vector-effect: non-scaling-stroke;
     animation: flow 1.6s linear infinite;
   }
+  .lane-middle .lane-base,
+  .lane-middle .lane-flow {
+    stroke: var(--signal);
+  }
+  .lane-south .lane-base,
+  .lane-south .lane-flow {
+    stroke: var(--gold);
+  }
+  .lane-europe .lane-base,
+  .lane-europe .lane-flow {
+    stroke: var(--ink);
+  }
   .cargo {
     fill: #ffffff;
-    stroke: var(--madder-bright);
-    stroke-width: 1.5;
+    stroke-width: 1.8;
+  }
+  .lane-middle .cargo {
+    stroke: var(--signal);
+  }
+  .lane-south .cargo {
+    stroke: var(--gold);
+  }
+  .lane-europe .cargo {
+    stroke: var(--ink);
   }
   .city .dot {
-    fill: var(--deep);
-    stroke: rgba(230, 238, 250, 0.85);
-    stroke-width: 1.5;
+    fill: var(--ink);
+    stroke: #ffffff;
+    stroke-width: 1.6;
   }
   .city.home .dot {
-    fill: var(--madder-bright);
+    fill: var(--gold);
     stroke: #ffffff;
+    stroke-width: 2;
   }
   .pulse {
     fill: none;
-    stroke: var(--madder-bright);
-    stroke-width: 1.25;
+    stroke: var(--gold);
+    stroke-width: 1.4;
     transform-box: fill-box;
     transform-origin: center;
     animation: pulse 2.8s ease-out infinite;
   }
   @keyframes flow {
     to {
-      stroke-dashoffset: -12;
+      stroke-dashoffset: -11;
     }
   }
   @keyframes pulse {
@@ -256,27 +305,27 @@ const cities = (Object.keys(city) as CityKey[]).map((k) => {
       transform: scale(1.4);
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .lane-flow,
-    .pulse {
-      animation: none;
-    }
-    .pulse {
-      opacity: 0.5;
-    }
-  }
 
-  .label {
+  .region {
     position: absolute;
-    font-size: clamp(0.7rem, 0.55rem + 0.5vw, 0.95rem);
-    line-height: 1;
-    color: var(--deep-muted);
+    transform: translate(-50%, -50%);
+    font: italic 400 clamp(0.8rem, 0.55rem + 0.9vw, 1.3rem) / 1 var(--serif);
+    color: #7a879f;
     white-space: nowrap;
     pointer-events: none;
   }
+  .label {
+    position: absolute;
+    font-size: clamp(0.66rem, 0.5rem + 0.5vw, 0.92rem);
+    line-height: 1;
+    color: var(--ink-2);
+    white-space: nowrap;
+    pointer-events: none;
+    text-shadow: 0 0 3px #f1f4f8, 0 0 3px #f1f4f8;
+  }
   .label.home {
-    color: #ffffff;
-    font-weight: 500;
+    color: var(--ink);
+    font-weight: 600;
   }
   .p-e {
     transform: translate(0.9em, -50%);
@@ -285,10 +334,10 @@ const cities = (Object.keys(city) as CityKey[]).map((k) => {
     transform: translate(calc(-100% - 0.9em), -50%);
   }
   .p-n {
-    transform: translate(-50%, calc(-100% - 0.8em));
+    transform: translate(-50%, calc(-100% - 0.85em));
   }
   .p-s {
-    transform: translate(-50%, 0.8em);
+    transform: translate(-50%, 0.85em);
   }
   .p-ne {
     transform: translate(0.6em, calc(-100% - 0.5em));
@@ -302,6 +351,24 @@ const cities = (Object.keys(city) as CityKey[]).map((k) => {
   .p-sw {
     transform: translate(calc(-100% - 0.6em), 0.5em);
   }
+  /* On phones the map keeps a readable size and scrolls sideways. */
+  @media (max-width: 40rem) {
+    .scroller {
+      overflow-x: auto;
+      margin-inline: calc(-1 * var(--gutter));
+      padding-inline: var(--gutter);
+      scrollbar-width: thin;
+    }
+    .stage {
+      width: 46rem;
+    }
+    .label {
+      font-size: 0.78rem;
+    }
+    .region {
+      font-size: 1rem;
+    }
+  }
 
   .legend {
     list-style: none;
@@ -310,19 +377,28 @@ const cities = (Object.keys(city) as CityKey[]).map((k) => {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem 2rem;
-    color: var(--deep-muted);
+    color: var(--ink-2);
     font-size: 0.925rem;
   }
   .legend li {
     position: relative;
-    padding-left: 1.6rem;
+    padding-left: 1.8rem;
   }
   .legend li::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 0.7em;
-    width: 1.1rem;
-    border-top: 2px dotted var(--madder-bright);
+    top: 0.66em;
+    width: 1.25rem;
+    border-top: 3px dotted;
+  }
+  .lg-middle::before {
+    border-color: var(--signal);
+  }
+  .lg-south::before {
+    border-color: var(--gold);
+  }
+  .lg-europe::before {
+    border-color: var(--ink);
   }
 </style>

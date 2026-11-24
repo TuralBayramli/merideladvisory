@@ -19,6 +19,18 @@ const a = d.about;
     </div>
   </header>
 
+  <div class="photo-band">
+    <img
+      src="/images/sea-river-wide-1600.webp"
+      srcset="/images/sea-river-wide-800.webp 800w, /images/sea-river-wide-1600.webp 1600w"
+      sizes="100vw"
+      width="1600"
+      height="1067"
+      alt=""
+      decoding="async"
+    />
+  </div>
+
   <section class="section">
     <div class="wrap about-grid">
       <div class="prose bio">
@@ -115,8 +127,14 @@ const a = d.about;
     }
   }
 
+  .photo-band img {
+    width: 100%;
+    height: clamp(12rem, 28vw, 22rem);
+    object-fit: cover;
+    object-position: 50% 60%;
+  }
   .principles {
-    background: var(--surface);
+    background: var(--mist);
   }
   .principles h2 {
     margin-bottom: 2.5rem;
@@ -127,8 +145,10 @@ const a = d.about;
     gap: 2.5rem;
   }
   .p {
-    border-top: 2px solid var(--madder);
-    padding-top: 1.25rem;
+    background: var(--paper);
+    border-radius: var(--radius);
+    border-top: 3px solid var(--gold);
+    padding: 1.4rem 1.5rem 1.6rem;
   }
   .p h3 {
     font-size: var(--step-1);

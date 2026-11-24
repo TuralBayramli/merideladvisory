@@ -2,11 +2,13 @@
 import Base from '../layouts/Base.astro';
 import fs from 'node:fs';
 import path from 'node:path';
-import Graticule from '../components/Graticule.astro';
 import RouteMap from '../components/RouteMap.astro';
 import BgVideo from '../components/BgVideo.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { t, localePath, formatDate, type Lang } from '../i18n/ui';
+import ModeCards from '../components/ModeCards.astro';
+import ServiceTabs from '../components/ServiceTabs.astro';
+import DashboardMock from '../components/diagrams/DashboardMock.astro';
+import { t, localePath, formatDate, tools, type Lang } from '../i18n/ui';
 import { getArticles } from '../i18n/insights';
 
 interface Props {
@@ -15,9 +17,10 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const latest = (await getArticles(lang)).slice(0, 3);
+// A photo for each article card.
+const artImg: Record<string, string> = { 'cost-to-serve': 'road', 'freight-audit': 'rail', 'safety-stock': 'warehouse' };
 
-// Background videos switch on automatically when their files exist in public/videos/
-// (hero.mp4 for the top of the page, band.mp4 for the band further down).
+// Background videos switch on automatically when their files exist in public/videos/.
 const videoDir = path.join(process.cwd(), 'public', 'videos');
 const heroVideo = fs.existsSync(path.join(videoDir, 'hero.mp4'));
 const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
@@ -25,15 +28,7 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
 
 <Base lang={lang} title={d.home.title} description={d.home.description} path="/">
   <section class:list={['hero', 'on-deep', { 'has-video': heroVideo }]}>
-    {
-      heroVideo ? (
-        <BgVideo name="hero" eager pauseLabel={d.home.videoPause} playLabel={d.home.videoPlay} />
-      ) : (
-        <div class="hero-art">
-          <Graticule />
-        </div>
-      )
-    }
+    {heroVideo && <BgVideo name="hero" eager pauseLabel={d.home.videoPause} playLabel={d.home.videoPlay} />}
     <div class="wrap hero-inner">
       <h1>{d.home.h1}</h1>
       <p class="hero-lead">{d.home.lead}</p>
@@ -46,38 +41,80 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head">
-        <h2>{d.home.practicesTitle}</h2>
-        <p>{d.home.practicesLead}</p>
+      <div class="advise">
+        <h2>{d.home.adviseTitle}</h2>
+        <p>{d.home.adviseText}</p>
       </div>
-      <div class="practices">
-        {
-          d.practices.map((p) => (
-            <article class="practice">
-              <h3>{p.title}</h3>
-              <div>
-                <p>{p.text}</p>
-                <h4 class="visually-hidden">{d.home.questionsLabel}</h4>
-                <ul class="questions">
-                  {p.questions.map((q) => (
-                    <li>{q}</li>
-                  ))}
-                </ul>
-              </div>
-            </article>
-          ))
-        }
-      </div>
+      <ModeCards lang={lang} />
     </div>
   </section>
 
-  <section class="lanes on-deep">
+  <section class="section tint" id="services">
     <div class="wrap">
-      <div class="lanes-head">
+      <div class="section-head">
+        <h2>{d.home.servicesTitle}</h2>
+        <p>{d.home.servicesLead}</p>
+      </div>
+      <ServiceTabs lang={lang} />
+    </div>
+  </section>
+
+  <section class="section map-section">
+    <div class="wrap">
+      <div class="section-head">
         <h2>{d.home.mapTitle}</h2>
         <p>{d.home.mapLead}</p>
       </div>
       <RouteMap lang={lang} />
+    </div>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap data-grid">
+      <div class="data-text">
+        <h2>{d.home.dataTitle}</h2>
+        <p class="data-lead">{d.home.dataText}</p>
+        <ul class="points">
+          {d.home.dataPoints.map((p) => <li>{p}</li>)}
+        </ul>
+        <h3 class="tools-label">{d.home.toolsLabel}</h3>
+        <ul class="chips">
+          {tools.slice(0, 9).map((x) => <li>{x}</li>)}
+        </ul>
+      </div>
+      <div class="data-visual">
+        <img
+          class="data-photo"
+          src="/images/data-wide-800.webp"
+          srcset="/images/data-wide-800.webp 800w, /images/data-wide-1600.webp 1600w"
+          sizes="(max-width: 56rem) 100vw, 46vw"
+          width="800"
+          height="533"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="data-dash">
+          <DashboardMock lang={lang} />
+        </div>
+      </div>
+    </div>
+    <div class="wrap workshop">
+      <img
+        src="/images/workshop-wide-800.webp"
+        srcset="/images/workshop-wide-800.webp 800w, /images/workshop-wide-1600.webp 1600w"
+        sizes="(max-width: 56rem) 100vw, 40vw"
+        width="800"
+        height="533"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <div>
+        <h3>{d.home.workshopTitle}</h3>
+        <p>{d.home.workshopText}</p>
+        <a href={`${localePath(lang, '/services')}#workshops`}>{d.home.servicesMore}</a>
+      </div>
     </div>
   </section>
 
@@ -103,7 +140,7 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     </div>
   </section>
 
-  <section class="section engagements">
+  <section class="section tint">
     <div class="wrap">
       <div class="section-head">
         <h2>{d.home.engagementsTitle}</h2>
@@ -113,10 +150,8 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
         {
           d.engagements.map((e) => (
             <div class="eng">
-              <div class="eng-top">
-                <h3>{e.title}</h3>
-                <span class="eng-len">{e.length}</span>
-              </div>
+              <span class="eng-len">{e.length}</span>
+              <h3>{e.title}</h3>
               <p>{e.text}</p>
             </div>
           ))
@@ -136,6 +171,15 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
           <ul class="article-list">
             {latest.map((a) => (
               <li>
+                <img
+                  class="art"
+                  src={`/images/${artImg[a.slug] ?? 'sea-river'}-wide-800.webp`}
+                  width="800"
+                  height="533"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
                 <time datetime={a.data.date.toISOString().slice(0, 10)}>{formatDate(a.data.date, lang)}</time>
                 <h3>
                   <a href={localePath(lang, `/insights/${a.slug}`)}>{a.data.title}</a>
@@ -149,7 +193,7 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     )
   }
 
-  <section class="section founder">
+  <section class="section tint founder">
     <div class="wrap founder-inner">
       <h2>{d.home.founderTitle}</h2>
       <div>
@@ -167,7 +211,9 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
           <p class="band-text">{d.home.bandText}</p>
           <div class="band-cta">
             <p>{d.home.bandCta}</p>
-            <a class="btn btn-solid" href={localePath(lang, '/contact')}>{d.cta.button}</a>
+            <a class="btn btn-solid" href={localePath(lang, '/contact')}>
+              {d.cta.button}
+            </a>
           </div>
         </div>
       </section>
@@ -181,24 +227,16 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
   .hero {
     position: relative;
     overflow: hidden;
-    background: var(--deep);
-    color: var(--deep-text);
+    background: var(--navy);
+    color: #ffffff;
     padding-block: clamp(4.5rem, 3rem + 7vw, 9rem) clamp(4rem, 3rem + 5vw, 7.5rem);
     isolation: isolate;
-  }
-  .hero-art {
-    position: absolute;
-    z-index: -1;
-    top: 50%;
-    right: max(-14rem, calc((100vw - var(--wrap)) / 2 - 12rem));
-    width: min(48rem, 70vw);
-    transform: translateY(-50%);
   }
   .hero-inner {
     position: relative;
   }
   .hero.has-video {
-    min-height: min(46rem, 88vh);
+    min-height: min(44rem, 86vh);
     display: flex;
     align-items: center;
   }
@@ -206,129 +244,147 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     width: min(100% - 2 * var(--gutter), var(--wrap));
     z-index: 1;
   }
-
-  .band {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    background: var(--deep);
-    color: #ffffff;
-    min-height: clamp(22rem, 50vw, 34rem);
-    display: flex;
-    align-items: center;
-  }
-  .band-inner {
-    position: relative;
-    z-index: 1;
-    padding-block: 4rem;
-  }
-  .band-cta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem 1.5rem;
-    margin-top: 2rem;
-  }
-  .band-cta p {
-    margin: 0;
-    color: var(--deep-muted);
-    font-size: var(--step-1);
-  }
-  .band-text {
-    margin: 0;
-    max-width: 24ch;
-    font-family: var(--serif);
-    font-size: var(--step-3);
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    text-wrap: balance;
-  }
-
-  .lanes {
-    background: var(--deep);
-    color: var(--deep-text);
-    padding-block: var(--space);
-  }
-  .lanes-head {
-    max-width: 40rem;
-    margin-bottom: clamp(1.5rem, 1rem + 2vw, 2.5rem);
-  }
-  .lanes-head h2 {
-    color: #ffffff;
-  }
-  .lanes-head p {
-    color: var(--deep-muted);
-    margin: 1rem 0 0;
-  }
   .hero h1 {
     max-width: 13ch;
     color: #ffffff;
+    text-shadow: 0 2px 24px rgba(8, 14, 28, 0.35);
   }
   .hero-lead {
-    max-width: 34rem;
+    max-width: 36rem;
     margin: 1.75rem 0 2.25rem;
     font-size: var(--step-1);
     line-height: 1.5;
-    color: var(--deep-muted);
+    color: #e6ecf6;
+    text-shadow: 0 1px 14px rgba(8, 14, 28, 0.45);
   }
   .hero-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
   }
+
+  .advise {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 1.5rem clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: end;
+    margin-bottom: clamp(2.25rem, 1.5rem + 2.5vw, 3.5rem);
+  }
+  .advise h2 {
+    max-width: 20ch;
+  }
+  .advise p {
+    margin: 0;
+    color: var(--ink-2);
+    font-size: 1.1rem;
+    max-width: 34rem;
+  }
   @media (max-width: 52rem) {
-    .hero-art {
-      width: 34rem;
-      right: -16rem;
-      top: 48%;
-      opacity: 0.55;
+    .advise {
+      grid-template-columns: 1fr;
     }
   }
 
-  .practices {
-    border-top: 1px solid var(--rule);
+  .map-section :global(.label) {
+    text-shadow: 0 0 3px #ffffff, 0 0 3px #ffffff;
   }
-  .practice {
+
+  .data-grid {
     display: grid;
-    grid-template-columns: minmax(12rem, 1fr) 1.6fr;
-    gap: 1rem 3rem;
-    padding-block: 2rem;
-    border-bottom: 1px solid var(--rule);
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(2rem, 1rem + 4vw, 4.5rem);
+    align-items: center;
   }
-  .practice h3 {
-    font-size: var(--step-2);
-    font-weight: 460;
-    line-height: 1.15;
+  .data-lead {
+    margin: 1rem 0 1.5rem;
+    font-size: 1.1rem;
+    color: var(--ink-2);
   }
-  .practice p {
-    max-width: 38rem;
-    margin-bottom: 0.9rem;
-  }
-  .questions {
+  .points {
     list-style: none;
-    margin: 0;
+    margin: 0 0 2rem;
     padding: 0;
-    color: var(--slate);
-    font-size: 0.95rem;
   }
-  .questions li {
+  .points li {
     position: relative;
-    padding-left: 1.1rem;
+    padding: 0.75rem 0 0.75rem 1.6rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink-2);
   }
-  .questions li + li {
-    margin-top: 0.3rem;
-  }
-  .questions li::before {
+  .points li::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0.72em;
-    width: 0.45rem;
-    height: 1px;
-    background: var(--madder);
+    left: 0.1rem;
+    top: 1.25rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 2px;
+    background: var(--signal);
   }
-  @media (max-width: 44rem) {
-    .practice {
+  .tools-label {
+    font: 600 0.9rem / 1.3 var(--sans);
+    margin-bottom: 0.75rem;
+  }
+  .data-visual {
+    position: relative;
+    padding-bottom: 4rem;
+  }
+  .data-photo {
+    width: 85%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  .data-dash {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: min(62%, 25rem);
+    box-shadow: 0 24px 50px -24px rgba(20, 33, 58, 0.4);
+    border-radius: var(--radius);
+  }
+  @media (max-width: 56rem) {
+    .data-grid {
+      grid-template-columns: 1fr;
+    }
+    .data-visual {
+      padding-bottom: 0;
+    }
+    .data-photo {
+      width: 100%;
+    }
+    .data-dash {
+      position: relative;
+      width: auto;
+      margin: -3rem 0.75rem 0;
+    }
+  }
+  .workshop {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(1.5rem, 1rem + 3vw, 4rem);
+    align-items: center;
+    margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+    padding-top: clamp(3rem, 2rem + 3vw, 5rem);
+    border-top: 1px solid var(--line);
+  }
+  .workshop img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  .workshop h3 {
+    font-size: var(--step-2);
+    font-weight: 440;
+  }
+  .workshop p {
+    margin: 0.9rem 0 1rem;
+    color: var(--ink-2);
+    max-width: 34rem;
+  }
+  @media (max-width: 52rem) {
+    .workshop {
       grid-template-columns: 1fr;
     }
   }
@@ -345,11 +401,11 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
   .steps::before {
     content: '';
     position: absolute;
-    top: 1.25rem;
-    left: 1.25rem;
-    right: 1.25rem;
+    top: 1.375rem;
+    left: 1.375rem;
+    right: 1.375rem;
     height: 1px;
-    background: var(--rule);
+    background: var(--line);
   }
   .step {
     position: relative;
@@ -357,27 +413,28 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
   .step-n {
     display: grid;
     place-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
     border-radius: 50%;
     background: var(--paper);
-    border: 1px solid var(--ink);
-    font: 500 1.1rem / 1 var(--serif);
+    border: 1.5px solid var(--gold);
+    color: var(--gold-ink);
+    font: 500 1.2rem / 1 var(--serif);
     margin-bottom: 1.5rem;
     position: relative;
   }
   .step:last-child .step-n {
-    background: var(--madder);
-    border-color: var(--madder);
+    background: var(--signal);
+    border-color: var(--signal);
     color: #ffffff;
   }
   .step h3 {
     font-size: var(--step-2);
-    font-weight: 460;
+    font-weight: 440;
     margin-bottom: 0.75rem;
   }
   .step p {
-    color: var(--slate);
+    color: var(--muted);
     max-width: 22rem;
   }
   @media (max-width: 52rem) {
@@ -392,53 +449,56 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     .step:not(:last-child)::after {
       content: '';
       position: absolute;
-      left: -2.5rem;
-      top: 2.15rem;
+      left: -2.4rem;
+      top: 2.3rem;
       bottom: -2.35rem;
       width: 1px;
-      background: var(--rule);
+      background: var(--line);
     }
     .step-n {
       position: absolute;
       left: -3.75rem;
-      top: -0.35rem;
+      top: -0.4rem;
       margin: 0;
     }
   }
 
-  .engagements {
-    background: var(--surface);
-  }
   .eng-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    border-top: 1px solid var(--rule);
-    border-left: 1px solid var(--rule);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
   }
   .eng {
-    padding: 2rem clamp(1.25rem, 1rem + 1.5vw, 2.25rem);
-    border-right: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-  }
-  .eng-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.75rem;
+    background: var(--paper);
+    border-radius: var(--radius);
+    padding: 1.6rem 1.5rem 1.75rem;
+    border-top: 3px solid var(--gold);
   }
   .eng-len {
-    font-size: 0.875rem;
-    color: var(--slate);
-    white-space: nowrap;
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--signal-ink);
+    background: var(--signal-soft);
+    border-radius: 2rem;
+    padding: 0.2rem 0.65rem;
+    margin-bottom: 0.9rem;
+  }
+  .eng h3 {
+    font-size: 1.3rem;
+    font-weight: 500;
   }
   .eng p {
-    margin: 0;
-    color: var(--slate);
-    max-width: 30rem;
+    margin: 0.6rem 0 0;
+    color: var(--muted);
+    font-size: 0.975rem;
   }
-  @media (max-width: 44rem) {
+  @media (max-width: 60rem) {
+    .eng-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 40rem) {
     .eng-grid {
       grid-template-columns: 1fr;
     }
@@ -458,19 +518,23 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     padding: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2.5rem;
+    gap: 2rem;
   }
-  .article-list li {
-    border-top: 1px solid var(--ink);
-    padding-top: 1.25rem;
+  .art {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 1.1rem;
+    background: var(--mist);
   }
   .article-list time {
     font-size: 0.875rem;
-    color: var(--slate);
+    color: var(--muted);
   }
   .article-list h3 {
-    margin: 0.6rem 0 0.75rem;
-    font-size: 1.4rem;
+    margin: 0.5rem 0 0.6rem;
+    font-size: 1.35rem;
     font-weight: 500;
   }
   .article-list h3 a {
@@ -478,18 +542,17 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     text-decoration: none;
   }
   .article-list h3 a:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
+    color: var(--signal-ink);
   }
   .article-list p {
-    color: var(--slate);
+    color: var(--muted);
     font-size: 0.95rem;
     margin: 0;
   }
   @media (max-width: 52rem) {
     .article-list {
       grid-template-columns: 1fr;
-      gap: 2rem;
+      gap: 2.25rem;
     }
   }
 
@@ -508,5 +571,42 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     .founder-inner {
       grid-template-columns: 1fr;
     }
+  }
+
+  .band {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--navy);
+    color: #ffffff;
+    min-height: clamp(22rem, 50vw, 34rem);
+    display: flex;
+    align-items: center;
+  }
+  .band-inner {
+    position: relative;
+    z-index: 1;
+    padding-block: 4rem;
+  }
+  .band-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 2rem;
+  }
+  .band-cta p {
+    margin: 0;
+    color: #e6ecf6;
+    font-size: var(--step-1);
+  }
+  .band-text {
+    margin: 0;
+    max-width: 24ch;
+    font-family: var(--serif);
+    font-size: var(--step-3);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
   }
 </style>

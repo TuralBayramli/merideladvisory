@@ -1,52 +1,39 @@
 ---
+// The Meridel Advisory logo, drawn from src/assets/brand/lockup.svg (made by brand/build_logo.py).
+// Ink takes the text colour; the gold comes from --logo-gold.
+import lockup from '../assets/brand/lockup.svg?raw';
+
 interface Props {
   href: string;
+  class?: string;
 }
-const { href } = Astro.props;
-const clip = `mk-${Math.random().toString(36).slice(2, 8)}`;
+const { href, class: cls } = Astro.props;
+// Each copy on a page needs its own ids for the clip and mask inside the mark.
+const uid = `lg${Math.random().toString(36).slice(2, 8)}`;
+const svg = lockup
+  .replaceAll('LOGOID', uid)
+  .replace(' role="img" aria-label="Meridel Advisory"', ' aria-hidden="true" focusable="false"')
+  .replace('<svg ', '<svg class="logo-svg" ');
 ---
 
-<a class="logo" href={href} aria-label="Meridel Advisory, home">
-  <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
-    <clipPath id={clip}><circle cx="16" cy="16" r="12.75"></circle></clipPath>
-    <g clip-path={`url(#${clip})`}>
-      <path d="M16 2.5 A6.5 13.5 0 0 0 16 29.5" fill="none" stroke="currentColor" stroke-width="1" opacity="0.55"></path>
-      <path d="M16 2.5 A6.5 13.5 0 0 1 16 29.5" fill="none" stroke="var(--madder)" stroke-width="1.75"></path>
-    </g>
-    <circle cx="16" cy="16" r="13.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
-    <circle cx="21.6" cy="11" r="1.9" fill="var(--madder)"></circle>
-  </svg>
-  <span class="word">Meridel</span>
-  <span class="sub">Advisory</span>
+<a class:list={['logo', cls]} href={href} aria-label="Meridel Advisory, home">
+  <Fragment set:html={svg} />
 </a>
 
 <style>
   .logo {
     display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    color: inherit;
+    color: var(--ink);
+    line-height: 0;
     text-decoration: none;
   }
-  .mark {
-    width: 1.9rem;
-    height: 1.9rem;
-    flex: none;
+  .logo :global(.logo-svg) {
+    height: 3.15rem;
+    width: auto;
   }
-  .word {
-    font: 520 1.5rem / 1 var(--serif);
-    letter-spacing: -0.01em;
-  }
-  .sub {
-    font: 400 0.95rem / 1 var(--sans);
-    color: var(--slate);
-    padding-left: 0.55rem;
-    border-left: 1px solid var(--rule);
-    margin-left: 0.05rem;
-  }
-  @media (max-width: 380px) {
-    .sub {
-      display: none;
+  @media (max-width: 30rem) {
+    .logo :global(.logo-svg) {
+      height: 2.7rem;
     }
   }
 </style>

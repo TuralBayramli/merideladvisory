@@ -1,0 +1,110 @@
+---
+// Centre of gravity: customers sized by volume, candidate sites, and the best location.
+import { t, type Lang } from '../../i18n/ui';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang).diagrams;
+const L = d.network;
+const customers = [
+  [52, 46, 9], [96, 152, 6], [140, 70, 12], [188, 182, 8], [236, 52, 7], [270, 128, 14], [300, 196, 6], [62, 200, 7], [214, 104, 5],
+] as const;
+const sites = [[110, 110], [236, 160], [262, 74]] as const;
+const best = [190, 112] as const;
+---
+
+<figure class="figure">
+  <figcaption><strong>{L.title}</strong><span>{d.example}</span></figcaption>
+  <svg class="chart" viewBox="0 0 340 236" role="img" aria-label={L.title}>
+    <g class="grid">
+      {[40, 80, 120, 160, 200].map((y) => <line x1="10" x2="330" y1={y} y2={y} />)}
+      {[50, 110, 170, 230, 290].map((x) => <line x1={x} x2={x} y1="14" y2="222" />)}
+    </g>
+    <g class="spokes">
+      {customers.map(([x, y]) => <line x1={best[0]} y1={best[1]} x2={x} y2={y} />)}
+    </g>
+    <g class="cust">
+      {customers.map(([x, y, r]) => <circle cx={x} cy={y} r={r} />)}
+    </g>
+    <g class="site">
+      {sites.map(([x, y]) => <rect x={x - 6} y={y - 6} width="12" height="12" rx="2" />)}
+    </g>
+    <circle class="best-ring" cx={best[0]} cy={best[1]} r="15"></circle>
+    <circle class="best" cx={best[0]} cy={best[1]} r="6.5"></circle>
+  </svg>
+  <ul class="legend">
+    <li><span class="k k-cust"></span>{L.customers}</li>
+    <li><span class="k k-site"></span>{L.sites}</li>
+    <li><span class="k k-best"></span>{L.best}</li>
+  </ul>
+</figure>
+
+<style>
+  .chart {
+    width: 100%;
+    max-width: 30rem;
+    margin-inline: auto;
+  }
+  .grid line {
+    stroke: var(--mist-2);
+    stroke-width: 1;
+  }
+  .spokes line {
+    stroke: var(--signal-mid);
+    stroke-width: 1.2;
+    stroke-dasharray: 3 4;
+  }
+  .cust circle {
+    fill: color-mix(in srgb, var(--ink) 14%, transparent);
+    stroke: var(--ink);
+    stroke-width: 1;
+  }
+  .site rect {
+    fill: var(--paper);
+    stroke: var(--ink);
+    stroke-width: 1.4;
+  }
+  .best {
+    fill: var(--gold);
+  }
+  .best-ring {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.4;
+  }
+  .legend {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-size: 0.85rem;
+    color: var(--ink-2);
+  }
+  .legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .k {
+    display: inline-block;
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+  .k-cust {
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ink) 14%, transparent);
+    border: 1px solid var(--ink);
+  }
+  .k-site {
+    border-radius: 2px;
+    border: 1.4px solid var(--ink);
+  }
+  .k-best {
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.4px var(--gold);
+  }
+</style>
