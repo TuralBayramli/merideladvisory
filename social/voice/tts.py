@@ -33,9 +33,13 @@ def paragraphs(text: str) -> list[str]:
 
 
 def synth(text: str, voice: str, rate: str, pitch: str, key: str, region: str) -> bytes:
+    body = f'<prosody rate="{rate}" pitch="{pitch}">{escape(text)}</prosody>'
+    if not voice.startswith('az-'):
+        # Multilingual voices (e.g. en-US-AndrewMultilingualNeural) are told to speak Azerbaijani.
+        body = f'<lang xml:lang="az-AZ">{body}</lang>'
     ssml = (
         '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="az-AZ">'
-        f'<voice name="{voice}"><prosody rate="{rate}" pitch="{pitch}">{escape(text)}</prosody></voice></speak>'
+        f'<voice name="{voice}">{body}</voice></speak>'
     )
     req = urllib.request.Request(
         f'https://{region}.tts.speech.microsoft.com/cognitiveservices/v1',
