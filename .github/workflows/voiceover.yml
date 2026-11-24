@@ -27,6 +27,11 @@ on:
         description: Optional name for this version (keeps it apart from others)
         default: ''
         required: false
+      intonation:
+        description: plain, wide (bigger rises and falls) or expressive (also shapes each sentence and pauses after questions)
+        type: choice
+        options: [plain, wide, expressive]
+        default: expressive
 
 permissions:
   contents: write
@@ -50,6 +55,7 @@ jobs:
           RATE: ${{ inputs.rate }}
           PITCH: ${{ inputs.pitch }}
           LABEL: ${{ inputs.label }}
+          INTONATION: ${{ inputs.intonation }}
         run: python3 social/voice/tts.py
 
       - name: Save to the repository
