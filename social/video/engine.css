@@ -1,0 +1,39 @@
+/* Shared look for Meridel social videos: 1080x1920, deep navy, serif display. */
+:root {
+  --deep: #14213a;
+  --deep-2: #0e1729;
+  --text: #eef2f8;
+  --muted: #b4c0d6;
+  --faint: rgba(220, 230, 248, 0.16);
+  --madder: #e8655a;
+  --sky: #93b2f2;
+  --serif: 'Newsreader Variable', Georgia, serif;
+  --sans: 'IBM Plex Sans Variable', 'Segoe UI', sans-serif;
+  --x: 96px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; }
+body {
+  background: radial-gradient(120% 80% at 80% 30%, #1a2a49 0%, var(--deep) 45%, var(--deep-2) 100%);
+  color: var(--text);
+  font: 400 44px/1.35 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+#bg { position: absolute; inset: 0; }
+#bg ellipse, #bg circle, #bg line { fill: none; stroke: rgba(220, 230, 248, 0.07); stroke-width: 1.5; }
+#brand {
+  position: absolute; left: var(--x); top: 112px;
+  display: flex; align-items: center; gap: 16px;
+  font: 520 40px/1 var(--serif); letter-spacing: -0.01em;
+}
+#brand svg { width: 44px; height: 44px; }
+#brand .sub { font: 400 28px/1 var(--sans); color: var(--muted); padding-left: 16px; border-left: 1.5px solid var(--faint); }
+.scene { position: absolute; inset: 0; display: none; }
+.serif { font-family: var(--serif); letter-spacing: -0.015em; }
+.muted { color: var(--muted); }
+.madder { color: var(--madder); }
+.sky { color: var(--sky); }
+.abs { position: absolute; left: var(--x); right: var(--x); }
+.num { font-variant-numeric: tabular-nums; }
+h1, h2, p { margin: 0; font-weight: inherit; }
+.balance { text-wrap: balance; }

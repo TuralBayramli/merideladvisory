@@ -1,0 +1,55 @@
+name: Make voiceover
+
+# Run by hand from the Actions tab. Reads the scripts in social/voice/,
+# turns each paragraph into speech with Azure AI Speech and saves the MP3s
+# in social/audio/. Needs the AZURE_SPEECH_KEY and AZURE_SPEECH_REGION secrets.
+
+on:
+  workflow_dispatch:
+    inputs:
+      scripts:
+        description: Scripts in social/voice (names without .txt, comma separated)
+        default: xidmet-xerci,tanitim
+        required: true
+      voices:
+        description: Azure voices (comma separated)
+        default: az-AZ-BabekNeural,az-AZ-BanuNeural
+        required: true
+      rate:
+        description: Speaking rate, for example 0% or -8%
+        default: '-5%'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: voiceover
+  cancel-in-progress: false
+
+jobs:
+  speak:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Turn scripts into speech
+        env:
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
+          SCRIPTS: ${{ inputs.scripts }}
+          VOICES: ${{ inputs.voices }}
+          RATE: ${{ inputs.rate }}
+        run: python3 social/voice/tts.py
+
+      - name: Save to the repository
+        env:
+          SCRIPTS: ${{ inputs.scripts }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add social/audio
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Voiceover: $SCRIPTS"
+          git pull --rebase origin main
+          git push
