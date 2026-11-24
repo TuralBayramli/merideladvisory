@@ -5,7 +5,8 @@
 
 AUDIO_DIR holds p01.mp3, p02.mp3, ... with one paragraph per scene (made by
 the "Make voiceover" workflow). Each scene is then slowed down until its
-paragraph fits, and the voice is mixed in. Needs Chrome, Playwright and ffmpeg.
+paragraph fits, and the voice is mixed in with the studio finish from
+social/voice/polish.py. Needs Chrome, Playwright, ffmpeg and numpy.
 """
 import json
 import os
@@ -14,6 +15,9 @@ import sys
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'voice'))
+from polish import polish  # noqa: E402
 
 FPS = 30
 W, H = 1080, 1920
@@ -69,14 +73,17 @@ def stills(page_path, outdir, times):
 
 
 def mix_voice(clips, starts, total, outfile):
+    """Place each paragraph at the start of its scene, then finish the whole track."""
+    raw = Path(outfile).with_name('voice-raw.wav')
     cmd = ['ffmpeg', '-y', '-loglevel', 'error']
     for c in clips:
         cmd += ['-i', str(c)]
     parts = [f'[{i}:a]adelay={int((s + LEAD) * 1000)}:all=1[a{i}]' for i, s in enumerate(starts)]
     mix = ''.join(f'[a{i}]' for i in range(len(clips)))
-    graph = ';'.join(parts) + f';{mix}amix=inputs={len(clips)}:normalize=0,apad,atrim=0:{total:.3f},loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000[out]'
-    cmd += ['-filter_complex', graph, '-map', '[out]', '-c:a', 'aac', '-b:a', '192k', str(outfile)]
+    graph = ';'.join(parts) + f';{mix}amix=inputs={len(clips)}:normalize=0,apad,atrim=0:{total:.3f}[out]'
+    cmd += ['-filter_complex', graph, '-map', '[out]', '-c:a', 'pcm_s24le', str(raw)]
     subprocess.run(cmd, check=True)
+    polish(raw, outfile, codec=('-c:a', 'aac', '-b:a', '192k'))
 
 
 def video(page_path, outfile, audio_dir=None):

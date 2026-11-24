@@ -18,8 +18,8 @@ import numpy as np
 RATE = 48000
 PAUSE = 0.6
 # In order: cut rumble, warmth, presence, softer s sounds, gentle levelling.
-CHAIN = ('highpass=f=70,'
-         'equalizer=f=170:t=q:w=0.9:g=1.5,'
+CHAIN = ('highpass=f=80,'
+         'equalizer=f=180:t=q:w=1.2:g=1,'
          'equalizer=f=3200:t=q:w=1.0:g=2,'
          'deesser=i=0.45,'
          'acompressor=threshold=0.1:ratio=2.5:attack=10:release=150:makeup=1.4')
@@ -46,7 +46,7 @@ def polish(src, dst, codec=MP3):
         ir = Path(tmp) / 'room.wav'
         room_ir(ir)
         graph = (f'[0:a]aresample={RATE},{CHAIN},asplit=2[dry][w];'
-                 '[w][1:a]afir=gtype=none[wet];'
+                 '[w][1:a]afir=gtype=none,highpass=f=250,lowpass=f=7000[wet];'
                  f"[dry][wet]amix=inputs=2:duration=first:weights='1 {ROOM}':normalize=0")
         base = ['ffmpeg', '-y', '-hide_banner', '-nostats', '-i', str(src), '-i', str(ir)]
         # Measure first, then set the loudness in one even step (no pumping).
