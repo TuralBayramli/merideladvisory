@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { t, tools, type Lang } from '../i18n/ui';
+import { t, tools, FOUNDER, LINKEDIN, type Lang } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
@@ -9,6 +9,22 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const a = d.about;
+
+// Line icons for the industries, in the order of a.industries.
+const icons = [
+  // Banking and financial services
+  'M3 9.2 12 4l9 5.2M4.5 9.8h15M6 10.5v7M10 10.5v7M14 10.5v7M18 10.5v7M3.5 20h17',
+  // Healthcare and medical products
+  'M9.6 4h4.8v5.6H20v4.8h-5.6V20H9.6v-5.6H4V9.6h5.6z',
+  // Retail
+  'M5 8.5h14l-1.1 11.5H6.1zM9 8.5V7a3 3 0 0 1 6 0v1.5',
+  // Building materials manufacturing
+  'M2.5 12.5 12 5l9.5 7.5M5.5 10.5V20h13v-9.5M2.5 16.2 12 8.7l9.5 7.5',
+  // On-demand delivery and ride-hailing
+  'M12 20.5s-6-5.2-6-9.8a6 6 0 0 1 12 0c0 4.6-6 9.8-6 9.8zM12 12.6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  // Logistics and transport
+  'M2.5 6.5h11v10h-11zM13.5 10h4.2l3 3.2v3.3h-7.2M6.5 19a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6zM17 19a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z',
+];
 ---
 
 <Base lang={lang} title={a.title} description={a.description} path="/about">
@@ -37,10 +53,6 @@ const a = d.about;
         {a.bio.map((para) => <p>{para}</p>)}
       </div>
       <aside class="facts">
-        <h2>{a.credentialsTitle}</h2>
-        <ul>
-          {a.credentials.map((c) => <li>{c}</li>)}
-        </ul>
         <h2>{a.languagesTitle}</h2>
         <p class="langs">{a.languages}</p>
         <h2>{a.toolsTitle}</h2>
@@ -48,6 +60,24 @@ const a = d.about;
           {tools.map((x) => <li>{x}</li>)}
         </ul>
       </aside>
+    </div>
+  </section>
+
+  <section class="section navy industries">
+    <div class="wrap">
+      <h2>{a.industriesTitle}</h2>
+      <ul class="ind-grid">
+        {
+          a.industries.map((name, i) => (
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d={icons[i]} />
+              </svg>
+              <span>{name}</span>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
@@ -63,6 +93,23 @@ const a = d.about;
             </div>
           ))
         }
+      </div>
+    </div>
+  </section>
+
+  <section class="section founder">
+    <div class="wrap founder-grid">
+      <div class="founder-id">
+        <p class="founder-label">{a.founderTitle}</p>
+        <h2>{FOUNDER}</h2>
+        <p class="founder-role">{a.founderRole}</p>
+        <a href={LINKEDIN} rel="noopener">{d.contact.linkedinLabel}</a>
+      </div>
+      <div>
+        <h3>{a.credentialsTitle}</h3>
+        <ul class="creds">
+          {a.credentials.map((c) => <li>{c}</li>)}
+        </ul>
       </div>
     </div>
   </section>
@@ -94,16 +141,6 @@ const a = d.about;
   .facts h2:not(:first-child) {
     margin-top: 2rem;
   }
-  .facts ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .facts li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--rule);
-    font-size: 0.95rem;
-  }
   .langs {
     margin: 0;
     padding: 0.5rem 0;
@@ -111,6 +148,9 @@ const a = d.about;
     font-size: 0.95rem;
   }
   .facts .tools {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -133,6 +173,54 @@ const a = d.about;
     object-fit: cover;
     object-position: 50% 60%;
   }
+
+  .industries h2 {
+    margin-bottom: 2.5rem;
+    max-width: 30rem;
+  }
+  .ind-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line);
+  }
+  .ind-grid li {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 1.5rem 1.25rem 1.5rem 0;
+    border-bottom: 1px solid var(--line);
+    font: 440 1.2rem / 1.3 var(--serif);
+  }
+  .ind-grid svg {
+    flex: none;
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0.55rem;
+    border: 1px solid rgba(194, 165, 116, 0.55);
+    border-radius: 50%;
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  @media (max-width: 60rem) {
+    .ind-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 36rem) {
+    .ind-grid {
+      grid-template-columns: 1fr;
+    }
+    .ind-grid li {
+      padding-block: 1.1rem;
+    }
+  }
+
   .principles {
     background: var(--mist);
   }
@@ -162,6 +250,46 @@ const a = d.about;
     .p-grid {
       grid-template-columns: 1fr;
       gap: 2rem;
+    }
+  }
+
+  .founder-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2.5rem 5rem;
+    align-items: start;
+  }
+  .founder-label {
+    margin: 0 0 0.75rem;
+    color: var(--gold-ink);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .founder-id h2 {
+    font-size: var(--step-3);
+  }
+  .founder-role {
+    margin: 0.9rem 0 1.25rem;
+    color: var(--ink-2);
+    max-width: 22rem;
+  }
+  .founder h3 {
+    font: 600 0.95rem / 1.3 var(--sans);
+    margin-bottom: 0.5rem;
+  }
+  .creds {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--ink);
+  }
+  .creds li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 52rem) {
+    .founder-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

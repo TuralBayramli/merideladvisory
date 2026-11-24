@@ -37,6 +37,7 @@ export interface Dict {
     about: string;
     contact: string;
     menu: string;
+    main: string;
     close: string;
     bookCall: string;
     allServices: string;
@@ -125,6 +126,37 @@ export interface Dict {
     by: string;
     back: string;
     otherLang: string;
+    keyTakeaways: string;
+    contents: string;
+    related: string;
+    watch: string;
+    watchText: string;
+    minRead: string;
+  };
+  anim: {
+    replay: string;
+    cts: { title: string; a: string; b: string; margin: string; costs: string[]; net: string; note: string };
+    safety: {
+      title: string;
+      stock: string;
+      rop: string;
+      ss: string;
+      order: string;
+      arrive: string;
+      lead: string;
+      time: string;
+      note: string;
+    };
+    audit: {
+      title: string;
+      shipment: string;
+      invoiced: string;
+      contract: string;
+      check: string;
+      ok: string;
+      found: string;
+      rows: { lane: string; invoiced: number; contract: number; note: string }[];
+    };
   };
   about: {
     title: string;
@@ -132,6 +164,10 @@ export interface Dict {
     h1: string;
     lead: string;
     bio: string[];
+    industriesTitle: string;
+    industries: string[];
+    founderTitle: string;
+    founderRole: string;
     credentialsTitle: string;
     credentials: string[];
     toolsTitle: string;
@@ -167,6 +203,7 @@ const en: Dict = {
     about: 'About',
     contact: 'Contact',
     menu: 'Menu',
+    main: 'Main',
     close: 'Close menu',
     bookCall: 'Book a call',
     allServices: 'All services',
@@ -234,10 +271,10 @@ const en: Dict = {
     engagementsLead: 'Examples of the work we take on. Each is scoped to a clear question, timeline and fixed fee.',
     insightsTitle: 'Latest insights',
     insightsAll: 'All insights',
-    founderTitle: 'Who you work with',
+    founderTitle: 'Who we are',
     founderText:
-      'Meridel Advisory is led by Tural Bayramli, a supply chain finance and network optimisation specialist with more than six years of work across European markets. His logistics network, cost-to-serve and inventory models have delivered over €700,000 in annual savings for multinational companies.',
-    founderMore: 'More about Tural',
+      'We are a small team of supply chain, finance and data specialists, founded by Tural Bayramli. We have worked inside international companies in Poland and Azerbaijan, in banking, healthcare, retail, building materials manufacturing and on-demand delivery, so we know how these decisions look from the inside. Our network, cost-to-serve and inventory models have delivered over €700,000 in annual savings.',
+    founderMore: 'More about us',
     videoPause: 'Pause background video',
     videoPlay: 'Play background video',
     bandText: 'Every container, ship and truck is a line in your data. We turn those lines into decisions.',
@@ -503,18 +540,74 @@ const en: Dict = {
     by: 'By',
     back: 'All insights',
     otherLang: 'Bu məqaləni azərbaycanca oxuyun',
+    keyTakeaways: 'Key takeaways',
+    contents: 'In this article',
+    related: 'More insights',
+    watch: 'Cost to serve in 90 seconds',
+    watchText: 'A short animated explainer with the same example as this article.',
+    minRead: 'min read',
+  },
+  anim: {
+    replay: 'Play again',
+    cts: {
+      title: 'Same sales, different profit',
+      a: 'Customer A',
+      b: 'Customer B',
+      margin: 'Gross margin',
+      costs: ['Order handling', 'Warehousing', 'Transport', 'Returns', 'Payment terms'],
+      net: 'Net profit',
+      note: 'Example figures per customer per month, in AZN.',
+    },
+    safety: {
+      title: 'How safety stock protects service',
+      stock: 'Stock on hand',
+      rop: 'Reorder point',
+      ss: 'Safety stock',
+      order: 'Order placed',
+      arrive: 'Delivery arrives',
+      lead: 'Lead time',
+      time: 'Weeks',
+      note: 'Demand of about 100 units a week, a four-week lead time and a 95% service level.',
+    },
+    audit: {
+      title: 'Checking invoices against the contract',
+      shipment: 'Shipment',
+      invoiced: 'Invoiced',
+      contract: 'Contract',
+      check: 'Check',
+      ok: 'OK',
+      found: 'Overcharges found',
+      rows: [
+        { lane: 'Warsaw → Berlin', invoiced: 1150, contract: 1150, note: '' },
+        { lane: 'Warsaw → Prague', invoiced: 1386, contract: 1300, note: 'Fuel surcharge' },
+        { lane: 'Łódź → Vilnius', invoiced: 1050, contract: 1050, note: '' },
+        { lane: 'Poznań → Riga', invoiced: 1542, contract: 1450, note: 'Wrong weight band' },
+        { lane: 'Warsaw → Kyiv', invoiced: 1636, contract: 1600, note: 'Waiting time not ordered' },
+      ],
+    },
   },
   about: {
     title: 'About | Meridel Advisory',
-    description: 'Meridel Advisory is an independent supply chain consultancy founded by Tural Bayramli, working from Warsaw and Baku.',
-    h1: 'About Meridel',
+    description: 'Meridel Advisory is a small, independent team of supply chain, finance and data specialists working from Warsaw and Baku.',
+    h1: 'About us',
     lead: 'A meridian is the line navigators use to fix their position. We do the same for your supply chain: establish where you stand, then set a clear direction.',
     bio: [
-      'Meridel Advisory is an independent supply chain consultancy founded by Tural Bayramli. Tural specialises in supply chain finance and network optimisation, with more than six years of work across Benelux, DACH, Iberia, Italy and the wider EMEA region.',
-      'He has led logistics network and cost-to-serve modelling, inventory risk simulations, warehouse location studies and logistics carbon emission calculations for multinational manufacturers, and built the dashboards that track them. Together these models have delivered over €700,000 in annual savings. Earlier, he worked on treasury analytics in global banking and on retail supply chain and logistics planning in Azerbaijan.',
-      'He also builds analytics for operations teams, from delivery and last-mile performance dashboards to automated reporting, and trains teams in the tools behind them.',
-      'His background in finance means every recommendation is tied to the profit and loss statement, not only to operational metrics. Meridel works from Warsaw and Baku with companies that trade across Europe, the Caucasus, Central Asia and China.',
+      'Meridel Advisory is a small, independent team of supply chain, finance and data specialists. We work from Warsaw and Baku with companies that trade across Europe, the Caucasus, Central Asia and China.',
+      'We built our experience inside international companies in Poland and Azerbaijan: in banking, healthcare and medical products, retail, building materials manufacturing, and on-demand delivery and ride-hailing. That is where we learned how logistics, cost and service decisions are really made, and what it takes for a model to be used after the consultants leave.',
+      'Our work covers logistics network and cost-to-serve models, inventory risk simulations, warehouse location studies, logistics carbon emission calculations, delivery performance analytics and the dashboards that track them. Together these models have delivered over €700,000 in annual savings across Benelux, DACH, Iberia, Italy and the wider EMEA region.',
+      'Because our background is in finance as well as operations, every recommendation we make is tied to the profit and loss statement, not only to operational metrics.',
     ],
+    industriesTitle: 'Industries we have worked in',
+    industries: [
+      'Banking and financial services',
+      'Healthcare and medical products',
+      'Retail',
+      'Building materials manufacturing',
+      'On-demand delivery and ride-hailing',
+      'Logistics and transport',
+    ],
+    founderTitle: 'Founder',
+    founderRole: 'Founder, supply chain finance and network optimisation',
     credentialsTitle: 'Education and certifications',
     credentials: [
       'Master’s degree in Data Science (WSB University, Poland), with distinction',
@@ -576,6 +669,7 @@ const az: Dict = {
     about: 'Haqqımızda',
     contact: 'Əlaqə',
     menu: 'Menyu',
+    main: 'Əsas bölmələr',
     close: 'Menyunu bağlayın',
     bookCall: 'Görüş təyin edin',
     allServices: 'Bütün xidmətlər',
@@ -643,10 +737,10 @@ const az: Dict = {
     engagementsLead: 'Gördüyümüz işlərdən nümunələr. Hər biri aydın sual, müddət və sabit ödəniş üzrə planlaşdırılır.',
     insightsTitle: 'Son məqalələr',
     insightsAll: 'Bütün məqalələr',
-    founderTitle: 'Kiminlə işləyirsiniz',
+    founderTitle: 'Biz kimik',
     founderText:
-      'Meridel Advisory-yə Avropa bazarlarında altı ildən artıq təcrübəsi olan təchizat zənciri maliyyəsi və şəbəkə optimallaşdırılması üzrə mütəxəssis Tural Bayramli rəhbərlik edir. Onun logistika şəbəkəsi, xidmət xərci və ehtiyat modelləri beynəlxalq şirkətlərə illik 700 000 avrodan çox qənaət gətirib.',
-    founderMore: 'Tural haqqında ətraflı',
+      'Biz Tural Bayramli tərəfindən təsis edilmiş, təchizat zənciri, maliyyə və məlumat üzrə mütəxəssislərdən ibarət kiçik komandayıq. Polşa və Azərbaycanda beynəlxalq şirkətlərin daxilində bankçılıq, səhiyyə, pərakəndə satış, tikinti materialları istehsalı və çatdırılma sahələrində çalışmışıq, ona görə bu qərarların içəridən necə göründüyünü bilirik. Şəbəkə, xidmət xərci və ehtiyat modellərimiz illik 700 000 avrodan çox qənaət gətirib.',
+    founderMore: 'Bizim haqqımızda ətraflı',
     videoPause: 'Fon videosunu dayandırın',
     videoPlay: 'Fon videosunu oynadın',
     bandText: 'Hər konteyner, gəmi və yük maşını məlumatlarınızda bir sətirdir. Biz bu sətirləri qərarlara çeviririk.',
@@ -912,18 +1006,74 @@ const az: Dict = {
     by: 'Müəllif:',
     back: 'Bütün məqalələr',
     otherLang: 'Read this article in English',
+    keyTakeaways: 'Əsas məqamlar',
+    contents: 'Bu məqalədə',
+    related: 'Digər məqalələr',
+    watch: 'Xidmət xərci 90 saniyədə',
+    watchText: 'Bu məqalədəki nümunəni izah edən qısa animasiyalı video.',
+    minRead: 'dəq oxu',
+  },
+  anim: {
+    replay: 'Yenidən oynadın',
+    cts: {
+      title: 'Eyni satış, fərqli mənfəət',
+      a: 'Müştəri A',
+      b: 'Müştəri B',
+      margin: 'Ümumi marja',
+      costs: ['Sifarişlərin emalı', 'Anbar əməliyyatları', 'Daşıma', 'Qaytarmalar', 'Ödəniş müddəti'],
+      net: 'Xalis mənfəət',
+      note: 'Nümunə rəqəmlər, bir müştəri üzrə bir ayda, AZN ilə.',
+    },
+    safety: {
+      title: 'Sığorta ehtiyatı xidməti necə qoruyur',
+      stock: 'Anbardakı ehtiyat',
+      rop: 'Sifariş nöqtəsi',
+      ss: 'Sığorta ehtiyatı',
+      order: 'Sifariş verilir',
+      arrive: 'Mal gəlir',
+      lead: 'Çatdırılma müddəti',
+      time: 'Həftələr',
+      note: 'Həftəlik tələb təxminən 100 ədəd, çatdırılma müddəti dörd həftə, xidmət səviyyəsi 95%.',
+    },
+    audit: {
+      title: 'Hesab-fakturaların müqavilə ilə yoxlanılması',
+      shipment: 'Daşıma',
+      invoiced: 'Faktura',
+      contract: 'Müqavilə',
+      check: 'Yoxlama',
+      ok: 'Düzdür',
+      found: 'Aşkar edilən artıq ödənişlər',
+      rows: [
+        { lane: 'Bakı → Tbilisi', invoiced: 1100, contract: 1100, note: '' },
+        { lane: 'Bakı → İstanbul', invoiced: 3486, contract: 3400, note: 'Yanacaq əlavəsi' },
+        { lane: 'Sumqayıt → Gəncə', invoiced: 460, contract: 460, note: '' },
+        { lane: 'Bakı → Aktau', invoiced: 2612, contract: 2520, note: 'Yanlış çəki aralığı' },
+        { lane: 'Bakı → Varşava', invoiced: 4516, contract: 4480, note: 'Sifariş edilməmiş gözləmə' },
+      ],
+    },
   },
   about: {
     title: 'Haqqımızda | Meridel Advisory',
-    description: 'Meridel Advisory Tural Bayramli tərəfindən təsis edilmiş, Varşava və Bakıdan işləyən müstəqil təchizat zənciri konsaltinq şirkətidir.',
-    h1: 'Meridel haqqında',
+    description: 'Meridel Advisory Varşava və Bakıdan işləyən, təchizat zənciri, maliyyə və məlumat üzrə mütəxəssislərdən ibarət kiçik, müstəqil komandadır.',
+    h1: 'Haqqımızda',
     lead: 'Meridian dənizçilərin öz mövqelərini müəyyən etmək üçün istifadə etdiyi xətdir. Biz də təchizat zənciriniz üçün eyni şeyi edirik: harada dayandığınızı dəqiqləşdirir, sonra aydın istiqamət təyin edirik.',
     bio: [
-      'Meridel Advisory Tural Bayramli tərəfindən təsis edilmiş müstəqil təchizat zənciri konsaltinq şirkətidir. Tural təchizat zənciri maliyyəsi və şəbəkə optimallaşdırılması üzrə ixtisaslaşıb və Benilüks, DACH, İberiya, İtaliya və daha geniş EMEA regionunda altı ildən artıq təcrübəyə malikdir.',
-      'O, beynəlxalq istehsalçılar üçün logistika şəbəkəsi və xidmət xərci modelləşdirməsinə, ehtiyat risklərinin simulyasiyasına, anbar yerləşdirmə tədqiqatlarına və logistika karbon emissiyalarının hesablanmasına rəhbərlik edib, onları izləyən panelləri qurub. Bu modellər birlikdə illik 700 000 avrodan çox qənaət gətirib. Daha əvvəl qlobal bankçılıqda xəzinədarlıq analitikası, Azərbaycanda isə pərakəndə təchizat zənciri və logistika planlaşdırması üzərində çalışıb.',
-      'O, həmçinin əməliyyat komandaları üçün analitika qurur: çatdırılma və son mil performansı panellərindən avtomatlaşdırılmış hesabatlara qədər, komandaları bu alətlər üzrə təlimləndirir.',
-      'Maliyyə təhsili sayəsində hər tövsiyə yalnız əməliyyat göstəriciləri ilə deyil, mənfəət və zərər hesabatı ilə də əlaqələndirilir. Meridel Varşava və Bakıdan Avropa, Qafqaz, Mərkəzi Asiya və Çin arasında ticarət edən şirkətlərlə işləyir.',
+      'Meridel Advisory təchizat zənciri, maliyyə və məlumat üzrə mütəxəssislərdən ibarət kiçik, müstəqil komandadır. Varşava və Bakıdan Avropa, Qafqaz, Mərkəzi Asiya və Çin arasında ticarət edən şirkətlərlə işləyirik.',
+      'Təcrübəmizi Polşa və Azərbaycanda beynəlxalq şirkətlərin daxilində qazanmışıq: bankçılıq, səhiyyə və tibbi məhsullar, pərakəndə satış, tikinti materialları istehsalı, sifarişlə çatdırılma və taksi xidmətləri. Logistika, xərc və xidmət qərarlarının əslində necə verildiyini və modelin məsləhətçilər gedəndən sonra da istifadə olunması üçün nə lazım olduğunu orada öyrənmişik.',
+      'İşimizə logistika şəbəkəsi və xidmət xərci modelləri, ehtiyat risklərinin simulyasiyası, anbar yerləşdirmə tədqiqatları, logistika karbon emissiyalarının hesablanması, çatdırılma performansı analitikası və bunları izləyən panellər daxildir. Bu modellər birlikdə Benilüks, DACH, İberiya, İtaliya və daha geniş EMEA regionunda illik 700 000 avrodan çox qənaət gətirib.',
+      'Təcrübəmiz həm maliyyə, həm də əməliyyat sahəsində olduğuna görə hər tövsiyəmiz yalnız əməliyyat göstəriciləri ilə deyil, mənfəət və zərər hesabatı ilə də əlaqələndirilir.',
     ],
+    industriesTitle: 'Çalışdığımız sahələr',
+    industries: [
+      'Bank və maliyyə xidmətləri',
+      'Səhiyyə və tibbi məhsullar',
+      'Pərakəndə satış',
+      'Tikinti materialları istehsalı',
+      'Sifarişlə çatdırılma və taksi xidmətləri',
+      'Logistika və daşıma',
+    ],
+    founderTitle: 'Təsisçi',
+    founderRole: 'Təsisçi, təchizat zənciri maliyyəsi və şəbəkə optimallaşdırılması',
     credentialsTitle: 'Təhsil və sertifikatlar',
     credentials: [
       'Data Elmi üzrə magistr dərəcəsi (WSB Universiteti, Polşa), fərqlənmə ilə',
@@ -940,7 +1090,7 @@ const az: Dict = {
     principles: [
       { title: 'Əvvəl faktlar, sonra fikirlər', text: 'Hər tövsiyə sizin öz məlumatlarınıza əsaslanır və hesablamaları açıq göstəririk.' },
       { title: 'Bir aydın istiqamət', text: 'Variantları müqayisə edir, sonra birini tövsiyə edirik. Əlinizdə yalnız imkanlar siyahısı qalmamalıdır.' },
-      { title: 'Qalan alətlər', text: 'Modellər və panellər sənədləşdirilərək təhvil verilir ki, komandanız onları bizsiz də işlədə bilsin.' },
+      { title: 'Sizdə qalan alətlər', text: 'Modellər və panellər sənədləşdirilərək təhvil verilir ki, komandanız onları bizsiz də işlədə bilsin.' },
     ],
   },
   contact: {

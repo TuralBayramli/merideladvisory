@@ -8,7 +8,8 @@ import CtaBand from '../components/CtaBand.astro';
 import ModeCards from '../components/ModeCards.astro';
 import ServiceTabs from '../components/ServiceTabs.astro';
 import DashboardMock from '../components/diagrams/DashboardMock.astro';
-import { t, localePath, formatDate, tools, type Lang } from '../i18n/ui';
+import ArticleCard from '../components/ArticleCard.astro';
+import { t, localePath, tools, type Lang } from '../i18n/ui';
 import { getArticles } from '../i18n/insights';
 
 interface Props {
@@ -17,8 +18,6 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const latest = (await getArticles(lang)).slice(0, 3);
-// A photo for each article card.
-const artImg: Record<string, string> = { 'cost-to-serve': 'road', 'freight-audit': 'rail', 'safety-stock': 'warehouse' };
 
 // Background videos switch on automatically when their files exist in public/videos/.
 const videoDir = path.join(process.cwd(), 'public', 'videos');
@@ -59,13 +58,13 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     </div>
   </section>
 
-  <section class="section map-section">
+  <section class="section map-section navy">
     <div class="wrap">
       <div class="section-head">
         <h2>{d.home.mapTitle}</h2>
         <p>{d.home.mapLead}</p>
       </div>
-      <RouteMap lang={lang} />
+      <RouteMap lang={lang} tone="navy" />
     </div>
   </section>
 
@@ -168,26 +167,11 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
             <h2>{d.home.insightsTitle}</h2>
             <a href={localePath(lang, '/insights')}>{d.home.insightsAll}</a>
           </div>
-          <ul class="article-list">
+          <div class="article-list">
             {latest.map((a) => (
-              <li>
-                <img
-                  class="art"
-                  src={`/images/${artImg[a.slug] ?? 'sea-river'}-wide-800.webp`}
-                  width="800"
-                  height="533"
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                />
-                <time datetime={a.data.date.toISOString().slice(0, 10)}>{formatDate(a.data.date, lang)}</time>
-                <h3>
-                  <a href={localePath(lang, `/insights/${a.slug}`)}>{a.data.title}</a>
-                </h3>
-                <p>{a.data.description}</p>
-              </li>
+              <ArticleCard article={a} lang={lang} />
             ))}
-          </ul>
+          </div>
         </div>
       </section>
     )
@@ -283,10 +267,6 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     .advise {
       grid-template-columns: 1fr;
     }
-  }
-
-  .map-section :global(.label) {
-    text-shadow: 0 0 3px #ffffff, 0 0 3px #ffffff;
   }
 
   .data-grid {
@@ -513,41 +493,9 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     margin-bottom: 2rem;
   }
   .article-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
-  }
-  .art {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border-radius: var(--radius);
-    margin-bottom: 1.1rem;
-    background: var(--mist);
-  }
-  .article-list time {
-    font-size: 0.875rem;
-    color: var(--muted);
-  }
-  .article-list h3 {
-    margin: 0.5rem 0 0.6rem;
-    font-size: 1.35rem;
-    font-weight: 500;
-  }
-  .article-list h3 a {
-    color: var(--ink);
-    text-decoration: none;
-  }
-  .article-list h3 a:hover {
-    color: var(--signal-ink);
-  }
-  .article-list p {
-    color: var(--muted);
-    font-size: 0.95rem;
-    margin: 0;
   }
   @media (max-width: 52rem) {
     .article-list {

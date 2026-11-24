@@ -1,0 +1,227 @@
+---
+// Freight audit, animated: each invoice line is checked against the contract
+// in turn; overcharges are flagged with the reason, then added up.
+import { t, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = t(lang).anim.audit;
+
+const group = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+// English puts the euro sign first; Azerbaijani after the amount.
+const money = (n: number) => (lang === 'az' ? `${group(n)} €` : `€${group(n)}`);
+const STEP = 0.75;
+const rows = L.rows.map((r, i) => ({ ...r, diff: r.invoiced - r.contract, d: 0.4 + i * STEP }));
+const total = rows.reduce((sum, r) => sum + r.diff, 0);
+const end = 0.4 + rows.length * STEP + 0.2;
+---
+
+<div class="audit">
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th scope="col" class="lane">{L.shipment}</th>
+        <th scope="col">{L.invoiced}</th>
+        <th scope="col">{L.contract}</th>
+        <th scope="col" class="res">{L.check}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((r) => (
+          <tr class:list={['row', { bad: r.diff > 0 }]} style={`--d:${r.d.toFixed(2)}s`}>
+            <th scope="row" class="lane">
+              {r.lane}
+            </th>
+            <td>{money(r.invoiced)}</td>
+            <td>{money(r.contract)}</td>
+            <td class="res">
+              {r.diff > 0 ? (
+                <span class="flag">
+                  <b>+{money(r.diff)}</b>
+                  <small>{r.note}</small>
+                </span>
+              ) : (
+                <span class="ok">
+                  <svg viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M3.5 8.5l3 3 6-7" />
+                  </svg>
+                  {L.ok}
+                </span>
+              )}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+    <tfoot>
+      <tr class="sum" style={`--d:${end.toFixed(2)}s`}>
+        <th scope="row" colspan="3">{L.found}</th>
+        <td class="res">{money(total)}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<style>
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.925rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .tbl th,
+  .tbl td {
+    padding: 0.6rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+    text-align: right;
+    vertical-align: top;
+  }
+  .tbl th:first-child,
+  .tbl td:first-child {
+    padding-left: 0.4rem;
+  }
+  .tbl thead th {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    border-bottom-color: var(--ink);
+    vertical-align: bottom;
+  }
+  .tbl .lane {
+    text-align: left;
+  }
+  .tbl tbody th {
+    font-weight: 500;
+  }
+  .tbl .res {
+    width: 9.5rem;
+  }
+  .flag {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+    color: var(--neg);
+  }
+  .flag small {
+    font-size: 0.75rem;
+    line-height: 1.25;
+    color: var(--ink-2);
+  }
+  .ok {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #2f7d55;
+    font-weight: 500;
+  }
+  .ok svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .bad {
+    background: rgba(200, 69, 60, 0.06);
+  }
+  .sum th,
+  .sum td {
+    border-bottom: 0;
+    border-top: 1.5px solid var(--ink);
+    font-weight: 600;
+    text-align: left;
+  }
+  .sum td {
+    text-align: right;
+    color: var(--neg);
+    font-size: 1.05rem;
+  }
+  @media (max-width: 34rem) {
+    .tbl {
+      font-size: 0.8rem;
+    }
+    .tbl th,
+    .tbl td {
+      padding: 0.55rem 0.25rem;
+    }
+    .tbl thead th {
+      font-size: 0.72rem;
+    }
+    .tbl .res {
+      width: 5.6rem;
+    }
+    .flag small {
+      font-size: 0.68rem;
+    }
+    .sum td {
+      font-size: 0.95rem;
+    }
+  }
+
+  /* Animation */
+  :global(.is-ready) .res > span,
+  :global(.is-ready) .sum {
+    opacity: 0;
+  }
+  :global(.is-ready) .bad {
+    background: transparent;
+  }
+  :global(.is-on) .row {
+    animation: au-scan 0.9s ease var(--d) both;
+  }
+  :global(.is-on) .bad {
+    animation-name: au-scan-bad;
+  }
+  :global(.is-on) .res > span {
+    animation: au-pop 0.4s cubic-bezier(0.3, 1.5, 0.5, 1) calc(var(--d) + 0.35s) both;
+  }
+  :global(.is-on) .sum {
+    animation: au-fade 0.5s ease var(--d) both;
+  }
+  @keyframes au-scan {
+    0% {
+      background: transparent;
+    }
+    35% {
+      background: var(--signal-soft);
+    }
+    100% {
+      background: transparent;
+    }
+  }
+  @keyframes au-scan-bad {
+    0% {
+      background: transparent;
+    }
+    35% {
+      background: var(--signal-soft);
+    }
+    100% {
+      background: rgba(200, 69, 60, 0.06);
+    }
+  }
+  @keyframes au-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes au-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>

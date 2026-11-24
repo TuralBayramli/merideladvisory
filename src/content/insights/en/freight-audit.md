@@ -2,6 +2,13 @@
 title: 'Freight invoices: the cheapest data project you are not doing'
 description: 'Checking freight invoices against contracted rates recovers overcharges and builds the lane-level data you need for your next tender.'
 date: 2026-11-23
+image: rail
+takeaways:
+  - 'Small errors in base rates, fuel surcharges and extra charges add up across thousands of shipments.'
+  - 'An audit compares every invoice line with what the contract says it should cost.'
+  - 'The bigger prize is a clean, lane-by-lane cost history for your next freight tender.'
+figure: audit
+figureBefore: 3
 ---
 
 Freight is one of the largest costs in most distribution businesses, yet invoices are often approved with a quick glance at the total. Carriers are not usually dishonest. But rate cards are complex, fuel surcharges change every month, and accessorial charges for waiting time, tail lifts or failed deliveries are easy to apply by mistake. Small errors on thousands of shipments add up.

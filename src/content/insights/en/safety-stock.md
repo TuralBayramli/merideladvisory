@@ -2,6 +2,13 @@
 title: 'Safety stock without guesswork'
 description: 'Rules like "two weeks of cover" treat every item the same. A simple statistical approach sets safety stock by item, based on demand variability, lead time and the service level you want.'
 date: 2026-11-23
+image: warehouse
+takeaways:
+  - 'Rules like "two weeks of cover" overstock stable items and understock erratic ones.'
+  - 'Safety stock = z × σ × √L sets the buffer from demand variability, lead time and the service level you want.'
+  - 'Moving from 95% to 99% service needs about 40% more safety stock, so make it a business decision.'
+figure: safety
+figureBefore: 2
 ---
 
 Ask a planner how much safety stock an item needs and you will often hear a rule of thumb: two weeks of cover, or one month for imported goods. Rules like these are easy to explain, but they treat a steady, fast-moving item the same as an erratic one. The result is too much stock where demand is calm and stock-outs where it is not.

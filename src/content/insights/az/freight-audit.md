@@ -2,6 +2,13 @@
 title: 'Daşıma hesab-fakturaları: hələ başlamadığınız ən ucuz məlumat layihəsi'
 description: 'Daşıma hesab-fakturalarını müqavilə tarifləri ilə yoxlamaq artıq ödənişləri geri qaytarır və növbəti tender üçün lazım olan marşrut səviyyəli məlumatları yaradır.'
 date: 2026-11-23
+image: rail
+takeaways:
+  - 'Baza tarifdə, yanacaq əlavəsində və əlavə ödənişlərdə kiçik səhvlər minlərlə daşınmada böyük məbləğə çevrilir.'
+  - 'Audit hər hesab-faktura sətrini müqaviləyə görə olmalı olan məbləğlə müqayisə edir.'
+  - 'Daha böyük qazanc növbəti daşıma tenderi üçün marşrutlar üzrə təmiz xərc tarixçəsidir.'
+figure: audit
+figureBefore: 3
 ---
 
 Daşıma əksər distribusiya bizneslərində ən böyük xərclərdən biridir, amma hesab-fakturalar çox vaxt yalnız ümumi məbləğə ötəri baxılaraq təsdiqlənir. Daşıyıcılar adətən vicdansız deyil. Lakin tarif cədvəlləri mürəkkəbdir, yanacaq əlavəsi hər ay dəyişir, gözləmə vaxtı, hidravlik lift və ya uğursuz çatdırılma üçün əlavə ödənişləri səhvən tətbiq etmək asandır. Minlərlə daşınmada kiçik səhvlər böyük məbləğə çevrilir.

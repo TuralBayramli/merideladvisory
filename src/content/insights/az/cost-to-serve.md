@@ -2,6 +2,17 @@
 title: 'Xidmət xərci: gətirdiyindən çox xərc yaradan müştəriləri tapmaq'
 description: 'Orta marjalar hansı müştərilərin, məhsulların və marşrutların həqiqətən qazanc gətirdiyini gizlədir. Xidmət xərci (cost-to-serve) modeli bunu artıq əlinizdə olan məlumatlarla göstərir.'
 date: 2026-11-23
+image: road
+takeaways:
+  - 'Eyni satış və eyni ümumi marja ilə iki müştəriyə xidmət göstərmək tamam fərqli məbləğə başa gələ bilər.'
+  - 'Xidmət xərci sifarişlərin emalı, anbar, daşıma, qaytarmalar və ödəniş müddəti xərclərini onları yaradan müştərilərə bölüşdürür.'
+  - 'Həll yolu nadir hallarda müştərini itirməkdir: minimum sifariş, daha dolu çatdırılmalar, xidmət səviyyələri və ödəniş şərtləri adətən fərqi aradan qaldırır.'
+figure: cts
+figureBefore: 1
+video:
+  src: /videos/xidmet-xerci-720.mp4
+  poster: /videos/xidmet-xerci-poster.webp
+  length: '1:27'
 ---
 
 Əksər şirkətlər ümumi marjasını məhsul üzrə bilir. Lakin logistika xərclərindən sonra müştəri üzrə marjanı bilənlər daha azdır. Bu fərq vacibdir, çünki eyni məhsulu eyni qiymətə alan iki müştəriyə xidmət göstərmək tamam fərqli məbləğə başa gələ bilər.

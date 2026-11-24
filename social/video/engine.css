@@ -6,6 +6,7 @@
   --muted: #b4c0d6;
   --faint: rgba(220, 230, 248, 0.16);
   --madder: #e8655a;
+  --gold: #c2a574;
   --sky: #93b2f2;
   --serif: 'Newsreader Variable', Georgia, serif;
   --sans: 'IBM Plex Sans Variable', 'Segoe UI', sans-serif;
@@ -32,6 +33,7 @@ body {
 .serif { font-family: var(--serif); letter-spacing: -0.015em; }
 .muted { color: var(--muted); }
 .madder { color: var(--madder); }
+.gold { color: var(--gold); }
 .sky { color: var(--sky); }
 .abs { position: absolute; left: var(--x); right: var(--x); }
 .num { font-variant-numeric: tabular-nums; }

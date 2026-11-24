@@ -2,6 +2,13 @@
 title: 'Cost-to-serve: finding the customers who cost more than they pay'
 description: 'Average margins hide which customers, products and routes actually make money. A cost-to-serve model shows it, using data you already have.'
 date: 2026-11-23
+image: road
+takeaways:
+  - 'Two customers with the same sales and gross margin can cost very different amounts to serve.'
+  - 'Cost-to-serve assigns order handling, warehousing, transport, returns and payment terms to the customers that cause them.'
+  - 'The fix is rarely dropping customers: minimum orders, fuller deliveries, service tiers and payment terms usually close the gap.'
+figure: cts
+figureBefore: 1
 ---
 
 Most companies know their gross margin by product. Far fewer know their margin by customer after logistics. That gap matters, because two customers buying the same product at the same price can cost very different amounts to serve.

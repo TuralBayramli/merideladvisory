@@ -1,0 +1,121 @@
+---
+// An article teaser: photo, date and reading time, title and summary.
+import { t, localePath, formatDate, type Lang } from '../i18n/ui';
+import type { Article } from '../i18n/insights';
+
+interface Props {
+  article: Article;
+  lang: Lang;
+  /** Heading level, so the card fits the page outline. */
+  level?: 2 | 3;
+  /** 'wide' puts the photo beside the text (for a featured article). */
+  layout?: 'stack' | 'wide';
+}
+const { article: a, lang, level = 3, layout = 'stack' } = Astro.props;
+const d = t(lang);
+const H = level === 2 ? 'h2' : 'h3';
+const href = localePath(lang, `/insights/${a.slug}`);
+const img = a.data.image;
+---
+
+<article class:list={['card', `card-${layout}`]}>
+  <img
+    class="card-img"
+    src={`/images/${img}-wide-800.webp`}
+    srcset={`/images/${img}-wide-800.webp 800w, /images/${img}-wide-1600.webp 1600w`}
+    sizes={layout === 'wide' ? '(min-width: 52rem) 40rem, 100vw' : '(min-width: 52rem) 24rem, 100vw'}
+    width="800"
+    height="533"
+    alt=""
+    loading="lazy"
+    decoding="async"
+  />
+  <div class="card-text">
+    <p class="card-meta">
+      <time datetime={a.data.date.toISOString().slice(0, 10)}>{formatDate(a.data.date, lang)}</time>
+      <span>{a.minutes} {d.insights.minRead}</span>
+    </p>
+    <H class="card-title">
+      <a href={href}>{a.data.title}</a>
+    </H>
+    <p class="card-desc">{a.data.description}</p>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    height: 100%;
+  }
+  .card-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius);
+    background: var(--mist);
+  }
+  .card-text {
+    padding-top: 1.1rem;
+  }
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .card-title {
+    margin: 0.5rem 0 0.6rem;
+    font-size: 1.35rem;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+  .card-title a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  /* The whole card is clickable through the title link. */
+  .card-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .card:hover .card-title a {
+    color: var(--signal-ink);
+  }
+  .card:hover .card-img {
+    filter: saturate(1.08) brightness(1.03);
+  }
+  .card-title a:focus-visible {
+    outline: none;
+  }
+  .card:has(a:focus-visible) {
+    outline: 3px solid var(--signal);
+    outline-offset: 6px;
+    border-radius: var(--radius);
+  }
+  .card-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  @media (min-width: 52rem) {
+    .card-wide {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+    .card-wide .card-text {
+      padding-top: 0;
+    }
+    .card-wide .card-title {
+      font-size: var(--step-2);
+      font-weight: 460;
+    }
+    .card-wide .card-desc {
+      font-size: 1.05rem;
+    }
+  }
+</style>

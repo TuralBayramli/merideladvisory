@@ -82,6 +82,11 @@ svg {
   max-width: 100%;
 }
 
+/* Images keep their proportions when CSS sets only the width. */
+img {
+  height: auto;
+}
+
 h1,
 h2,
 h3 {
@@ -211,6 +216,41 @@ a:hover {
 
 .section.tint {
   background: var(--mist);
+}
+
+/* Navy sections: the same components on the dark brand ground. Colour
+   tokens are remapped, so text, rules and the logo follow automatically. */
+.navy {
+  --ink: #ffffff;
+  --ink-2: #d5dcea;
+  --muted: #a7b3c9;
+  --slate: #a7b3c9;
+  --line: rgba(220, 230, 248, 0.16);
+  --rule: rgba(220, 230, 248, 0.16);
+  --gold: var(--gold-light);
+  --logo-gold: var(--gold-light);
+  background: var(--navy);
+  color: var(--ink);
+}
+
+.navy a:not(.btn) {
+  color: var(--signal-mid);
+}
+
+.navy a:not(.btn):hover {
+  color: #ffffff;
+}
+
+.navy .btn-line {
+  color: #ffffff;
+}
+
+.navy .btn-line:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.navy :focus-visible {
+  outline-color: var(--signal-mid);
 }
 
 .section-head {

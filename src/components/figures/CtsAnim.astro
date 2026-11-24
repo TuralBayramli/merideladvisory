@@ -1,0 +1,307 @@
+---
+// Cost to serve, animated: two customers start with the same gross margin and
+// lose it cost by cost, as the rows of the table appear. Same numbers as the
+// cost-to-serve video and the diagram on the services page.
+import { t, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = t(lang).anim.cts;
+
+const MARGIN = 3000;
+const costs = { a: [50, 200, 250, 0, 80], b: [400, 900, 1300, 300, 250] };
+// What is left of the margin after each cost.
+const left = (xs: number[]) => xs.reduce<number[]>((acc, c) => [...acc, (acc.at(-1) ?? MARGIN) - c], []);
+const steps = { a: left(costs.a), b: left(costs.b) };
+const net = { a: steps.a[4], b: steps.b[4] };
+const scales = (xs: number[]) => xs.map((v, i) => `--s${i + 1}:${(Math.max(v, 0) / MARGIN).toFixed(4)}`).join(';');
+const fmt = (n: number) => (n < 0 ? '−' : '') + String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+const Z = 6; // share of the track (%) left of zero, for a loss
+const SPAN = 100 - Z;
+const at = (v: number) => Z + (SPAN * v) / MARGIN;
+// When each cost row appears (s); the bar keyframes below follow the same beat.
+const delays = [1.1, 2.05, 3.0, 3.95, 4.9];
+const customers = [
+  { key: 'a' as const, name: L.a },
+  { key: 'b' as const, name: L.b },
+];
+---
+
+<div class="cts">
+  <div class="bars" aria-hidden="true">
+    {
+      customers.map((c) => (
+        <div class="bar-row">
+          <span class="who">{c.name}</span>
+          <div class="track" style={`--z:${Z}%`}>
+            <span class="ghost" />
+            <span class="bar" style={scales(steps[c.key])} />
+            {net[c.key] < 0 && <span class="loss" style={`width:${((SPAN * -net[c.key]) / MARGIN).toFixed(2)}%`} />}
+            {net[c.key] >= 0 ? (
+              <span class="val in" style={`left:${at(net[c.key]).toFixed(2)}%`}>
+                {fmt(net[c.key])}
+              </span>
+            ) : (
+              <span class="val out" style={`left:${Z}%`}>
+                {fmt(net[c.key])}
+              </span>
+            )}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <table class="tbl">
+    <thead>
+      <tr>
+        <td></td>
+        <th scope="col">{L.a}</th>
+        <th scope="col">{L.b}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="tr" style="--d:0.15s">
+        <th scope="row">{L.margin}</th>
+        <td>{fmt(MARGIN)}</td>
+        <td>{fmt(MARGIN)}</td>
+      </tr>
+      {
+        L.costs.map((name, i) => (
+          <tr class="tr" style={`--d:${delays[i]}s`}>
+            <th scope="row">{name}</th>
+            <td>{fmt(-costs.a[i])}</td>
+            <td>{fmt(-costs.b[i])}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+    <tfoot>
+      <tr class="tr total" style="--d:5.55s">
+        <th scope="row">{L.net}</th>
+        <td class="pos">{fmt(net.a)}</td>
+        <td class="neg">{fmt(net.b)}</td>
+      </tr>
+    </tfoot>
+  </table>
+  <p class="note">{L.note}</p>
+</div>
+
+<style>
+  .cts {
+    display: grid;
+    gap: 1.75rem;
+  }
+  .bars {
+    display: grid;
+    gap: 1.1rem;
+  }
+  .who {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .track {
+    position: relative;
+    height: 2rem;
+  }
+  .track::before {
+    content: '';
+    position: absolute;
+    left: var(--z);
+    top: -0.35rem;
+    bottom: -0.35rem;
+    width: 1.5px;
+    background: var(--ink);
+    opacity: 0.45;
+    z-index: 1;
+  }
+  .ghost,
+  .bar,
+  .loss {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: 4px;
+  }
+  .ghost {
+    left: var(--z);
+    right: 0;
+    border: 1.5px dashed #c5cfdd;
+  }
+  .bar {
+    left: var(--z);
+    right: 0;
+    background: var(--signal);
+    transform-origin: left center;
+    transform: scaleX(var(--s5));
+  }
+  .loss {
+    right: calc(100% - var(--z));
+    background: var(--neg);
+    transform-origin: right center;
+  }
+  .val {
+    position: absolute;
+    top: 50%;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    z-index: 2;
+  }
+  .val.in {
+    color: #ffffff;
+    transform: translate(calc(-100% - 0.6rem), -50%);
+  }
+  .val.out {
+    color: var(--neg);
+    transform: translate(0.6rem, -50%);
+  }
+
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.925rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .tbl th,
+  .tbl td {
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .tbl thead th {
+    text-align: right;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    border-bottom-color: var(--ink);
+  }
+  .tbl thead td {
+    border-bottom-color: var(--ink);
+  }
+  .tbl tbody th {
+    text-align: left;
+    font-weight: 400;
+    color: var(--ink-2);
+  }
+  .tbl td {
+    width: 7.5rem;
+    text-align: right;
+  }
+  .total th,
+  .total td {
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 0;
+    border-top: 1.5px solid var(--ink);
+  }
+  .total td {
+    text-align: right;
+  }
+  .pos {
+    color: var(--signal-ink);
+  }
+  .neg {
+    color: var(--neg);
+  }
+  .note {
+    margin: -0.75rem 0 0;
+    font-size: 0.825rem;
+    color: var(--muted);
+  }
+  @media (max-width: 30rem) {
+    .tbl td {
+      width: 5.5rem;
+    }
+    .tbl {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Animation: ready = the start, on = playing (see ArticleFigure). */
+  :global(.is-ready) .bar,
+  :global(.is-ready) .loss {
+    transform: scaleX(0);
+  }
+  :global(.is-ready) .val,
+  :global(.is-ready) .tr {
+    opacity: 0;
+  }
+  :global(.is-on) .bar {
+    animation: cts-bar 5.45s ease-in-out both;
+  }
+  :global(.is-on) .loss {
+    animation: cts-loss 5.45s ease-in-out both;
+  }
+  :global(.is-on) .val {
+    animation: cts-fade 0.5s ease 5.45s both;
+  }
+  :global(.is-on) .tr {
+    animation: cts-row 0.9s ease var(--d) both;
+  }
+  @keyframes cts-bar {
+    0% {
+      transform: scaleX(0);
+    }
+    12.84%,
+    20.18% {
+      transform: scaleX(1);
+    }
+    30.28%,
+    37.61% {
+      transform: scaleX(var(--s1));
+    }
+    47.71%,
+    55.05% {
+      transform: scaleX(var(--s2));
+    }
+    65.14%,
+    72.48% {
+      transform: scaleX(var(--s3));
+    }
+    82.57%,
+    89.91% {
+      transform: scaleX(var(--s4));
+    }
+    100% {
+      transform: scaleX(var(--s5));
+    }
+  }
+  @keyframes cts-loss {
+    0%,
+    89.91% {
+      transform: scaleX(0);
+    }
+    100% {
+      transform: scaleX(1);
+    }
+  }
+  @keyframes cts-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes cts-row {
+    0% {
+      opacity: 0;
+      background-color: var(--signal-soft);
+    }
+    30% {
+      opacity: 1;
+      background-color: var(--signal-soft);
+    }
+    100% {
+      opacity: 1;
+      background-color: transparent;
+    }
+  }
+</style>

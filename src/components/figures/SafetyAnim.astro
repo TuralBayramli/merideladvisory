@@ -1,0 +1,381 @@
+---
+// Safety stock, animated: stock on hand falls with demand, an order goes out at
+// the reorder point and arrives four weeks later. In the second cycle demand
+// jumps while the order is on its way, and the safety stock absorbs it.
+// Numbers follow the article: about 100 units a week, σ = 40, L = 4, z = 1.65.
+import { t, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = t(lang).anim.safety;
+
+const SS = 132; // 1.65 × 40 × √4
+const ROP = 532; // demand over the lead time (4 × 100) plus safety stock
+const Q = 600;
+const LEAD = 4;
+const demand = [96, 108, 92, 104, 99, 112, 94, 101, 128, 134, 122, 97, 103, 95, 106, 100];
+
+// Stock over time, falling evenly within each week; orders and deliveries on the way.
+type Ev = { kind: 'order' | 'arrive'; t: number; v: number };
+const pts: [number, number][] = [[0, 760]];
+const events: Ev[] = [];
+{
+  let s = 760;
+  let due: number | null = null;
+  demand.forEach((d, w) => {
+    let cur = w;
+    const end = w + 1;
+    for (;;) {
+      const arrive = due !== null && due > cur && due <= end ? due : null;
+      const cross = due === null && s > ROP && cur + (s - ROP) / d <= end ? cur + (s - ROP) / d : null;
+      const next = [arrive, cross].filter((x): x is number => x !== null).sort((a, b) => a - b)[0];
+      if (next === undefined) {
+        s -= d * (end - cur);
+        pts.push([end, s]);
+        break;
+      }
+      s -= d * (next - cur);
+      cur = next;
+      pts.push([next, s]);
+      if (next === arrive) {
+        events.push({ kind: 'arrive', t: next, v: s });
+        s += Q;
+        pts.push([next, s]);
+        due = null;
+      } else {
+        events.push({ kind: 'order', t: next, v: s });
+        due = next + LEAD;
+      }
+    }
+  });
+}
+
+const W = 640;
+const H = 300;
+const X0 = 14;
+const X1 = 626;
+const Y0 = 18;
+const Y1 = 262;
+const WEEKS = demand.length;
+const VMAX = 800;
+const sx = (w: number) => X0 + ((X1 - X0) * w) / WEEKS;
+const sy = (v: number) => Y1 - ((Y1 - Y0) * v) / VMAX;
+const px = (x: number) => ((x / W) * 100).toFixed(2);
+const py = (y: number) => ((y / H) * 100).toFixed(2);
+const line = pts.map(([w, v], i) => `${i ? 'L' : 'M'}${sx(w).toFixed(1)} ${sy(v).toFixed(1)}`).join('');
+
+// The line is revealed left to right in REVEAL seconds after START; anything on
+// the line appears when the reveal reaches it.
+const START = 0.8;
+const REVEAL = 5;
+const when = (x: number) => (START + (REVEAL * x) / W).toFixed(2);
+
+const orders = events.filter((e) => e.kind === 'order');
+const arrivals = events.filter((e) => e.kind === 'arrive');
+const firstOrder = orders[0];
+const firstArrival = arrivals[0];
+const ticks = [0, 4, 8, 12];
+---
+
+<div class="ss">
+  <div class="stage" role="img" aria-label={`${L.title}. ${L.note}`}>
+    <svg class="base" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
+      {[200, 400, 600, 800].map((v) => <line class="grid" x1={X0} x2={X1} y1={sy(v)} y2={sy(v)} />)}
+      <rect class="band" x={X0} y={sy(SS)} width={X1 - X0} height={sy(0) - sy(SS)} />
+      <line class="rop" x1={X0} x2={X1} y1={sy(ROP)} y2={sy(ROP)} />
+      <line class="axis" x1={X0} x2={X1} y1={Y1} y2={Y1} />
+    </svg>
+    <svg class="line-layer" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
+      <path class="stock" d={line} />
+    </svg>
+
+    <span class="lbl l-stock" style={`left:${px(sx(0.25))}%;top:${py(sy(760))}%;--d:${START}s`}>{L.stock}</span>
+    <span class="lbl l-rop" style={`left:${px(X1)}%;top:${py(sy(ROP))}%`}>{L.rop}</span>
+    <span class="lbl l-ss" style={`left:${px(X1)}%;top:${py(sy(SS / 2))}%`}>{L.ss}</span>
+
+    {
+      orders.map((e) => (
+        <span class="mk order" style={`left:${px(sx(e.t))}%;top:${py(sy(e.v))}%;--d:${when(sx(e.t))}s`} />
+      ))
+    }
+    {
+      arrivals.map((e) => (
+        <span class="mk arrive" style={`left:${px(sx(e.t))}%;top:${py(sy(e.v))}%;--d:${when(sx(e.t))}s`} />
+      ))
+    }
+    <span
+      class="lbl l-order"
+      style={`left:${px(sx(firstOrder.t))}%;top:${py(sy(firstOrder.v))}%;--d:${when(sx(firstOrder.t))}s`}
+    >
+      {L.order}
+    </span>
+    <span
+      class="lbl l-arrive"
+      style={`left:${px(sx(firstArrival.t))}%;top:${py(sy(firstArrival.v))}%;--d:${when(sx(firstArrival.t))}s`}
+    >
+      {L.arrive}
+    </span>
+    <span
+      class="lead"
+      style={`left:${px(sx(firstOrder.t))}%;width:${(((sx(firstArrival.t) - sx(firstOrder.t)) / W) * 100).toFixed(2)}%;top:${py(sy(640))}%;--d:${when(sx(firstArrival.t))}s`}
+    >
+      <span>{L.lead}</span>
+    </span>
+
+    {
+      ticks.map((w) => (
+        <span class="tick" style={`left:${px(sx(w))}%;top:${py(Y1)}%`}>
+          {w}
+        </span>
+      ))
+    }
+    <span class="tick t-title" style={`left:${px(X1)}%;top:${py(Y1)}%`}>{L.time}</span>
+  </div>
+  <ul class="key" aria-hidden="true">
+    <li><span class="k-rop"></span>{L.rop}</li>
+    <li><span class="k-ss"></span>{L.ss}</li>
+    <li><span class="k-order"></span>{L.order}</li>
+    <li><span class="k-arrive"></span>{L.arrive}</li>
+  </ul>
+  <p class="note">{L.note}</p>
+</div>
+
+<style>
+  .stage {
+    position: relative;
+    aspect-ratio: 640 / 300;
+    margin-top: 0.5rem;
+  }
+  .stage svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .grid {
+    stroke: var(--line);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .axis {
+    stroke: var(--ink);
+    stroke-width: 1.2;
+    opacity: 0.55;
+    vector-effect: non-scaling-stroke;
+  }
+  .band {
+    fill: rgba(194, 165, 116, 0.24);
+  }
+  .rop {
+    stroke: var(--signal);
+    stroke-width: 1.6;
+    stroke-dasharray: 6 5;
+    vector-effect: non-scaling-stroke;
+  }
+  .stock {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.2;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .lbl,
+  .tick,
+  .mk,
+  .lead {
+    position: absolute;
+  }
+  .lbl {
+    font-size: 0.8rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: var(--ink-2);
+  }
+  .l-stock {
+    transform: translate(0, calc(-100% - 0.35rem));
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .l-rop {
+    transform: translate(-100%, calc(-100% - 0.3rem));
+    color: var(--signal-ink);
+    font-weight: 600;
+  }
+  .l-ss {
+    transform: translate(calc(-100% - 0.5rem), -50%);
+    color: var(--gold-ink);
+    font-weight: 600;
+  }
+  .l-order {
+    transform: translate(0.6rem, calc(-100% - 0.3rem));
+  }
+  .l-arrive {
+    transform: translate(0.75rem, -50%);
+  }
+  .mk {
+    width: 0.8rem;
+    height: 0.8rem;
+    transform: translate(-50%, -50%);
+  }
+  .order {
+    background: var(--signal);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+  .arrive {
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 2px var(--paper);
+  }
+  .lead {
+    height: 0.5rem;
+    border: 1.5px solid var(--muted);
+    border-bottom: 0;
+    transform: translateY(-50%);
+  }
+  .lead span {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translate(-50%, -0.25rem);
+    font-size: 0.78rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .tick {
+    transform: translate(-50%, 0.45rem);
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .t-title {
+    transform: translate(-100%, 0.45rem);
+  }
+  .note {
+    margin: 1.9rem 0 0;
+    font-size: 0.825rem;
+    color: var(--muted);
+  }
+  /* On narrow screens the labels move into a key under the chart. */
+  .key {
+    display: none;
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-size: 0.8rem;
+    color: var(--ink-2);
+  }
+  .key li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .key span {
+    flex: none;
+    display: inline-block;
+  }
+  .k-rop {
+    width: 1.2rem;
+    border-top: 2px dashed var(--signal);
+  }
+  .k-ss {
+    width: 1rem;
+    height: 0.7rem;
+    background: rgba(194, 165, 116, 0.35);
+  }
+  .k-order {
+    width: 0.7rem;
+    height: 0.7rem;
+    background: var(--signal);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+  .k-arrive {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+  @media (max-width: 36rem) {
+    .stage {
+      aspect-ratio: 4 / 3;
+    }
+    .l-rop,
+    .l-ss,
+    .l-order,
+    .l-arrive,
+    .lead {
+      display: none;
+    }
+    .key {
+      display: flex;
+    }
+    .note {
+      margin-top: 1rem;
+    }
+  }
+
+  /* Animation */
+  :global(.is-ready) .band,
+  :global(.is-ready) .rop,
+  :global(.is-ready) .l-rop,
+  :global(.is-ready) .l-ss,
+  :global(.is-ready) .lbl,
+  :global(.is-ready) .mk,
+  :global(.is-ready) .lead {
+    opacity: 0;
+  }
+  :global(.is-ready) .line-layer {
+    clip-path: inset(0 100% 0 0);
+  }
+  :global(.is-on) .band,
+  :global(.is-on) .l-ss {
+    animation: ss-fade 0.6s ease 0s both;
+  }
+  :global(.is-on) .rop,
+  :global(.is-on) .l-rop {
+    animation: ss-fade 0.6s ease 0.3s both;
+  }
+  :global(.is-on) .line-layer {
+    animation: ss-reveal 5s linear 0.8s both;
+  }
+  :global(.is-on) .l-stock,
+  :global(.is-on) .l-order,
+  :global(.is-on) .l-arrive,
+  :global(.is-on) .lead {
+    animation: ss-fade 0.5s ease var(--d) both;
+  }
+  :global(.is-on) .mk {
+    animation: ss-pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) var(--d) both;
+  }
+  @keyframes ss-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes ss-reveal {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes ss-pop {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.2);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+</style>

@@ -1,0 +1,97 @@
+---
+// An animated figure inside an article. It plays once when it scrolls into
+// view and can be replayed. Without JavaScript, or with reduced motion, the
+// finished picture is shown.
+import { t, type Lang } from '../../i18n/ui';
+import CtsAnim from './CtsAnim.astro';
+import SafetyAnim from './SafetyAnim.astro';
+import AuditAnim from './AuditAnim.astro';
+
+interface Props {
+  kind: 'cts' | 'safety' | 'audit';
+  lang: Lang;
+}
+const { kind, lang } = Astro.props;
+const d = t(lang);
+---
+
+<figure class="figure anim-fig" data-anim>
+  <figcaption>
+    <strong>{d.anim[kind].title}</strong>
+    <span>{d.diagrams.example}</span>
+  </figcaption>
+  {kind === 'cts' && <CtsAnim lang={lang} />}
+  {kind === 'safety' && <SafetyAnim lang={lang} />}
+  {kind === 'audit' && <AuditAnim lang={lang} />}
+  <div class="anim-foot">
+    <button class="replay" type="button" data-replay hidden>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.6 11.2a5.6 5.6 0 1 0 1.3-4.9M5.4 2.8l.5 3.6-3.5.6"></path></svg>
+      {d.anim.replay}
+    </button>
+  </div>
+</figure>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-anim]').forEach((fig) => {
+    if (reduce || !('IntersectionObserver' in window)) return;
+    const btn = fig.querySelector<HTMLButtonElement>('[data-replay]');
+    const play = () => {
+      fig.classList.remove('is-on');
+      void fig.offsetWidth; // restart the CSS animations
+      fig.classList.add('is-on');
+    };
+    fig.classList.add('is-ready');
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        play();
+        if (btn) btn.hidden = false;
+      },
+      { threshold: 0.45 },
+    );
+    io.observe(fig);
+    btn?.addEventListener('click', play);
+  });
+</script>
+
+<style>
+  .anim-fig {
+    margin: 2.25rem 0 2.5rem;
+  }
+  .anim-foot {
+    display: flex;
+    justify-content: flex-end;
+    min-height: 0.5rem;
+  }
+  .replay {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    padding: 0.35rem 0.8rem 0.35rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 2rem;
+    background: var(--paper);
+    color: var(--ink-2);
+    font: 500 0.85rem / 1.2 var(--sans);
+    cursor: pointer;
+  }
+  .replay:hover {
+    border-color: var(--signal);
+    color: var(--signal-ink);
+  }
+  .replay[hidden] {
+    display: none;
+  }
+  .replay svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>

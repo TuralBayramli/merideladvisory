@@ -5,13 +5,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { feature, mesh } from 'topojson-client';
 import { presimplify, simplify, quantile } from 'topojson-simplify';
-import { geoConicConformal, geoPath } from 'd3-geo';
+import { geoConicConformal, geoGraticule, geoPath } from 'd3-geo';
 import { t, type Lang } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
+  /** 'navy' for a map on the dark brand ground. */
+  tone?: 'light' | 'navy';
 }
-const { lang } = Astro.props;
+const { lang, tone = 'light' } = Astro.props;
 const d = t(lang);
 
 const W = 1000;
@@ -41,6 +43,8 @@ const projection = geoConicConformal()
 const toPath = geoPath(projection).digits(1);
 const landPath = toPath(land as any) ?? '';
 const borderPath = toPath(borders as any) ?? '';
+// Meridians and parallels every 10 degrees, as on a navigator's chart.
+const gratPath = toPath(geoGraticule().step([10, 10]).extent([[-10, 10], [120, 60]])() as any) ?? '';
 
 const P = (lon: number, lat: number) => projection([lon, lat]) as [number, number];
 
@@ -136,10 +140,11 @@ const regions = Object.entries(regionAt).map(([k, [lon, lat]]) => {
 });
 ---
 
-<figure class="routemap">
+<figure class:list={['routemap', `tone-${tone}`]}>
   <div class="scroller">
   <div class="stage">
     <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+      <path class="grat" d={gratPath}></path>
       <path class="land" d={landPath}></path>
       <path class="borders" d={borderPath}></path>
       {
@@ -213,6 +218,40 @@ const regions = Object.entries(regionAt).map(([k, [lon, lat]]) => {
 <style>
   .routemap {
     margin: 0;
+    --map-land: #dfe6f0;
+    --map-border: #ffffff;
+    --map-grat: #e8edf4;
+    --map-middle: var(--signal);
+    --map-south: var(--gold);
+    --map-europe: var(--ink);
+    --map-cargo: #ffffff;
+    --map-dot: var(--ink);
+    --map-dot-edge: #ffffff;
+    --map-halo: #ffffff;
+    --map-region: #7a879f;
+    --map-label: var(--ink-2);
+    --map-label-home: var(--ink);
+  }
+  .tone-navy {
+    --map-land: #24385d;
+    --map-border: #14213a;
+    --map-grat: rgba(194, 165, 116, 0.13);
+    --map-middle: #6b97ff;
+    --map-south: #d2b07a;
+    --map-europe: #efe9dd;
+    --map-cargo: #14213a;
+    --map-dot: #efe9dd;
+    --map-dot-edge: #14213a;
+    --map-halo: #14213a;
+    --map-region: #8493b2;
+    --map-label: #d5dcea;
+    --map-label-home: #ffffff;
+  }
+  .grat {
+    fill: none;
+    stroke: var(--map-grat);
+    stroke-width: 0.8;
+    vector-effect: non-scaling-stroke;
   }
   .stage {
     position: relative;
@@ -225,11 +264,11 @@ const regions = Object.entries(regionAt).map(([k, [lon, lat]]) => {
     height: 100%;
   }
   .land {
-    fill: #dfe6f0;
+    fill: var(--map-land);
   }
   .borders {
     fill: none;
-    stroke: #ffffff;
+    stroke: var(--map-border);
     stroke-width: 0.8;
     vector-effect: non-scaling-stroke;
   }
@@ -249,42 +288,45 @@ const regions = Object.entries(regionAt).map(([k, [lon, lat]]) => {
   }
   .lane-middle .lane-base,
   .lane-middle .lane-flow {
-    stroke: var(--signal);
+    stroke: var(--map-middle);
   }
   .lane-south .lane-base,
   .lane-south .lane-flow {
-    stroke: var(--gold);
+    stroke: var(--map-south);
   }
   .lane-europe .lane-base,
   .lane-europe .lane-flow {
-    stroke: var(--ink);
+    stroke: var(--map-europe);
+  }
+  .tone-navy .lane-base {
+    opacity: 0.45;
   }
   .cargo {
-    fill: #ffffff;
+    fill: var(--map-cargo);
     stroke-width: 1.8;
   }
   .lane-middle .cargo {
-    stroke: var(--signal);
+    stroke: var(--map-middle);
   }
   .lane-south .cargo {
-    stroke: var(--gold);
+    stroke: var(--map-south);
   }
   .lane-europe .cargo {
-    stroke: var(--ink);
+    stroke: var(--map-europe);
   }
   .city .dot {
-    fill: var(--ink);
-    stroke: #ffffff;
+    fill: var(--map-dot);
+    stroke: var(--map-dot-edge);
     stroke-width: 1.6;
   }
   .city.home .dot {
-    fill: var(--gold);
-    stroke: #ffffff;
+    fill: var(--map-south);
+    stroke: var(--map-dot-edge);
     stroke-width: 2;
   }
   .pulse {
     fill: none;
-    stroke: var(--gold);
+    stroke: var(--map-south);
     stroke-width: 1.4;
     transform-box: fill-box;
     transform-origin: center;
@@ -310,7 +352,7 @@ const regions = Object.entries(regionAt).map(([k, [lon, lat]]) => {
     position: absolute;
     transform: translate(-50%, -50%);
     font: italic 400 clamp(0.8rem, 0.55rem + 0.9vw, 1.3rem) / 1 var(--serif);
-    color: #7a879f;
+    color: var(--map-region);
     white-space: nowrap;
     pointer-events: none;
   }
@@ -318,13 +360,13 @@ const regions = Object.entries(regionAt).map(([k, [lon, lat]]) => {
     position: absolute;
     font-size: clamp(0.66rem, 0.5rem + 0.5vw, 0.92rem);
     line-height: 1;
-    color: var(--ink-2);
+    color: var(--map-label);
     white-space: nowrap;
     pointer-events: none;
-    text-shadow: 0 0 3px #f1f4f8, 0 0 3px #f1f4f8;
+    text-shadow: 0 0 3px var(--map-halo), 0 0 3px var(--map-halo);
   }
   .label.home {
-    color: var(--ink);
+    color: var(--map-label-home);
     font-weight: 600;
   }
   .p-e {
@@ -393,12 +435,12 @@ const regions = Object.entries(regionAt).map(([k, [lon, lat]]) => {
     border-top: 3px dotted;
   }
   .lg-middle::before {
-    border-color: var(--signal);
+    border-color: var(--map-middle);
   }
   .lg-south::before {
-    border-color: var(--gold);
+    border-color: var(--map-south);
   }
   .lg-europe::before {
-    border-color: var(--ink);
+    border-color: var(--map-europe);
   }
 </style>

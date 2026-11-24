@@ -2,8 +2,10 @@
 import { render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import CtaBand from '../components/CtaBand.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import ArticleFigure from '../components/figures/ArticleFigure.astro';
 import { t, localePath, formatDate, type Lang } from '../i18n/ui';
-import { getSlugs, type Article } from '../i18n/insights';
+import { getArticles, getSlugs, type Article } from '../i18n/insights';
 
 interface Props {
   lang: Lang;
@@ -11,70 +13,201 @@ interface Props {
 }
 const { lang, article } = Astro.props;
 const d = t(lang);
+const data = article.data;
 const other: Lang = lang === 'en' ? 'az' : 'en';
 const hasAlternate = (await getSlugs(other)).has(article.slug);
-const { Content } = await render(article);
 const path = `/insights/${article.slug}`;
+
+// The body as HTML, split before the chosen section heading so the animated
+// figure sits inside the text where it belongs.
+const { Content } = await render(article);
+const html = article.rendered?.html ?? '';
+let before = html;
+let after = '';
+if (html && data.figure) {
+  let at = -1;
+  for (let i = 0, from = 0; i < data.figureBefore; i++) {
+    at = html.indexOf('<h2', from);
+    if (at === -1) break;
+    from = at + 3;
+  }
+  if (at !== -1) {
+    before = html.slice(0, at);
+    after = html.slice(at);
+  }
+}
+// Table of contents from the section headings.
+const strip = (s: string) => s.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"');
+const sections = [...html.matchAll(/<h2 id="([^"]+)"[^>]*>([\s\S]*?)<\/h2>/g)].map((m) => ({ id: m[1], text: strip(m[2]) }));
+
+const related = (await getArticles(lang)).filter((a) => a.slug !== article.slug).slice(0, 2);
+const img = data.image;
 ---
 
 <Base
   lang={lang}
-  title={`${article.data.title} | Meridel Advisory`}
-  description={article.data.description}
+  title={`${data.title} | Meridel Advisory`}
+  description={data.description}
   path={path}
   hasAlternate={hasAlternate}
   type="article"
 >
   <article>
     <header class="article-head">
-      <div class="wrap narrow">
-        <a class="back" href={localePath(lang, '/insights')}>{d.insights.back}</a>
-        <h1>{article.data.title}</h1>
-        <p class="standfirst">{article.data.description}</p>
-        <p class="meta">
-          <span>{d.insights.by} {article.data.author}</span>
-          <time datetime={article.data.date.toISOString().slice(0, 10)}>{formatDate(article.data.date, lang)}</time>
-        </p>
+      <div class="wrap layout">
+        <div class="main">
+          <a class="back" href={localePath(lang, '/insights')}>{d.insights.back}</a>
+          <h1>{data.title}</h1>
+          <p class="standfirst">{data.description}</p>
+          <p class="meta">
+            <span>{d.insights.by} {data.author}</span>
+            <time datetime={data.date.toISOString().slice(0, 10)}>{formatDate(data.date, lang)}</time>
+            <span>{article.minutes} {d.insights.minRead}</span>
+          </p>
+        </div>
       </div>
     </header>
-    <div class="wrap narrow body">
-      <div class="prose">
-        <Content />
+
+    <div class="wrap layout">
+      <div class="main">
+        <img
+          class="hero-img"
+          src={`/images/${img}-wide-1600.webp`}
+          srcset={`/images/${img}-wide-800.webp 800w, /images/${img}-wide-1600.webp 1600w`}
+          sizes="(min-width: 46rem) 44rem, 100vw"
+          width="1600"
+          height="1067"
+          alt=""
+          decoding="async"
+          fetchpriority="high"
+        />
       </div>
+    </div>
+
+    <div class="wrap layout body">
       {
-        hasAlternate && (
-          <p class="alt">
-            <a href={localePath(other, path)} hreflang={other} lang={other}>
-              {d.insights.otherLang}
-            </a>
-          </p>
+        sections.length > 1 && (
+          <nav class="toc" aria-labelledby="toc-title">
+            <p id="toc-title">{d.insights.contents}</p>
+            <ol>
+              {sections.map((s) => (
+                <li>
+                  <a href={`#${s.id}`}>{s.text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
         )
       }
+      <div class="main">
+        {
+          data.takeaways.length > 0 && (
+            <section class="takeaways" aria-labelledby="takeaways-title">
+              <h2 id="takeaways-title">{d.insights.keyTakeaways}</h2>
+              <ul>
+                {data.takeaways.map((x) => (
+                  <li>{x}</li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        {
+          data.video && (
+            <figure class="video-card navy">
+              <video controls preload="none" playsinline poster={data.video.poster} width="720" height="1280">
+                <source src={data.video.src} type="video/mp4" />
+              </video>
+              <figcaption>
+                <strong>{d.insights.watch}</strong>
+                <span>{d.insights.watchText}</span>
+                <span class="len">{data.video.length}</span>
+              </figcaption>
+            </figure>
+          )
+        }
+
+        <div class="prose">
+          {
+            html ? (
+              <>
+                <Fragment set:html={before} />
+                {data.figure && <ArticleFigure kind={data.figure} lang={lang} />}
+                <Fragment set:html={after} />
+              </>
+            ) : (
+              <Content />
+            )
+          }
+        </div>
+
+        {
+          hasAlternate && (
+            <p class="alt">
+              <a href={localePath(other, path)} hreflang={other} lang={other}>
+                {d.insights.otherLang}
+              </a>
+            </p>
+          )
+        }
+      </div>
     </div>
   </article>
+
+  {
+    related.length > 0 && (
+      <section class="section tint related">
+        <div class="wrap">
+          <h2>{d.insights.related}</h2>
+          <div class="related-grid">
+            {related.map((a) => (
+              <ArticleCard article={a} lang={lang} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
   <CtaBand lang={lang} />
 </Base>
 
 <style>
-  .narrow {
-    max-width: 42rem;
+  /* One reading column; on wide screens a contents list sits to its left. */
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 44rem);
+    justify-content: center;
   }
+  @media (min-width: 72rem) {
+    .layout {
+      grid-template-columns: 13rem minmax(0, 44rem);
+      column-gap: 4.5rem;
+    }
+    .main {
+      grid-column: 2;
+    }
+    .toc {
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+
   .article-head {
-    padding-block: clamp(3rem, 2rem + 4vw, 5rem) 2.5rem;
-    border-bottom: 1px solid var(--rule);
+    padding-block: clamp(2.5rem, 2rem + 3vw, 4.25rem) 2rem;
   }
   .back {
     font-size: 0.925rem;
   }
   .article-head h1 {
     font-size: clamp(2.1rem, 1.5rem + 2.6vw, 3.3rem);
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
   }
   .standfirst {
     font-family: var(--serif);
     font-size: var(--step-1);
     line-height: 1.5;
-    color: var(--ink-soft);
+    color: var(--ink-2);
     margin: 1.25rem 0 1.5rem;
   }
   .meta {
@@ -82,11 +215,148 @@ const path = `/insights/${article.slug}`;
     flex-wrap: wrap;
     gap: 0.25rem 1.5rem;
     font-size: 0.9rem;
-    color: var(--slate);
+    color: var(--muted);
     margin: 0;
   }
+  .hero-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius);
+    background: var(--mist);
+  }
+
   .body {
-    padding-block: 3rem var(--space);
+    padding-block: 2.5rem var(--space);
+    align-items: start;
+  }
+  .toc {
+    display: none;
+  }
+  @media (min-width: 72rem) {
+    .toc {
+      display: block;
+      position: sticky;
+      top: 6.5rem;
+      padding-top: 0.25rem;
+      border-top: 2px solid var(--ink);
+    }
+  }
+  .toc p {
+    margin: 0.85rem 0 0.75rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+  .toc li {
+    counter-increment: toc;
+    border-top: 1px solid var(--line);
+  }
+  .toc a {
+    display: grid;
+    grid-template-columns: 1.4rem 1fr;
+    padding: 0.6rem 0;
+    color: var(--ink-2);
+    font-size: 0.9rem;
+    line-height: 1.35;
+    text-decoration: none;
+  }
+  .toc a::before {
+    content: counter(toc);
+    color: var(--gold-ink);
+    font-weight: 600;
+  }
+  .toc a:hover,
+  .toc a[aria-current='true'] {
+    color: var(--signal-ink);
+  }
+
+  .takeaways {
+    margin-bottom: 2.25rem;
+    padding: 1.4rem 1.6rem 1.5rem;
+    background: var(--mist);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .takeaways h2 {
+    font: 600 1.05rem / 1.3 var(--sans);
+    letter-spacing: 0;
+    margin-bottom: 0.75rem;
+  }
+  .takeaways ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .takeaways li {
+    position: relative;
+    padding-left: 1.3rem;
+    line-height: 1.55;
+  }
+  .takeaways li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 0.45rem;
+    height: 0.45rem;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  .video-card {
+    display: grid;
+    grid-template-columns: 13.5rem 1fr;
+    gap: 1.5rem 1.75rem;
+    align-items: center;
+    margin: 0 0 2.5rem;
+    padding: 1.1rem;
+    border-radius: var(--radius);
+  }
+  .video-card video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 9 / 16;
+    border-radius: calc(var(--radius) - 4px);
+    background: #0e1729;
+  }
+  .video-card figcaption {
+    display: grid;
+    gap: 0.6rem;
+    padding-right: 0.5rem;
+  }
+  .video-card strong {
+    font: 440 var(--step-2) / 1.15 var(--serif);
+  }
+  .video-card span {
+    color: var(--ink-2);
+  }
+  .video-card .len {
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 34rem) {
+    .video-card {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+    }
+    .video-card video {
+      max-width: 17rem;
+    }
+  }
+
+  .prose {
+    max-width: none;
   }
   .alt {
     margin-top: 3rem;
@@ -94,4 +364,40 @@ const path = `/insights/${article.slug}`;
     border-top: 1px solid var(--rule);
     font-size: 0.95rem;
   }
+
+  .related h2 {
+    margin-bottom: 2rem;
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+  }
+  @media (max-width: 44rem) {
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
+
+<script>
+  // Mark the section being read in the contents list.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
+  if (links.length && 'IntersectionObserver' in window) {
+    const byId = new Map(links.map((a) => [a.hash.slice(1), a]));
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          links.forEach((a) => a.removeAttribute('aria-current'));
+          byId.get(e.target.id)?.setAttribute('aria-current', 'true');
+        }
+      },
+      { rootMargin: '0px 0px -70% 0px' },
+    );
+    byId.forEach((_, id) => {
+      const h = document.getElementById(id);
+      if (h) io.observe(h);
+    });
+  }
+</script>

@@ -1,7 +1,10 @@
 """Render a timeline page to a vertical MP4, optionally fitted to a voiceover.
 
   python3 social/video/render.py stills PAGE OUTDIR t1 t2 ...
-  python3 social/video/render.py video  PAGE OUTFILE [AUDIO_DIR]
+  python3 social/video/render.py video  PAGE OUTFILE [AUDIO_DIR] [--timing TIMING_JSON]
+
+--timing reuses the scene lengths of an earlier render (its timing.json), so a
+re-drawn video keeps the pacing, and the soundtrack, of the version before.
 
 AUDIO_DIR holds p01.mp3, p02.mp3, ... with one paragraph per scene (made by
 the "Make voiceover" workflow). Each scene is then slowed down until its
@@ -79,7 +82,7 @@ def mix_voice(clips, starts, total, outfile):
     subprocess.run(cmd, check=True)
 
 
-def video(page_path, outfile, audio_dir=None):
+def video(page_path, outfile, audio_dir=None, timing=None):
     outfile = Path(outfile)
     work = outfile.with_suffix('')
     os.makedirs(work, exist_ok=True)
@@ -93,6 +96,12 @@ def video(page_path, outfile, audio_dir=None):
                 raise SystemExit(f'{len(clips)} voice paragraphs for {len(scenes)} scenes')
             voice = [audio_length(c) for c in clips]
         steps = plan(scenes, voice)
+        if timing:
+            old = json.loads(Path(timing).read_text())
+            bounds = old['scene_starts'] + [old['total']]
+            if len(bounds) - 1 != len(steps):
+                raise SystemExit(f'{timing} has {len(bounds) - 1} scenes, the page has {len(steps)}')
+            steps = [(a, b, round((bounds[i + 1] - bounds[i]) * FPS)) for i, (a, b, _) in enumerate(steps)]
         parts, starts, t0 = [], [], 0.0
         for i, (a, b, frames) in enumerate(steps):
             final = work / f'scene{i + 1:02d}.mp4'
@@ -136,4 +145,10 @@ if __name__ == '__main__':
     if mode == 'stills':
         stills(sys.argv[2], sys.argv[3], sys.argv[4:])
     else:
-        video(sys.argv[2], sys.argv[3], sys.argv[4] if len(sys.argv) > 4 else None)
+        args = sys.argv[2:]
+        timing = None
+        if '--timing' in args:
+            k = args.index('--timing')
+            timing = args[k + 1]
+            del args[k:k + 2]
+        video(args[0], args[1], args[2] if len(args) > 2 else None, timing)

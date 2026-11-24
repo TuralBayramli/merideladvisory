@@ -2,6 +2,13 @@
 title: 'Təxminsiz sığorta ehtiyatı'
 description: '"İki həftəlik ehtiyat" kimi qaydalar bütün məhsullara eyni yanaşır. Sadə statistik üsul sığorta ehtiyatını tələbin dəyişkənliyinə, çatdırılma müddətinə və istədiyiniz xidmət səviyyəsinə görə hər məhsul üzrə təyin edir.'
 date: 2026-11-23
+image: warehouse
+takeaways:
+  - '"İki həftəlik ehtiyat" kimi qaydalar sabit məhsullarda artıq, qeyri-sabit məhsullarda isə az ehtiyat yaradır.'
+  - 'Sığorta ehtiyatı = z × σ × √L düsturu ehtiyatı tələbin dəyişkənliyinə, çatdırılma müddətinə və istədiyiniz xidmət səviyyəsinə görə təyin edir.'
+  - 'Xidmət səviyyəsini 95%-dən 99%-ə qaldırmaq təxminən 40% daha çox sığorta ehtiyatı tələb edir, ona görə bu, biznes qərarı olmalıdır.'
+figure: safety
+figureBefore: 2
 ---
 
 Planlaşdırıcıdan bir məhsul üçün nə qədər sığorta ehtiyatı lazım olduğunu soruşsanız, çox vaxt təcrübi qayda eşidəcəksiniz: iki həftəlik ehtiyat, idxal mallar üçün isə bir ay. Belə qaydaları izah etmək asandır, amma onlar sabit və sürətli satılan məhsula da, qeyri-sabit məhsula da eyni yanaşır. Nəticədə tələbin sakit olduğu yerdə artıq ehtiyat, qeyri-sabit olduğu yerdə isə çatışmazlıq yaranır.
