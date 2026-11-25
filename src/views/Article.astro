@@ -1,11 +1,15 @@
 ---
+import fs from 'node:fs';
 import { render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import CtaBand from '../components/CtaBand.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import ArticleFigure from '../components/figures/ArticleFigure.astro';
 import { t, localePath, formatDate, type Lang } from '../i18n/ui';
+import { x } from '../i18n/extra';
+import { topic, topicPath } from '../i18n/topics';
 import { getArticles, getSlugs, type Article } from '../i18n/insights';
+import { terms } from '../data/terms';
 
 interface Props {
   lang: Lang;
@@ -13,13 +17,19 @@ interface Props {
 }
 const { lang, article } = Astro.props;
 const d = t(lang);
+const X = x(lang);
+const A = X.article;
 const data = article.data;
 const other: Lang = lang === 'en' ? 'az' : 'en';
 const hasAlternate = (await getSlugs(other)).has(article.slug);
 const path = `/insights/${article.slug}`;
+const site = Astro.site ?? new URL('https://merideladvisory.com');
+const url = new URL(localePath(lang, path), site).href;
+const tp = topic(lang, data.topic);
+const topicHref = localePath(lang, topicPath(data.topic));
 
-// The body as HTML, split before the chosen section heading so the animated
-// figure sits inside the text where it belongs.
+// The body as HTML, split before the chosen section heading so the figure
+// sits inside the text where it belongs.
 const { Content } = await render(article);
 const html = article.rendered?.html ?? '';
 let before = html;
@@ -36,12 +46,60 @@ if (html && data.figure) {
     after = html.slice(at);
   }
 }
-// Table of contents from the section headings.
-const strip = (s: string) => s.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"');
+const strip = (s: string) =>
+  s.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"');
 const sections = [...html.matchAll(/<h2 id="([^"]+)"[^>]*>([\s\S]*?)<\/h2>/g)].map((m) => ({ id: m[1], text: strip(m[2]) }));
+if (data.bottomLine) sections.push({ id: 'bottom-line', text: A.bottomLine });
+if (data.faq.length) sections.push({ id: 'faq', text: A.faq });
 
-const related = (await getArticles(lang)).filter((a) => a.slug !== article.slug).slice(0, 2);
+const related = (await getArticles(lang))
+  .filter((a) => a.slug !== article.slug)
+  .sort((a, b) => Number(b.data.topic === data.topic) - Number(a.data.topic === data.topic))
+  .slice(0, 2);
+const relatedTerms = data.terms.map((id) => terms.find((tm) => tm.id === id)).filter((tm) => tm !== undefined);
+const termsHref = localePath(lang, '/insights/terms');
 const img = data.image;
+const ogFile = `/og/${lang}/${article.slug}.png`;
+const ogImage = fs.existsSync(new URL(`../../public${ogFile}`, import.meta.url)) ? ogFile : '/og.png';
+
+const crumbs = [
+  { name: A.home, href: localePath(lang, '/') },
+  { name: A.insights, href: localePath(lang, '/insights') },
+  { name: tp.name, href: topicHref },
+  { name: data.title, href: localePath(lang, path) },
+];
+const jsonLd: object[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: data.title,
+    description: data.description,
+    image: [new URL(`/images/${img}-wide-1600.webp`, site).href, new URL(ogImage, site).href],
+    datePublished: data.date.toISOString().slice(0, 10),
+    dateModified: data.date.toISOString().slice(0, 10),
+    inLanguage: lang,
+    articleSection: tp.name,
+    author: { '@type': 'Person', name: data.author, url: new URL(localePath(lang, '/about'), site).href },
+    publisher: { '@id': `${site.origin}/#organization` },
+    mainEntityOfPage: url,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.href, site).href })),
+  },
+];
+if (data.faq.length) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: data.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  });
+}
+const share = {
+  linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+  whatsapp: `https://wa.me/?text=${encodeURIComponent(`${data.title} ${url}`)}`,
+};
 ---
 
 <Base
@@ -51,13 +109,22 @@ const img = data.image;
   path={path}
   hasAlternate={hasAlternate}
   type="article"
+  ogImage={ogImage}
+  jsonLd={jsonLd}
 >
-  <article>
+  <div class="progress" aria-hidden="true"><span></span></div>
+
+  <article data-article>
     <header class="article-head">
       <div class="wrap layout">
         <div class="main">
-          <a class="back" href={localePath(lang, '/insights')}>{d.insights.back}</a>
-          <h1>{data.title}</h1>
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <ol>
+              <li><a href={crumbs[1].href}>{crumbs[1].name}</a></li>
+              <li><a href={topicHref}>{tp.name}</a></li>
+            </ol>
+          </nav>
+          <h1 data-pagefind-meta="title">{data.title}</h1>
           <p class="standfirst">{data.description}</p>
           <p class="meta">
             <span>{d.insights.by} {data.author}</span>
@@ -99,14 +166,14 @@ const img = data.image;
           </nav>
         )
       }
-      <div class="main">
+      <div class="main" data-pagefind-body>
         {
           data.takeaways.length > 0 && (
             <section class="takeaways" aria-labelledby="takeaways-title">
               <h2 id="takeaways-title">{d.insights.keyTakeaways}</h2>
               <ul>
-                {data.takeaways.map((x) => (
-                  <li>{x}</li>
+                {data.takeaways.map((s) => (
+                  <li>{s}</li>
                 ))}
               </ul>
             </section>
@@ -115,7 +182,7 @@ const img = data.image;
 
         {
           data.video && (
-            <figure class="video-card navy">
+            <figure class="video-card navy" data-pagefind-ignore>
               <video controls preload="none" playsinline poster={data.video.poster} width="720" height="1280">
                 <source src={data.video.src} type="video/mp4" />
               </video>
@@ -143,14 +210,85 @@ const img = data.image;
         </div>
 
         {
-          hasAlternate && (
-            <p class="alt">
-              <a href={localePath(other, path)} hreflang={other} lang={other}>
-                {d.insights.otherLang}
-              </a>
-            </p>
+          data.bottomLine && (
+            <section class="bottom-line navy" aria-labelledby="bottom-line">
+              <h2 id="bottom-line">{A.bottomLine}</h2>
+              <p>{data.bottomLine}</p>
+            </section>
           )
         }
+
+        {
+          data.faq.length > 0 && (
+            <section class="faq" aria-labelledby="faq">
+              <h2 id="faq">{A.faq}</h2>
+              {data.faq.map((f, i) => (
+                <details open={i === 0}>
+                  <summary>{f.q}</summary>
+                  <p>{f.a}</p>
+                </details>
+              ))}
+            </section>
+          )
+        }
+
+        <div class="after" data-pagefind-ignore>
+          {
+            relatedTerms.length > 0 && (
+              <div class="rel-terms">
+                <h2>{A.relatedTerms}</h2>
+                <ul>
+                  {relatedTerms.map((tm) => (
+                    <li>
+                      <a href={`${termsHref}#${tm!.id}`}>{tm![lang].term}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+          {
+            data.sources.length > 0 && (
+              <div class="sources">
+                <h2>{A.sources}</h2>
+                <ul>
+                  {data.sources.map((s) => (
+                    <li>
+                      <a href={s.url} rel="noopener">
+                        {s.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+          <div class="share">
+            <h2>{A.share}</h2>
+            <ul>
+              <li>
+                <a href={share.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+              </li>
+              <li>
+                <a href={share.whatsapp} target="_blank" rel="noopener">WhatsApp</a>
+              </li>
+              <li>
+                <button type="button" data-copy={url} data-done={A.copied}>
+                  {A.copy}
+                </button>
+              </li>
+            </ul>
+          </div>
+          {
+            hasAlternate && (
+              <p class="alt">
+                <a href={localePath(other, path)} hreflang={other} lang={other}>
+                  {d.insights.otherLang}
+                </a>
+              </p>
+            )
+          }
+        </div>
       </div>
     </div>
   </article>
@@ -193,15 +331,43 @@ const img = data.image;
     }
   }
 
-  .article-head {
-    padding-block: clamp(2.5rem, 2rem + 3vw, 4.25rem) 2rem;
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 25;
+    height: 3px;
+    pointer-events: none;
   }
-  .back {
+  .progress span {
+    display: block;
+    height: 100%;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .article-head {
+    padding-block: clamp(2.25rem, 2rem + 2.5vw, 4rem) 2rem;
+  }
+  .crumbs ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
     font-size: 0.925rem;
+  }
+  .crumbs li + li::before {
+    content: '›';
+    margin: 0 0.45rem 0 0.2rem;
+    color: var(--muted);
   }
   .article-head h1 {
     font-size: clamp(2.1rem, 1.5rem + 2.6vw, 3.3rem);
-    margin-top: 1.25rem;
+    margin-top: 1.1rem;
   }
   .standfirst {
     font-family: var(--serif);
@@ -358,8 +524,114 @@ const img = data.image;
   .prose {
     max-width: none;
   }
-  .alt {
+
+  .bottom-line {
     margin-top: 3rem;
+    padding: 1.6rem 1.75rem 1.7rem;
+    border-radius: var(--radius);
+    scroll-margin-top: 6rem;
+  }
+  .bottom-line h2 {
+    font: 600 1.05rem / 1.3 var(--sans);
+    letter-spacing: 0;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+  .bottom-line p {
+    margin: 0;
+    font: 400 var(--step-1) / 1.5 var(--serif);
+  }
+
+  .faq {
+    margin-top: 3rem;
+    scroll-margin-top: 6rem;
+  }
+  .faq h2 {
+    font-size: var(--step-2);
+    margin-bottom: 1rem;
+  }
+  .faq details {
+    border-top: 1px solid var(--line);
+  }
+  .faq details:last-of-type {
+    border-bottom: 1px solid var(--line);
+  }
+  .faq summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq summary::after {
+    content: '+';
+    flex: none;
+    font: 400 1.4rem / 1 var(--sans);
+    color: var(--gold-ink);
+  }
+  .faq details[open] summary::after {
+    content: '−';
+  }
+  .faq summary:hover {
+    color: var(--signal-ink);
+  }
+  .faq details p {
+    margin: 0 0 1.1rem;
+    color: var(--ink-2);
+    line-height: 1.65;
+  }
+
+  .after {
+    display: grid;
+    gap: 1.75rem;
+    margin-top: 3rem;
+  }
+  .after h2 {
+    font: 600 0.95rem / 1.3 var(--sans);
+    letter-spacing: 0;
+    margin-bottom: 0.7rem;
+  }
+  .after ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .rel-terms a,
+  .share a,
+  .share button {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 2rem;
+    background: var(--paper);
+    color: var(--ink-2);
+    font: 500 0.9rem / 1.3 var(--sans);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .rel-terms a:hover,
+  .share a:hover,
+  .share button:hover {
+    border-color: var(--signal);
+    color: var(--signal-ink);
+  }
+  .sources ul {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .sources a {
+    font-size: 0.925rem;
+  }
+  .alt {
+    margin: 0;
     padding-top: 1.5rem;
     border-top: 1px solid var(--rule);
     font-size: 0.95rem;
@@ -400,4 +672,43 @@ const img = data.image;
       if (h) io.observe(h);
     });
   }
+
+  // Reading progress: a thin gold line at the top of the window.
+  const bar = document.querySelector<HTMLElement>('.progress span');
+  const body = document.querySelector<HTMLElement>('[data-article]');
+  if (bar && body) {
+    let ticking = false;
+    const update = () => {
+      const r = body.getBoundingClientRect();
+      const total = r.height - window.innerHeight;
+      const done = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 1;
+      bar.style.transform = `scaleX(${done.toFixed(4)})`;
+      ticking = false;
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
+  }
+
+  // Copy the article link.
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) =>
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset.copy!);
+        const label = b.textContent;
+        b.textContent = b.dataset.done!;
+        setTimeout(() => (b.textContent = label), 2000);
+      } catch {
+        window.prompt('', b.dataset.copy!);
+      }
+    }),
+  );
 </script>

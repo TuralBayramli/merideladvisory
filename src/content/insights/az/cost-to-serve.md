@@ -13,6 +13,19 @@ video:
   src: /videos/xidmet-xerci-720.mp4
   poster: /videos/xidmet-xerci-poster.webp
   length: '1:27'
+topic: "strategy"
+terms:
+  - "cost-to-serve"
+  - "ftl-ltl"
+  - "kpi"
+bottomLine: "Ümumi marja müştərinin nə aldığını, xidmət xərci isə onun nəyə başa gəldiyini göstərir. Artıq əlinizdə olan məlumatlarla bu ikisini birləşdirin və hansı müştəriləri böyütməli, hansıların qiymətinə yenidən baxmalı və hansılarına fərqli xidmət göstərməli olduğunuzu biləcəksiniz."
+faq:
+  - q: "Ümumi marja ilə xidmət xərci arasında fərq nədir?"
+    a: "Ümumi marja gəlirdən satılmış malların maya dəyəri çıxıldıqdan sonra qalan məbləğdir. Xidmət xərci bu xəttdən aşağıda qalan və müştərinin necə alış etməsindən asılı olan xərcləri əlavə edir: sifarişlərin emalı, anbar, daşıma, qaytarmalar və ödəniş şərtlərinin xərci. Hər ikisi çıxıldıqda müştərinin real töhfəsi alınır."
+  - q: "Xidmət xərci təhlili nə qədər vaxt aparır?"
+    a: "Sifariş, daşıma və anbar məlumatları əlçatandırsa, ilk model adətən bir neçə həftəyə hazır olur. Vaxtın çox hissəsi hesablamaya deyil, məlumatların toplanmasına və təmizlənməsinə gedir."
+  - q: "Xüsusi proqram təminatı lazımdırmı?"
+    a: "Xeyr. İlk model ERP sifariş sətirləri, daşıma hesab-fakturaları və anbar fəaliyyəti əsasında Excel və ya Power BI-da qurula bilər. Model hər ay yenilənəndə xüsusi alətlər faydalı olur."
 ---
 
 Əksər şirkətlər ümumi marjasını məhsul üzrə bilir. Lakin logistika xərclərindən sonra müştəri üzrə marjanı bilənlər daha azdır. Bu fərq vacibdir, çünki eyni məhsulu eyni qiymətə alan iki müştəriyə xidmət göstərmək tamam fərqli məbləğə başa gələ bilər.

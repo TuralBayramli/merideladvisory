@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { t, localePath, type Lang } from '../i18n/ui';
+import { x } from '../i18n/extra';
+import { TOPICS, topic, topicPath, type TopicId } from '../i18n/topics';
+import { getArticles } from '../i18n/insights';
+
+interface Props {
+  lang: Lang;
+  topic: TopicId;
+}
+const { lang, topic: id } = Astro.props;
+const d = t(lang);
+const X = x(lang);
+const tp = topic(lang, id);
+const all = await getArticles(lang);
+const items = all.filter((a) => a.data.topic === id);
+const others = TOPICS.filter((o) => o !== id && all.some((a) => a.data.topic === o));
+const site = Astro.site ?? new URL('https://merideladvisory.com');
+const crumbs = [
+  { name: X.article.home, href: localePath(lang, '/') },
+  { name: X.article.insights, href: localePath(lang, '/insights') },
+  { name: tp.name, href: localePath(lang, topicPath(id)) },
+];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.href, site).href })),
+  },
+];
+---
+
+<Base
+  lang={lang}
+  title={`${tp.name} | Meridel Advisory`}
+  description={tp.text}
+  path={topicPath(id)}
+  jsonLd={jsonLd}
+>
+  <header class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href={crumbs[1].href}>{crumbs[1].name}</a>
+      </nav>
+      <h1>{tp.name}</h1>
+      <p>{tp.text}</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="grid">
+        {items.map((a) => <ArticleCard article={a} lang={lang} level={2} />)}
+      </div>
+      <div class="others">
+        <h2>{X.topicPage.other}</h2>
+        <ul>
+          {
+            others.map((o) => (
+              <li>
+                <a href={localePath(lang, topicPath(o))}>{topic(lang, o).name}</a>
+              </li>
+            ))
+          }
+          <li><a href={localePath(lang, '/insights/terms')}>{X.hub.termsTitle}</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .crumbs {
+    margin-bottom: 1rem;
+    font-size: 0.925rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem 2rem;
+  }
+  .others {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+  .others h2 {
+    font: 600 1rem / 1.3 var(--sans);
+    letter-spacing: 0;
+    margin-bottom: 1rem;
+  }
+  .others ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .others a {
+    display: block;
+    padding: 0.45rem 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 2rem;
+    color: var(--ink-2);
+    text-decoration: none;
+    font-size: 0.925rem;
+  }
+  .others a:hover {
+    border-color: var(--signal);
+    color: var(--signal-ink);
+  }
+  @media (max-width: 60rem) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 44rem) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

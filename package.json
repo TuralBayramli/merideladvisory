@@ -4,7 +4,7 @@
   "description": "Meridel Advisory website",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pagefind --site dist",
     "preview": "astro preview"
   },
   "dependencies": {
@@ -16,7 +16,9 @@
   "private": true,
   "type": "module",
   "devDependencies": {
+    "@astrojs/rss": "^4.0.19",
     "d3-geo": "^3.1.2",
+    "pagefind": "^1.6.0",
     "topojson-client": "^3.1.0",
     "topojson-simplify": "^3.0.3",
     "world-atlas": "^2.0.2"

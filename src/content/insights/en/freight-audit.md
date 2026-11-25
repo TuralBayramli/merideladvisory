@@ -9,6 +9,19 @@ takeaways:
   - 'The bigger prize is a clean, lane-by-lane cost history for your next freight tender.'
 figure: audit
 figureBefore: 3
+topic: "logistics"
+terms:
+  - "freight-audit"
+  - "ftl-ltl"
+  - "kpi"
+bottomLine: "A freight audit pays for itself twice: once through recovered overcharges and again through the clean cost data it leaves behind for your next tender. Start with one carrier and three months of invoices."
+faq:
+  - q: "How much can a freight audit recover?"
+    a: "It depends on how complex the rate cards are and how invoices are checked today, so results vary widely. That is why an audit works best when it runs on every invoice batch, automatically, rather than once."
+  - q: "Should we check invoices before or after paying them?"
+    a: "Before, where possible. Checking each batch before payment avoids having to claim money back, and carriers correct their billing faster when errors are flagged straight away."
+  - q: "What data do we need?"
+    a: "Invoice lines with date, origin, destination, weight, service and charges, plus the contract: rate cards, fuel surcharge rules and agreed extra charges. Most carriers can send invoices as electronic files."
 ---
 
 Freight is one of the largest costs in most distribution businesses, yet invoices are often approved with a quick glance at the total. Carriers are not usually dishonest. But rate cards are complex, fuel surcharges change every month, and accessorial charges for waiting time, tail lifts or failed deliveries are easy to apply by mistake. Small errors on thousands of shipments add up.

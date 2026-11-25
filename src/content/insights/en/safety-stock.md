@@ -9,6 +9,20 @@ takeaways:
   - 'Moving from 95% to 99% service needs about 40% more safety stock, so make it a business decision.'
 figure: safety
 figureBefore: 2
+topic: "inventory"
+terms:
+  - "safety-stock"
+  - "reorder-point"
+  - "cycle-service-level"
+  - "lead-time"
+bottomLine: "Set safety stock item by item from demand variability, lead time and an agreed service level, not from a rule of thumb. Then test the policy against last year’s demand before you trust it."
+faq:
+  - q: "What is the difference between safety stock and the reorder point?"
+    a: "Safety stock is the buffer for uncertainty. The reorder point is the stock level that triggers a new order: expected demand during the lead time plus the safety stock."
+  - q: "What service level should we choose?"
+    a: "It is a business decision. Many companies use 95% for most items and higher levels only for critical or high-margin ones, because each extra point of service costs more stock than the one before."
+  - q: "How often should safety stock be recalculated?"
+    a: "At least every quarter, and whenever demand patterns or suppliers change noticeably. Many planning systems can recalculate it automatically from recent data."
 ---
 
 Ask a planner how much safety stock an item needs and you will often hear a rule of thumb: two weeks of cover, or one month for imported goods. Rules like these are easy to explain, but they treat a steady, fast-moving item the same as an erratic one. The result is too much stock where demand is calm and stock-outs where it is not.

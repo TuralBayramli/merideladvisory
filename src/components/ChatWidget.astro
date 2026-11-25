@@ -1,0 +1,543 @@
+---
+// The "Ask our AI" chat. It talks to the Cloudflare Worker in chat/, whose
+// address the deploy workflow passes in as PUBLIC_CHAT_URL. Without that
+// address (for example before Cloudflare is set up) nothing is shown.
+import { localePath, type Lang } from '../i18n/ui';
+import { x } from '../i18n/extra';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const C = x(lang).chat;
+const endpoint = (import.meta.env.PUBLIC_CHAT_URL ?? '').trim();
+const contact = localePath(lang, '/contact');
+---
+
+{
+  endpoint && (
+    <div
+      class="chat"
+      data-chat
+      data-endpoint={endpoint}
+      data-lang={lang}
+      data-err-rate={C.errRate}
+      data-err-quota={C.errQuota}
+      data-err-generic={C.errGeneric}
+    >
+      <button class="chat-launch" type="button" aria-expanded="false" aria-controls="chat-panel" data-chat-open>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4.5 5.5h15a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-4.5 3.5V16.5h-1a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z" />
+          <path class="spark" d="M12 8.2v4.6M9.7 10.5h4.6" />
+        </svg>
+        <span>{C.open}</span>
+      </button>
+
+      <section class="chat-panel" id="chat-panel" role="dialog" aria-labelledby="chat-title" hidden>
+        <header class="chat-head navy">
+          <div>
+            <h2 id="chat-title">{C.title}</h2>
+            <p>{C.subtitle}</p>
+          </div>
+          <button class="chat-icon" type="button" data-chat-reset title={C.reset} aria-label={C.reset}>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4.6 11.2a5.6 5.6 0 1 0 1.3-4.9M5.4 2.8l.5 3.6-3.5.6" />
+            </svg>
+          </button>
+          <button class="chat-icon" type="button" data-chat-close title={C.close} aria-label={C.close}>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M5 5l10 10M15 5L5 15" />
+            </svg>
+          </button>
+        </header>
+
+        <ol class="chat-log" aria-live="polite" data-chat-log>
+          <li class="msg bot">
+            <p>{C.greeting}</p>
+          </li>
+        </ol>
+
+        <div class="chat-suggest" data-chat-suggest>
+          {C.suggestions.map((s) => (
+            <button type="button" data-q={s}>
+              {s}
+            </button>
+          ))}
+        </div>
+
+        <form class="chat-form" data-chat-form>
+          <label class="visually-hidden" for="chat-input">
+            {C.placeholder}
+          </label>
+          <textarea id="chat-input" rows="1" maxlength="1000" placeholder={C.placeholder} data-chat-input />
+          <button class="chat-send" type="submit" aria-label={C.send} title={C.send}>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M3.5 10h12M11 5.5l4.5 4.5-4.5 4.5" />
+            </svg>
+          </button>
+        </form>
+        <p class="chat-note">
+          {C.note} <a href={contact}>{C.noteLink}</a>.
+        </p>
+        <template data-chat-typing>
+          <li class="msg bot typing" aria-label={C.thinking}>
+            <span />
+            <span />
+            <span />
+          </li>
+        </template>
+      </section>
+    </div>
+  )
+}
+
+<script>
+  type Msg = { role: 'user' | 'assistant'; content: string };
+  const root = document.querySelector<HTMLElement>('[data-chat]');
+  if (root) {
+    const endpoint = root.dataset.endpoint!;
+    const lang = root.dataset.lang!;
+    const panel = root.querySelector<HTMLElement>('.chat-panel')!;
+    const launch = root.querySelector<HTMLButtonElement>('[data-chat-open]')!;
+    const log = root.querySelector<HTMLOListElement>('[data-chat-log]')!;
+    const form = root.querySelector<HTMLFormElement>('[data-chat-form]')!;
+    const input = root.querySelector<HTMLTextAreaElement>('[data-chat-input]')!;
+    const suggest = root.querySelector<HTMLElement>('[data-chat-suggest]')!;
+    const typingTpl = root.querySelector<HTMLTemplateElement>('[data-chat-typing]')!;
+    const KEY = `meridel-chat-${lang}`;
+    let history: Msg[] = [];
+    let busy = false;
+
+    const save = () => {
+      try {
+        sessionStorage.setItem(KEY, JSON.stringify(history.slice(-20)));
+      } catch {
+        /* storage can be blocked; the chat still works */
+      }
+    };
+    const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+    // A small, safe subset of Markdown: paragraphs, lists, bold, code and web links.
+    const inline = (s: string) =>
+      esc(s)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    const render = (text: string) => {
+      const out: string[] = [];
+      let list: string[] = [];
+      let ordered = false;
+      const flush = () => {
+        if (list.length) out.push(`<${ordered ? 'ol' : 'ul'}>${list.join('')}</${ordered ? 'ol' : 'ul'}>`);
+        list = [];
+      };
+      for (const raw of text.split('\n')) {
+        const line = raw.trim();
+        const bullet = line.match(/^[-*•]\s+(.*)$/);
+        const num = line.match(/^\d+[.)]\s+(.*)$/);
+        if (bullet || num) {
+          const isNum = Boolean(num);
+          if (list.length && isNum !== ordered) flush();
+          ordered = isNum;
+          list.push(`<li>${inline((bullet ?? num)![1])}</li>`);
+          continue;
+        }
+        flush();
+        if (!line) continue;
+        out.push(`<p>${inline(line.replace(/^#{1,6}\s+/, ''))}</p>`);
+      }
+      flush();
+      return out.join('');
+    };
+    const add = (m: Msg) => {
+      const li = document.createElement('li');
+      li.className = `msg ${m.role === 'user' ? 'me' : 'bot'}`;
+      li.innerHTML = m.role === 'user' ? `<p>${esc(m.content)}</p>` : render(m.content);
+      log.append(li);
+      log.scrollTop = log.scrollHeight;
+    };
+    const note = (text: string) => {
+      const li = document.createElement('li');
+      li.className = 'msg bot error';
+      li.innerHTML = `<p>${esc(text)}</p>`;
+      log.append(li);
+      log.scrollTop = log.scrollHeight;
+    };
+
+    try {
+      history = JSON.parse(sessionStorage.getItem(KEY) ?? '[]');
+    } catch {
+      history = [];
+    }
+    history.forEach(add);
+    if (history.length) suggest.hidden = true;
+
+    const setOpen = (open: boolean) => {
+      panel.hidden = !open;
+      launch.setAttribute('aria-expanded', String(open));
+      root.classList.toggle('is-open', open);
+      if (open) {
+        input.focus();
+        log.scrollTop = log.scrollHeight;
+      } else {
+        launch.focus();
+      }
+    };
+    launch.addEventListener('click', () => setOpen(panel.hidden));
+    root.querySelector('[data-chat-close]')!.addEventListener('click', () => setOpen(false));
+    root.querySelector('[data-chat-reset]')!.addEventListener('click', () => {
+      history = [];
+      save();
+      log.querySelectorAll('.msg:not(:first-child)').forEach((el) => el.remove());
+      suggest.hidden = false;
+      input.focus();
+    });
+    panel.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+
+    const ask = async (q: string) => {
+      const text = q.trim().slice(0, 1000);
+      if (!text || busy) return;
+      busy = true;
+      suggest.hidden = true;
+      const mine: Msg = { role: 'user', content: text };
+      history.push(mine);
+      add(mine);
+      save();
+      input.value = '';
+      input.style.height = '';
+      const typing = typingTpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+      log.append(typing);
+      log.scrollTop = log.scrollHeight;
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lang, messages: history.slice(-10) }),
+        });
+        const data = await res.json().catch(() => ({}));
+        typing.remove();
+        if (res.ok && typeof data.reply === 'string') {
+          const reply: Msg = { role: 'assistant', content: data.reply };
+          history.push(reply);
+          add(reply);
+          save();
+        } else {
+          // Take the question back out, so it can be asked again.
+          history.pop();
+          save();
+          note(res.status === 429 ? root.dataset.errRate! : data.error === 'quota' ? root.dataset.errQuota! : root.dataset.errGeneric!);
+        }
+      } catch {
+        typing.remove();
+        history.pop();
+        save();
+        note(root.dataset.errGeneric!);
+      } finally {
+        busy = false;
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void ask(input.value);
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        void ask(input.value);
+      }
+    });
+    input.addEventListener('input', () => {
+      input.style.height = '';
+      input.style.height = `${Math.min(input.scrollHeight, 128)}px`;
+    });
+    suggest.querySelectorAll<HTMLButtonElement>('button[data-q]').forEach((b) => b.addEventListener('click', () => void ask(b.dataset.q!)));
+  }
+</script>
+
+<style>
+  .chat {
+    position: fixed;
+    right: clamp(1rem, 0.5rem + 1.5vw, 1.75rem);
+    bottom: clamp(1rem, 0.5rem + 1.5vw, 1.75rem);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+  }
+  .chat-launch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 3.1rem;
+    padding: 0 1.15rem 0 0.95rem;
+    border: 1px solid rgba(194, 165, 116, 0.55);
+    border-radius: 2rem;
+    background: var(--navy);
+    color: #ffffff;
+    font: 500 0.95rem / 1 var(--sans);
+    box-shadow: 0 14px 34px -14px rgba(10, 18, 32, 0.6);
+    cursor: pointer;
+  }
+  .chat-launch:hover {
+    background: var(--navy-2);
+  }
+  .chat-launch svg {
+    width: 1.45rem;
+    height: 1.45rem;
+    fill: none;
+    stroke: var(--gold-light);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .chat.is-open .chat-launch {
+    display: none;
+  }
+  @media (max-width: 34rem) {
+    .chat-launch span {
+      display: none;
+    }
+    .chat-launch {
+      width: 3.25rem;
+      height: 3.25rem;
+      padding: 0;
+      justify-content: center;
+    }
+  }
+
+  .chat-panel {
+    display: flex;
+    flex-direction: column;
+    width: min(24rem, calc(100vw - 2rem));
+    height: min(37rem, calc(100dvh - 6rem));
+    border-radius: 18px;
+    background: var(--paper);
+    box-shadow: 0 30px 80px -28px rgba(10, 18, 32, 0.55);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    animation: chat-in 200ms ease-out;
+  }
+  .chat-panel[hidden] {
+    display: none;
+  }
+  @keyframes chat-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  .chat-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 1rem 0.75rem 0.95rem 1.1rem;
+  }
+  .chat-head div {
+    flex: 1;
+  }
+  .chat-head h2 {
+    font: 460 1.25rem / 1.2 var(--serif);
+  }
+  .chat-head p {
+    margin: 0.2rem 0 0;
+    font-size: 0.825rem;
+    color: var(--ink-2);
+  }
+  .chat-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: #ffffff;
+    cursor: pointer;
+  }
+  .chat-icon:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+  .chat-icon svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .chat-log {
+    flex: 1;
+    list-style: none;
+    margin: 0;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--mist);
+  }
+  .chat-log :global(.msg) {
+    max-width: 88%;
+    padding: 0.65rem 0.85rem;
+    border-radius: 14px;
+    font-size: 0.925rem;
+    line-height: 1.5;
+  }
+  .chat-log :global(.msg p) {
+    margin: 0 0 0.5em;
+  }
+  .chat-log :global(.msg p:last-child),
+  .chat-log :global(.msg ul:last-child),
+  .chat-log :global(.msg ol:last-child) {
+    margin-bottom: 0;
+  }
+  .chat-log :global(.msg ul),
+  .chat-log :global(.msg ol) {
+    margin: 0 0 0.5em;
+    padding-left: 1.1rem;
+  }
+  .chat-log :global(.msg code) {
+    font: 500 0.85em var(--sans);
+    background: var(--signal-soft);
+    padding: 0 0.25em;
+    border-radius: 3px;
+  }
+  .chat-log :global(.msg.bot) {
+    align-self: flex-start;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-bottom-left-radius: 4px;
+  }
+  .chat-log :global(.msg.me) {
+    align-self: flex-end;
+    background: var(--signal);
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+  }
+  .chat-log :global(.msg.error) {
+    border-color: rgba(200, 69, 60, 0.35);
+    color: var(--ink-2);
+  }
+  .typing {
+    display: inline-flex;
+    gap: 0.3rem;
+    padding-block: 0.85rem;
+  }
+  .typing span {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: dot 1s ease-in-out infinite;
+  }
+  .typing span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .typing span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  @keyframes dot {
+    0%,
+    80%,
+    100% {
+      opacity: 0.3;
+      transform: translateY(0);
+    }
+    40% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
+  .chat-suggest {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem 0;
+    background: var(--mist);
+  }
+  .chat-suggest[hidden] {
+    display: none;
+  }
+  .chat-suggest button {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--signal-mid);
+    border-radius: 2rem;
+    background: var(--paper);
+    color: var(--signal-ink);
+    font: 500 0.825rem / 1.3 var(--sans);
+    text-align: left;
+    cursor: pointer;
+  }
+  .chat-suggest button:hover {
+    background: var(--signal-soft);
+  }
+  .chat-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+  }
+  .chat-form textarea {
+    flex: 1;
+    min-height: 2.6rem;
+    max-height: 8rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    resize: none;
+    font: 400 0.95rem / 1.4 var(--sans);
+    color: var(--ink);
+  }
+  .chat-form textarea:focus {
+    outline: 2px solid var(--signal);
+    outline-offset: 0;
+    border-color: transparent;
+  }
+  .chat-send {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--signal);
+    color: #ffffff;
+    cursor: pointer;
+  }
+  .chat-send:hover {
+    background: var(--signal-ink);
+  }
+  .chat-send svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .chat-note {
+    margin: 0;
+    padding: 0 0.9rem 0.75rem;
+    background: var(--paper);
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  @media (max-width: 34rem) {
+    .chat-panel {
+      width: calc(100vw - 1.5rem);
+      height: calc(100dvh - 5.5rem);
+    }
+    .chat {
+      right: 0.75rem;
+      bottom: 0.75rem;
+    }
+  }
+</style>

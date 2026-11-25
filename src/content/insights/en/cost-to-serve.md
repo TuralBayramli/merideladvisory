@@ -9,6 +9,19 @@ takeaways:
   - 'The fix is rarely dropping customers: minimum orders, fuller deliveries, service tiers and payment terms usually close the gap.'
 figure: cts
 figureBefore: 1
+topic: "strategy"
+terms:
+  - "cost-to-serve"
+  - "ftl-ltl"
+  - "kpi"
+bottomLine: "Gross margin shows what a customer buys; cost to serve shows what they cost. Put the two together, using data you already have, and you will know which customers to grow, which to reprice and which to serve differently."
+faq:
+  - q: "What is the difference between gross margin and cost to serve?"
+    a: "Gross margin is revenue minus the cost of the goods sold. Cost to serve adds the costs below that line that depend on how a customer buys: order handling, warehousing, transport, returns and the cost of payment terms. Subtracting both gives the customer’s real contribution."
+  - q: "How long does a cost-to-serve analysis take?"
+    a: "A first model usually takes a few weeks if order, freight and warehouse data are available. Most of the time goes into collecting and cleaning the data, not into the calculation."
+  - q: "Do we need special software?"
+    a: "No. A first model can be built in Excel or Power BI from ERP order lines, freight invoices and warehouse activity. Specialist tools help later, when the model is refreshed every month."
 ---
 
 Most companies know their gross margin by product. Far fewer know their margin by customer after logistics. That gap matters, because two customers buying the same product at the same price can cost very different amounts to serve.

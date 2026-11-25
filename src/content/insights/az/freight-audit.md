@@ -9,6 +9,19 @@ takeaways:
   - 'Daha böyük qazanc növbəti daşıma tenderi üçün marşrutlar üzrə təmiz xərc tarixçəsidir.'
 figure: audit
 figureBefore: 3
+topic: "logistics"
+terms:
+  - "freight-audit"
+  - "ftl-ltl"
+  - "kpi"
+bottomLine: "Daşıma auditi özünü iki dəfə ödəyir: əvvəlcə geri qaytarılan artıq ödənişlərlə, sonra isə növbəti tender üçün qoyub getdiyi təmiz xərc məlumatları ilə. Bir daşıyıcı və üç aylıq hesab-fakturalarla başlayın."
+faq:
+  - q: "Daşıma auditi nə qədər vəsait qaytara bilər?"
+    a: "Bu, tarif cədvəllərinin mürəkkəbliyindən və hesab-fakturaların bu gün necə yoxlanılmasından asılıdır, ona görə nəticələr çox fərqli olur. Məhz buna görə audit bir dəfə deyil, hər hesab-faktura partiyasında avtomatik aparılanda ən yaxşı işləyir."
+  - q: "Hesab-fakturaları ödəmədən əvvəl, yoxsa sonra yoxlamalı?"
+    a: "Mümkünsə, əvvəl. Hər partiyanı ödənişdən əvvəl yoxlamaq pulu geri tələb etmək ehtiyacını aradan qaldırır, daşıyıcılar da səhvlər dərhal bildirildikdə hesablamalarını daha tez düzəldir."
+  - q: "Hansı məlumatlar lazımdır?"
+    a: "Tarix, göndərmə və təyinat yeri, çəki, xidmət növü və ödənişlər olan hesab-faktura sətirləri, üstəgəl müqavilə: tarif cədvəlləri, yanacaq əlavəsi qaydaları və razılaşdırılmış əlavə ödənişlər. Əksər daşıyıcılar hesab-fakturaları elektron fayl kimi göndərə bilir."
 ---
 
 Daşıma əksər distribusiya bizneslərində ən böyük xərclərdən biridir, amma hesab-fakturalar çox vaxt yalnız ümumi məbləğə ötəri baxılaraq təsdiqlənir. Daşıyıcılar adətən vicdansız deyil. Lakin tarif cədvəlləri mürəkkəbdir, yanacaq əlavəsi hər ay dəyişir, gözləmə vaxtı, hidravlik lift və ya uğursuz çatdırılma üçün əlavə ödənişləri səhvən tətbiq etmək asandır. Minlərlə daşınmada kiçik səhvlər böyük məbləğə çevrilir.

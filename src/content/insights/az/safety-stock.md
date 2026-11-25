@@ -9,6 +9,20 @@ takeaways:
   - 'Xidmət səviyyəsini 95%-dən 99%-ə qaldırmaq təxminən 40% daha çox sığorta ehtiyatı tələb edir, ona görə bu, biznes qərarı olmalıdır.'
 figure: safety
 figureBefore: 2
+topic: "inventory"
+terms:
+  - "safety-stock"
+  - "reorder-point"
+  - "cycle-service-level"
+  - "lead-time"
+bottomLine: "Sığorta ehtiyatını təcrübi qaydaya görə deyil, hər məhsul üzrə tələbin dəyişkənliyi, çatdırılma müddəti və razılaşdırılmış xidmət səviyyəsi əsasında təyin edin. Sonra siyasəti keçən ilin tələbi ilə yoxlayın."
+faq:
+  - q: "Sığorta ehtiyatı ilə sifariş nöqtəsi arasında fərq nədir?"
+    a: "Sığorta ehtiyatı qeyri-müəyyənlik üçün buferdir. Sifariş nöqtəsi isə yeni sifarişi başladan ehtiyat səviyyəsidir: çatdırılma müddətində gözlənilən tələb üstəgəl sığorta ehtiyatı."
+  - q: "Hansı xidmət səviyyəsini seçməliyik?"
+    a: "Bu, biznes qərarıdır. Bir çox şirkət əksər məhsullar üçün 95%, yalnız kritik və ya yüksək marjalı məhsullar üçün daha yüksək səviyyə tətbiq edir, çünki xidmətin hər əlavə faizi əvvəlkindən daha çox ehtiyat tələb edir."
+  - q: "Sığorta ehtiyatı nə qədər tez-tez yenidən hesablanmalıdır?"
+    a: "Ən azı rübdə bir dəfə və tələb və ya təchizatçılar nəzərəçarpacaq dərəcədə dəyişəndə. Bir çox planlaşdırma sistemi bunu son məlumatlarla avtomatik hesablaya bilir."
 ---
 
 Planlaşdırıcıdan bir məhsul üçün nə qədər sığorta ehtiyatı lazım olduğunu soruşsanız, çox vaxt təcrübi qayda eşidəcəksiniz: iki həftəlik ehtiyat, idxal mallar üçün isə bir ay. Belə qaydaları izah etmək asandır, amma onlar sabit və sürətli satılan məhsula da, qeyri-sabit məhsula da eyni yanaşır. Nəticədə tələbin sakit olduğu yerdə artıq ehtiyat, qeyri-sabit olduğu yerdə isə çatışmazlıq yaranır.

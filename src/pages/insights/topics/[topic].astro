@@ -1,0 +1,11 @@
+---
+import View from '../../../views/TopicPage.astro';
+import { TOPICS, type TopicId } from '../../../i18n/topics';
+
+export function getStaticPaths() {
+  return TOPICS.map((topic) => ({ params: { topic } }));
+}
+const { topic } = Astro.params as { topic: TopicId };
+---
+
+<View lang="en" topic={topic} />

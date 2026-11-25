@@ -61,6 +61,7 @@
 }
 
 html {
+  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-padding-top: 5.5rem;
@@ -376,6 +377,24 @@ a:hover {
   background: var(--signal-soft);
   padding: 0.1em 0.35em;
   border-radius: 3px;
+}
+
+/* A formula in an article: <p class="formula">…</p> in the Markdown */
+.prose .formula {
+  margin: 1.5rem 0;
+  padding: 1.1rem 1.3rem;
+  border-left: 3px solid var(--signal);
+  border-radius: 0 10px 10px 0;
+  background: var(--signal-soft);
+  font: 400 var(--step-1) / 1.45 var(--serif);
+  color: var(--ink);
+}
+
+.prose .formula small {
+  display: block;
+  margin-top: 0.35rem;
+  font: 400 0.875rem / 1.45 var(--sans);
+  color: var(--ink-2);
 }
 
 .prose blockquote {

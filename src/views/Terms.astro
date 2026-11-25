@@ -1,0 +1,212 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { localePath, type Lang } from '../i18n/ui';
+import { x } from '../i18n/extra';
+import { getSlugs } from '../i18n/insights';
+import { terms } from '../data/terms';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const X = x(lang);
+const T = X.terms;
+const published = await getSlugs(lang);
+const site = Astro.site ?? new URL('https://merideladvisory.com');
+const pageUrl = new URL(localePath(lang, '/insights/terms'), site).href;
+
+// Group by first letter, in the alphabetical order of the language.
+const sorted = [...terms].sort((a, b) => a[lang].term.localeCompare(b[lang].term, lang));
+const letterOf = (s: string) => {
+  const c = s.charAt(0).toLocaleUpperCase(lang);
+  return /\p{L}/u.test(c) ? c : '#';
+};
+const groups: { letter: string; items: typeof terms }[] = [];
+for (const tm of sorted) {
+  const l = letterOf(tm[lang].term);
+  const g = groups.find((x) => x.letter === l);
+  if (g) g.items.push(tm);
+  else groups.push({ letter: l, items: [tm] });
+}
+groups.sort((a, b) => (a.letter === '#' ? -1 : b.letter === '#' ? 1 : a.letter.localeCompare(b.letter, lang)));
+const anchor = (l: string) => (l === '#' ? 'num' : `l-${l.toLocaleLowerCase(lang)}`);
+const toolHref = localePath(lang, '/insights/tools');
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'DefinedTermSet',
+    '@id': pageUrl,
+    name: T.h1,
+    inLanguage: lang,
+    hasDefinedTerm: sorted.map((tm) => ({
+      '@type': 'DefinedTerm',
+      name: tm[lang].term,
+      description: tm[lang].text,
+      url: `${pageUrl}/#${tm.id}`,
+    })),
+  },
+];
+---
+
+<Base lang={lang} title={T.title} description={T.description} path="/insights/terms" jsonLd={jsonLd}>
+  <header class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href={localePath(lang, '/insights')}>{X.article.insights}</a>
+      </nav>
+      <h1>{T.h1}</h1>
+      <p>{T.lead}</p>
+    </div>
+  </header>
+
+  <nav class="letters" aria-label={T.letters}>
+    <div class="wrap">
+      <ul>
+        {
+          groups.map((g) => (
+            <li>
+              <a href={`#${anchor(g.letter)}`}>{g.letter}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </nav>
+
+  <section class="section dict" data-pagefind-body>
+    <div class="wrap">
+      <h2 class="visually-hidden" data-pagefind-ignore>{T.h1}</h2>
+      {
+        groups.map((g) => (
+          <div class="group" id={anchor(g.letter)}>
+            <p class="big-letter" aria-hidden="true" data-pagefind-ignore>
+              {g.letter}
+            </p>
+            <dl>
+              {g.items.map((tm) => (
+                <div class="term">
+                  <dt>
+                    <h3 id={tm.id}>{tm[lang].term}</h3>
+                  </dt>
+                  <dd>
+                    <p>{tm[lang].text}</p>
+                    {(tm.article && published.has(tm.article)) || tm.tool ? (
+                      <p class="term-links" data-pagefind-ignore>
+                        {tm.article && published.has(tm.article) && (
+                          <a href={localePath(lang, `/insights/${tm.article}`)}>{T.readArticle}</a>
+                        )}
+                        {tm.tool && <a href={`${toolHref}#${tm.tool}`}>{T.useTool}</a>}
+                      </p>
+                    ) : null}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .crumbs {
+    margin-bottom: 1rem;
+    font-size: 0.925rem;
+  }
+  .letters {
+    position: sticky;
+    top: 4.5rem;
+    z-index: 5;
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--line);
+  }
+  .letters ul {
+    list-style: none;
+    margin: 0;
+    padding: 0.6rem 0;
+    display: flex;
+    gap: 0.3rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .letters a {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 6px;
+    color: var(--ink);
+    text-decoration: none;
+    font: 500 1rem / 1 var(--serif);
+  }
+  .letters a:hover {
+    background: var(--signal-soft);
+    color: var(--signal-ink);
+  }
+  .group {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: 1rem 2rem;
+    padding-block: 2rem;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 9rem;
+  }
+  .group:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .big-letter {
+    margin: 0;
+    font: 400 3.5rem / 1 var(--serif);
+    color: var(--gold);
+  }
+  dl {
+    margin: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+  .term {
+    max-width: 46rem;
+  }
+  .term h3 {
+    scroll-margin-top: 9rem;
+  }
+  .term:has(h3:target) {
+    padding: 0.75rem 1rem;
+    margin: -0.75rem -1rem;
+    border-radius: 10px;
+    background: var(--signal-soft);
+  }
+  .term h3 {
+    font-size: var(--step-1);
+  }
+  dd {
+    margin: 0.35rem 0 0;
+  }
+  dd p {
+    margin: 0;
+    color: var(--ink-2);
+  }
+  .term-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin-top: 0.45rem !important;
+    font-size: 0.925rem;
+    font-weight: 500;
+  }
+  @media (max-width: 40rem) {
+    .group {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    .big-letter {
+      font-size: 2.5rem;
+    }
+  }
+</style>

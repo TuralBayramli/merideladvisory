@@ -1,0 +1,412 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { localePath, type Lang } from '../i18n/ui';
+import { x } from '../i18n/extra';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const X = x(lang);
+const T = X.tools;
+const S = T.ss;
+const E = T.eoq;
+const locale = lang === 'az' ? 'az' : 'en-GB';
+const site = Astro.site ?? new URL('https://merideladvisory.com');
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: T.h1,
+    url: new URL(localePath(lang, '/insights/tools'), site).href,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Any',
+    inLanguage: lang,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+  },
+];
+---
+
+<Base lang={lang} title={T.title} description={T.description} path="/insights/tools" jsonLd={jsonLd}>
+  <header class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href={localePath(lang, '/insights')}>{X.article.insights}</a>
+      </nav>
+      <h1>{T.h1}</h1>
+      <p>{T.lead}</p>
+      <noscript><p class="nojs">{T.noscript}</p></noscript>
+    </div>
+  </header>
+
+  <section class="section" data-pagefind-body>
+    <div class="wrap calcs" data-locale={locale}>
+      <article class="calc" id="ss" data-calc="ss">
+        <div class="calc-form">
+          <h2>{S.title}</h2>
+          <p class="calc-text">{S.text}</p>
+          <label>
+            <span>{S.demand}</span>
+            <input type="number" name="d" value="100" min="0" step="1" inputmode="decimal" />
+          </label>
+          <label>
+            <span>{S.sd}</span>
+            <input type="number" name="sd" value="40" min="0" step="1" inputmode="decimal" />
+          </label>
+          <label>
+            <span>{S.lead}</span>
+            <input type="number" name="l" value="4" min="0" step="0.5" inputmode="decimal" />
+          </label>
+          <label>
+            <span>{S.leadSd}</span>
+            <input type="number" name="lsd" value="0" min="0" step="0.1" inputmode="decimal" />
+          </label>
+          <label class="range">
+            <span>{S.level} <output name="levelOut">95%</output></span>
+            <input type="range" name="level" min="80" max="99.9" step="0.1" value="95" />
+          </label>
+        </div>
+        <div class="calc-out navy" aria-live="polite" data-pagefind-ignore>
+          <div class="big">
+            <span>{S.safety}</span>
+            <strong data-out="ss">—</strong>
+            <small>{S.units}</small>
+          </div>
+          <div class="big">
+            <span>{S.rop}</span>
+            <strong data-out="rop">—</strong>
+            <small>{S.units}</small>
+          </div>
+          <p class="small-out">{S.z}: <b data-out="z">—</b></p>
+          <p class="formula-note">{S.formula}</p>
+          <a href={localePath(lang, '/insights/safety-stock')}>{S.article}</a>
+        </div>
+      </article>
+
+      <article class="calc" id="eoq" data-calc="eoq">
+        <div class="calc-form">
+          <h2>{E.title}</h2>
+          <p class="calc-text">{E.text}</p>
+          <label>
+            <span>{E.demand}</span>
+            <input type="number" name="D" value="5200" min="0" step="1" inputmode="decimal" />
+          </label>
+          <label>
+            <span>{E.orderCost}</span>
+            <input type="number" name="S" value="60" min="0" step="1" inputmode="decimal" />
+          </label>
+          <label>
+            <span>{E.holdCost}</span>
+            <input type="number" name="H" value="4" min="0" step="0.1" inputmode="decimal" />
+          </label>
+          <figure class="eoq-chart" data-pagefind-ignore>
+            <figcaption>{E.chart}</figcaption>
+            <svg viewBox="0 0 320 170" aria-hidden="true" data-chart>
+              <line class="ax" x1="30" y1="150" x2="312" y2="150"></line>
+              <line class="ax" x1="30" y1="10" x2="30" y2="150"></line>
+              <path class="c-order" data-c="order"></path>
+              <path class="c-hold" data-c="hold"></path>
+              <path class="c-total" data-c="total"></path>
+              <line class="c-eoq" data-c="eoq" x1="0" x2="0" y1="10" y2="150"></line>
+            </svg>
+            <ul class="key">
+              <li><span class="k-order"></span>{E.ordering}</li>
+              <li><span class="k-hold"></span>{E.holding}</li>
+              <li><span class="k-total"></span>{E.totalShort}</li>
+            </ul>
+          </figure>
+        </div>
+        <div class="calc-out navy" aria-live="polite" data-pagefind-ignore>
+          <div class="big">
+            <span>{E.eoq}</span>
+            <strong data-out="eoq">—</strong>
+            <small>{E.units}</small>
+          </div>
+          <div class="big">
+            <span>{E.orders}</span>
+            <strong data-out="orders">—</strong>
+          </div>
+          <p class="small-out">{E.every} <b data-out="days">—</b> {E.days}</p>
+          <p class="small-out">{E.total}: <b data-out="total">—</b></p>
+          <p class="formula-note">{E.formula}</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<script>
+  // Inverse of the standard normal distribution (Acklam's method), for z.
+  function invNorm(p: number): number {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const lo = 0.02425;
+    if (p <= 0 || p >= 1) return NaN;
+    if (p < lo) {
+      const q = Math.sqrt(-2 * Math.log(p));
+      return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    }
+    if (p > 1 - lo) return -invNorm(1 - p);
+    const q = p - 0.5;
+    const r = q * q;
+    return ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+
+  const wrap = document.querySelector<HTMLElement>('.calcs');
+  const locale = wrap?.dataset.locale ?? 'en-GB';
+  const fmt = (n: number, digits = 0) =>
+    Number.isFinite(n) ? new Intl.NumberFormat(locale, { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(n) : '—';
+  const num = (form: HTMLElement, name: string) => {
+    const el = form.querySelector<HTMLInputElement>(`[name="${name}"]`);
+    const v = el ? parseFloat(el.value.replace(',', '.')) : NaN;
+    return Number.isFinite(v) && v >= 0 ? v : NaN;
+  };
+  const put = (box: HTMLElement, key: string, text: string) => {
+    const el = box.querySelector(`[data-out="${key}"]`);
+    if (el) el.textContent = text;
+  };
+
+  const ss = document.querySelector<HTMLElement>('[data-calc="ss"]');
+  if (ss) {
+    const update = () => {
+      const d = num(ss, 'd');
+      const sd = num(ss, 'sd');
+      const l = num(ss, 'l');
+      const lsd = num(ss, 'lsd');
+      const level = num(ss, 'level');
+      const out = ss.querySelector<HTMLOutputElement>('output[name="levelOut"]');
+      if (out) out.textContent = `${fmt(level, level % 1 ? 1 : 0)}%`;
+      const z = invNorm(level / 100);
+      const safety = z * Math.sqrt(l * sd * sd + d * d * lsd * lsd);
+      put(ss, 'z', fmt(z, 2));
+      put(ss, 'ss', fmt(Math.ceil(safety)));
+      put(ss, 'rop', fmt(Math.ceil(d * l + safety)));
+    };
+    ss.addEventListener('input', update);
+    update();
+  }
+
+  const eoq = document.querySelector<HTMLElement>('[data-calc="eoq"]');
+  if (eoq) {
+    const svg = eoq.querySelector<SVGSVGElement>('[data-chart]')!;
+    const path = (key: string) => svg.querySelector<SVGPathElement>(`[data-c="${key}"]`)!;
+    const update = () => {
+      const D = num(eoq, 'D');
+      const S = num(eoq, 'S');
+      const H = num(eoq, 'H');
+      const q = Math.sqrt((2 * D * S) / H);
+      const orders = D / q;
+      const total = orders * S + (q / 2) * H;
+      put(eoq, 'eoq', fmt(Math.round(q)));
+      put(eoq, 'orders', fmt(orders, 1));
+      put(eoq, 'days', fmt(365 / orders, 0));
+      put(eoq, 'total', fmt(total, 0));
+      // Cost curves from a fifth of the EOQ to three times it.
+      if (!Number.isFinite(q) || q <= 0) {
+        ['order', 'hold', 'total'].forEach((k) => path(k).setAttribute('d', ''));
+        return;
+      }
+      const qs = Array.from({ length: 60 }, (_, i) => q * (0.2 + (2.8 * i) / 59));
+      const cost = { order: (x: number) => (D / x) * S, hold: (x: number) => (x / 2) * H };
+      const top = Math.max(...qs.map((x) => cost.order(x) + cost.hold(x))) * 1.05;
+      const X = (x: number) => 30 + ((x - qs[0]) / (qs[qs.length - 1] - qs[0])) * 282;
+      const Y = (y: number) => 150 - (Math.min(y, top) / top) * 140;
+      const line = (f: (x: number) => number) => qs.map((x, i) => `${i ? 'L' : 'M'}${X(x).toFixed(1)} ${Y(f(x)).toFixed(1)}`).join('');
+      path('order').setAttribute('d', line(cost.order));
+      path('hold').setAttribute('d', line(cost.hold));
+      path('total').setAttribute('d', line((x) => cost.order(x) + cost.hold(x)));
+      const mark = svg.querySelector<SVGLineElement>('[data-c="eoq"]')!;
+      mark.setAttribute('x1', X(q).toFixed(1));
+      mark.setAttribute('x2', X(q).toFixed(1));
+    };
+    eoq.addEventListener('input', update);
+    update();
+  }
+</script>
+
+<style>
+  .crumbs {
+    margin-bottom: 1rem;
+    font-size: 0.925rem;
+  }
+  .nojs {
+    font-size: 1rem !important;
+    color: var(--neg) !important;
+  }
+  .calcs {
+    display: grid;
+    gap: 3rem;
+  }
+  .calc {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    scroll-margin-top: 6rem;
+  }
+  .calc-form {
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2.25rem);
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+  .calc-form h2 {
+    font-size: var(--step-2);
+  }
+  .calc-text {
+    margin: -0.25rem 0 0.5rem;
+    color: var(--muted);
+  }
+  label {
+    display: grid;
+    gap: 0.4rem;
+    font-size: 0.925rem;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+  input[type='number'] {
+    width: 100%;
+    max-width: 14rem;
+    height: 2.75rem;
+    padding: 0 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font: 500 1.05rem / 1 var(--sans);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  input[type='number']:focus {
+    outline: 2px solid var(--signal);
+    outline-offset: 1px;
+  }
+  .range span {
+    display: flex;
+    justify-content: space-between;
+    max-width: 24rem;
+  }
+  .range output {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  input[type='range'] {
+    width: 100%;
+    max-width: 24rem;
+    accent-color: var(--signal);
+  }
+  .calc-out {
+    display: grid;
+    align-content: start;
+    gap: 1.25rem;
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2.25rem);
+  }
+  .big {
+    display: grid;
+    gap: 0.2rem;
+  }
+  .big span {
+    color: var(--ink-2);
+    font-size: 0.925rem;
+  }
+  .big strong {
+    font: 400 clamp(2.4rem, 1.8rem + 2vw, 3.2rem) / 1 var(--serif);
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+  }
+  .big small {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .small-out {
+    margin: 0;
+    color: var(--ink-2);
+  }
+  .small-out b {
+    color: var(--gold);
+  }
+  .formula-note {
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font: italic 400 1rem / 1.5 var(--serif);
+    color: var(--ink-2);
+  }
+  .eoq-chart {
+    margin: 0.5rem 0 0;
+  }
+  .eoq-chart figcaption {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .eoq-chart svg {
+    width: 100%;
+    max-width: 26rem;
+    height: auto;
+  }
+  .ax {
+    stroke: var(--line);
+    stroke-width: 1.2;
+  }
+  .c-order,
+  .c-hold,
+  .c-total {
+    fill: none;
+    stroke-width: 2;
+  }
+  .c-order {
+    stroke: var(--gold);
+  }
+  .c-hold {
+    stroke: var(--signal-mid);
+  }
+  .c-total {
+    stroke: var(--signal);
+    stroke-width: 2.6;
+  }
+  .c-eoq {
+    stroke: var(--ink);
+    stroke-dasharray: 4 4;
+    stroke-width: 1.2;
+  }
+  .key {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+    font-size: 0.8rem;
+    color: var(--ink-2);
+  }
+  .key li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .key span {
+    width: 1.1rem;
+    height: 3px;
+    border-radius: 2px;
+  }
+  .k-order {
+    background: var(--gold);
+  }
+  .k-hold {
+    background: var(--signal-mid);
+  }
+  .k-total {
+    background: var(--signal);
+  }
+  @media (max-width: 52rem) {
+    .calc {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

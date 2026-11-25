@@ -2,43 +2,125 @@
 import Base from '../layouts/Base.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { t, type Lang } from '../i18n/ui';
+import { t, localePath, type Lang } from '../i18n/ui';
+import { x } from '../i18n/extra';
+import { TOPICS, topic, topicPath } from '../i18n/topics';
 import { getArticles } from '../i18n/insights';
+import { terms } from '../data/terms';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const d = t(lang);
-const [first, ...rest] = await getArticles(lang);
+const X = x(lang);
+const articles = await getArticles(lang);
+const [first, ...rest] = articles;
+const groups = TOPICS.map((id) => ({
+  id,
+  ...topic(lang, id),
+  href: localePath(lang, topicPath(id)),
+  items: articles.filter((a) => a.data.topic === id),
+})).filter((g) => g.items.length > 0);
+const termsHref = localePath(lang, '/insights/terms');
+const toolsHref = localePath(lang, '/insights/tools');
+const letters = [...new Set(terms.map((tm) => tm[lang].term.charAt(0).toLocaleUpperCase(lang)))]
+  .filter((l) => /\p{L}/u.test(l))
+  .sort((a, b) => a.localeCompare(b, lang))
+  .slice(0, 14);
 ---
 
 <Base lang={lang} title={d.insights.title} description={d.insights.description} path="/insights">
-  <header class="page-head">
+  <header class="page-head hub-head">
     <div class="wrap">
       <h1>{d.insights.h1}</h1>
       <p>{d.insights.lead}</p>
+      <button class="search-cta" type="button" data-open-search>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5l5 5"></path></svg>
+        <span>{X.hub.searchCta}</span>
+        <kbd aria-hidden="true">/</kbd>
+      </button>
+      <ul class="topic-chips" aria-label={X.hub.browse}>
+        {
+          groups.map((g) => (
+            <li>
+              <a href={g.href}>{g.name}</a>
+            </li>
+          ))
+        }
+        <li><a href={termsHref}>{X.hub.termsTitle}</a></li>
+        <li><a href={toolsHref}>{X.hub.toolsTitle}</a></li>
+      </ul>
     </div>
   </header>
 
-  <section class="section">
+  {
+    first && (
+      <section class="section featured-sec">
+        <div class="wrap">
+          <ArticleCard article={first} lang={lang} level={2} layout="wide" />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section tint">
     <div class="wrap">
-      {
-        first && (
-          <div class="featured">
-            <ArticleCard article={first} lang={lang} level={2} layout="wide" />
-          </div>
-        )
-      }
-      {
-        rest.length > 0 && (
+      <h2 class="sec-title">{X.hub.browse}</h2>
+      <div class="topic-grid">
+        {
+          groups.map((g) => (
+            <section class="topic-card" aria-labelledby={`tp-${g.id}`}>
+              <h3 id={`tp-${g.id}`}>
+                <a href={g.href}>{g.name}</a>
+              </h3>
+              <p>{g.text}</p>
+              <ul>
+                {g.items.slice(0, 3).map((a) => (
+                  <li>
+                    <a href={localePath(lang, `/insights/${a.slug}`)}>{a.data.title}</a>
+                  </li>
+                ))}
+              </ul>
+              <a class="see-all" href={g.href}>
+                {X.hub.seeAll} ({g.items.length})
+              </a>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    rest.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <h2 class="sec-title">{X.menu.latest}</h2>
           <div class="grid">
             {rest.map((a) => (
-              <ArticleCard article={a} lang={lang} level={2} />
+              <ArticleCard article={a} lang={lang} />
             ))}
           </div>
-        )
-      }
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section navy resources">
+    <div class="wrap res-grid">
+      <a class="res" href={termsHref}>
+        <span class="letters" aria-hidden="true">{letters.map((l) => <span>{l}</span>)}</span>
+        <strong>{X.hub.termsTitle}</strong>
+        <span class="res-text">{X.hub.termsText}</span>
+        <span class="res-cta">{X.hub.termsCta}</span>
+      </a>
+      <a class="res" href={toolsHref}>
+        <span class="formula" aria-hidden="true">EOQ = √(2DS/H)</span>
+        <strong>{X.hub.toolsTitle}</strong>
+        <span class="res-text">{X.hub.toolsText}</span>
+        <span class="res-cta">{X.hub.toolsCta}</span>
+      </a>
     </div>
   </section>
 
@@ -46,18 +128,191 @@ const [first, ...rest] = await getArticles(lang);
 </Base>
 
 <style>
-  .featured {
-    padding-bottom: clamp(2.5rem, 2rem + 2vw, 3.5rem);
-    margin-bottom: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+  .search-cta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: min(100%, 36rem);
+    margin-top: 2rem;
+    padding: 0.85rem 1rem 0.85rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 2rem;
+    background: var(--paper);
+    color: var(--muted);
+    font: 400 1.05rem / 1.2 var(--sans);
+    text-align: left;
+    cursor: text;
+    box-shadow: 0 10px 30px -20px rgba(10, 18, 32, 0.35);
+  }
+  .search-cta:hover {
+    border-color: var(--signal);
+  }
+  .search-cta svg {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke: var(--ink-2);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+  .search-cta span {
+    flex: 1;
+  }
+  .search-cta kbd {
+    font: 500 0.8rem / 1 var(--sans);
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--muted);
+  }
+  .topic-chips {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .topic-chips a {
+    display: block;
+    padding: 0.45rem 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 2rem;
+    background: var(--paper);
+    color: var(--ink-2);
+    font-size: 0.925rem;
+    text-decoration: none;
+  }
+  .topic-chips a:hover {
+    border-color: var(--signal);
+    color: var(--signal-ink);
+  }
+  .featured-sec {
+    padding-bottom: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+  .sec-title {
+    font-size: var(--step-2);
+    margin-bottom: 2rem;
+  }
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .topic-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1.6rem 1.4rem;
+    border-radius: var(--radius);
+    background: var(--paper);
+    border-top: 3px solid var(--gold);
+  }
+  .topic-card h3 {
+    font-size: var(--step-1);
+  }
+  .topic-card h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .topic-card h3 a:hover {
+    color: var(--signal-ink);
+  }
+  .topic-card > p {
+    margin: 0.5rem 0 1rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .topic-card ul {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .topic-card li a {
+    display: block;
+    padding: 0.6rem 0;
     border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .topic-card li a:hover {
+    color: var(--signal-ink);
+  }
+  .see-all {
+    margin-top: auto;
+    font-size: 0.925rem;
+    font-weight: 500;
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 3rem 2.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem 2rem;
+  }
+  .res-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .res {
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+    padding: 1.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .navy a.res {
+    color: var(--ink);
+  }
+  .res:hover {
+    border-color: var(--gold);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .res strong {
+    font: 440 var(--step-2) / 1.15 var(--serif);
+  }
+  .res-text {
+    color: var(--ink-2);
+  }
+  .res-cta {
+    margin-top: 0.5rem;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .letters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+  .letters span {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid rgba(194, 165, 116, 0.5);
+    border-radius: 6px;
+    font: 500 0.95rem / 1 var(--serif);
+    color: var(--gold);
+  }
+  .formula {
+    margin-bottom: 0.75rem;
+    font: italic 400 1.6rem / 1.2 var(--serif);
+    color: var(--gold);
+  }
+  @media (max-width: 60rem) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
   }
   @media (max-width: 44rem) {
-    .grid {
+    .topic-grid,
+    .grid,
+    .res-grid {
       grid-template-columns: 1fr;
     }
   }
