@@ -1,0 +1,20 @@
+# Shows the DNS records that decide whether hello@merideladvisory.com can
+# receive mail (MX), plus SPF/DMARC and the name servers. Run by hand.
+name: Check email DNS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for t in NS MX TXT A; do
+            echo "== $t merideladvisory.com"; dig +short $t merideladvisory.com
+          done
+          echo "== TXT _dmarc.merideladvisory.com"; dig +short TXT _dmarc.merideladvisory.com
+          echo "== whois (registrar)"; whois merideladvisory.com 2>/dev/null | grep -iE "registrar:|name server" | head -8 || true

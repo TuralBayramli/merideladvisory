@@ -8,6 +8,7 @@ on:
       - '.github/workflows/voiceover.yml'
       - '.github/workflows/fetch-music.yml'
       - '.github/workflows/fetch-photos.yml'
+      - '.github/workflows/check-email.yml'
   workflow_dispatch:
 
 permissions:
