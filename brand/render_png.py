@@ -26,15 +26,15 @@ def font_face():
             f"@font-face{{font-family:P;src:url(data:font/woff2;base64,{base64.b64encode(sans).decode()}) format('woff2');font-weight:100 700}}")
 
 
-def graticule(w, h, color, opacity):
+def graticule(w, h, color, opacity, sw=1):
     """Faint meridians and parallels, like the lines on a navigation chart."""
     lines = []
     cx, cy, r = w * 0.78, h * 0.5, max(w, h) * 0.55
     for i, rx in enumerate([0.15, 0.38, 0.62, 0.85, 1.0]):
-        lines.append(f'<ellipse cx="{cx}" cy="{cy}" rx="{r * rx}" ry="{r}" fill="none" stroke="{color}" stroke-width="1" opacity="{opacity}"/>')
+        lines.append(f'<ellipse cx="{cx}" cy="{cy}" rx="{r * rx}" ry="{r}" fill="none" stroke="{color}" stroke-width="{sw}" opacity="{opacity}"/>')
     for k in range(-4, 5):
         y = cy + k * r / 5
-        lines.append(f'<line x1="0" x2="{w}" y1="{y}" y2="{y}" stroke="{color}" stroke-width="1" opacity="{opacity * 0.7}"/>')
+        lines.append(f'<line x1="0" x2="{w}" y1="{y}" y2="{y}" stroke="{color}" stroke-width="{sw}" opacity="{opacity * 0.7}"/>')
     return f'<svg width="{w}" height="{h}" viewBox="0 0 {w} {h}" style="position:absolute;inset:0">{"".join(lines)}</svg>'
 
 
@@ -53,12 +53,14 @@ PAGES = {
     'meridel-logo-ivory.png': (1600, 560,
         f'<div style="width:1600px;height:560px;display:flex;align-items:center;justify-content:center">'
         f'<img src="{data_uri(B / "meridel-logo-ivory.svg")}" style="width:1300px"></div>'),
-    'meridel-linkedin-cover.png': (1128 * 2, 191 * 2,
-        f'<div style="position:relative;overflow:hidden;width:2256px;height:382px;background:{NAVY}">'
-        f'{graticule(2256, 382, GOLD, 0.22)}'
-        f'<div style="position:absolute;right:430px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right">'
-        f'<div style="font:330 84px/1.05 S;font-variation-settings:\'opsz\' 72;color:{IVORY};letter-spacing:-.005em">We find your position.<br>Together, we chart the course.</div>'
-        f'<div style="font:430 25px/1 P;letter-spacing:.42em;margin-right:-.42em;color:{GOLD};margin-top:30px">SUPPLY CHAIN CONSULTING</div></div></div>'),
+    # LinkedIn Page cover: 4200 x 700 (6:1), the size LinkedIn recommends. The text sits right of
+    # centre, clear of the logo that overlaps the bottom-left corner.
+    'meridel-linkedin-cover.png': (4200, 700,
+        f'<div style="position:relative;overflow:hidden;width:4200px;height:700px;background:{NAVY}">'
+        f'{graticule(4200, 700, GOLD, 0.22, 1.9)}'
+        f'<div style="position:absolute;right:820px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right">'
+        f'<div style="font:330 152px/1.05 S;font-variation-settings:\'opsz\' 72;color:{IVORY};letter-spacing:-.005em">We find your position.<br>Together, we chart the course.</div>'
+        f'<div style="font:430 46px/1 P;letter-spacing:.42em;margin-right:-.42em;color:{GOLD};margin-top:54px">SUPPLY CHAIN CONSULTING</div></div></div>'),
 }
 OG = (1200, 630,
       f'<div style="position:relative;overflow:hidden;width:1200px;height:630px;background:{NAVY};display:flex;align-items:center;justify-content:center">'
