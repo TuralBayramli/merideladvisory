@@ -1,5 +1,6 @@
 ---
 import fs from 'node:fs';
+import { join } from 'node:path';
 import { render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import CtaBand from '../components/CtaBand.astro';
@@ -60,7 +61,8 @@ const relatedTerms = data.terms.map((id) => terms.find((tm) => tm.id === id)).fi
 const termsHref = localePath(lang, '/insights/terms');
 const img = data.image;
 const ogFile = `/og/${lang}/${article.slug}.png`;
-const ogImage = fs.existsSync(new URL(`../../public${ogFile}`, import.meta.url)) ? ogFile : '/og.png';
+// Builds run from the project root, so public/ is found from there.
+const ogImage = fs.existsSync(join(process.cwd(), 'public', ogFile)) ? ogFile : '/og.png';
 
 const crumbs = [
   { name: A.home, href: localePath(lang, '/') },
