@@ -3,7 +3,7 @@ title: "ABC-XYZ analysis: give every item the policy it deserves"
 description: "Treating every item the same wastes stock on some and causes shortages on others. ABC-XYZ analysis groups items by value and by how steady their demand is, so each group gets the right policy."
 date: 2026-11-25
 topic: inventory
-image: warehouse
+image: picking
 takeaways:
   - "ABC ranks items by value; XYZ groups them by how steady their demand is."
   - "The nine combined groups each deserve their own stock policy, service level and amount of planner attention."

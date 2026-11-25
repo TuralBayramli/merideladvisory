@@ -3,7 +3,7 @@ title: "Logistics dashboards that people actually use"
 description: "Many dashboards are opened twice and then forgotten. A few design choices make the difference between a report people check every morning and one they ignore."
 date: 2026-11-25
 topic: data
-image: data
+image: dashboard
 takeaways:
   - "Design each dashboard page for one audience and one decision."
   - "Lead with a few KPIs that have targets and trends, and let users click through to the orders behind them."

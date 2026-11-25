@@ -21,6 +21,12 @@ PHOTOS = {
     'data': ('data-3183126.jpg', 0.42, 0.4),
     'workshop': ('workshop-18999540.jpg', 0.5, 0.5),
     'carbon': ('wind-5569023.jpg', 0.45, 0.6),
+    'delivery': ('delivery-7363098.jpg', 0.48, 0.5),
+    'dashboard': ('code-577210.jpg', 0.45, 0.6),
+    'code': ('dashboard-34804005.jpg', 0.55, 0.45),
+    'forklift': ('forklift-1267338.jpg', 0.45, 0.6),
+    'picking': ('team-4481329.jpg', 0.42, 0.5),
+    'analytics': ('laptop-12969403.jpg', 0.62, 0.4),
 }
 # shape: (aspect width/height, widths)
 SHAPES = {'wide': (3 / 2, (1600, 800)), 'tall': (4 / 5, (960, 480))}

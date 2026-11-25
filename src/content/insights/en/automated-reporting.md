@@ -3,7 +3,7 @@ title: "From monthly spreadsheet to automated report"
 description: "If someone spends the first days of every month copying data between files, the report can probably build itself. Here is how to get there step by step, with tools you may already have."
 date: 2026-11-25
 topic: data
-image: workshop
+image: code
 takeaways:
   - "Manual monthly reports tie up skilled people and give each team a slightly different version of the numbers."
   - "Automation follows five steps: list the sources, automate extraction, script the cleaning once, build one data model and schedule the refresh."

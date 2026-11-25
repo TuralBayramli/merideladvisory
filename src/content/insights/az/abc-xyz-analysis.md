@@ -3,7 +3,7 @@ title: "ABC-XYZ təhlili: hər məhsula layiq olduğu siyasəti verin"
 description: "Bütün məhsullara eyni yanaşma bəzilərində ehtiyatı israf edir, digərlərində isə çatışmazlıq yaradır. ABC-XYZ təhlili məhsulları dəyərinə və tələbin sabitliyinə görə qruplaşdırır ki, hər qrup düzgün siyasət alsın."
 date: 2026-11-25
 topic: inventory
-image: warehouse
+image: picking
 takeaways:
   - "ABC məhsulları dəyərinə görə sıralayır; XYZ isə tələbin nə qədər sabit olmasına görə qruplaşdırır."
   - "Birləşmiş doqquz qrupun hər birinə ayrıca ehtiyat siyasəti, xidmət səviyyəsi və planlaşdırıcı diqqəti lazımdır."

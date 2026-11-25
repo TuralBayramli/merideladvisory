@@ -3,7 +3,7 @@ title: "Forecast accuracy: how to measure it and what to do with it"
 description: "A single accuracy percentage hides as much as it shows. Measure the size of the errors and their direction, compare with a simple benchmark, and you will know where better forecasting pays off."
 date: 2026-11-25
 topic: inventory
-image: data
+image: analytics
 takeaways:
   - "Measure both the size of forecast errors (MAPE or WAPE) and their direction (bias)."
   - "Bias can be removed; random error has to be covered with safety stock."

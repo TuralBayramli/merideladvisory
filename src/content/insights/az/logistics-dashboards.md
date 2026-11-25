@@ -3,7 +3,7 @@ title: "İnsanların həqiqətən istifadə etdiyi logistika panelləri"
 description: "Bir çox panel iki dəfə açılır və sonra unudulur. Bir neçə dizayn qərarı insanların hər səhər baxdığı hesabatla heç kimin açmadığı hesabat arasındakı fərqi yaradır."
 date: 2026-11-25
 topic: data
-image: data
+image: dashboard
 takeaways:
   - "Panelin hər səhifəsini bir auditoriya və bir qərar üçün qurun."
   - "Hədəfi və tendensiyası olan bir neçə KPI ilə başlayın və istifadəçilərə onların arxasındakı sifarişlərə keçmək imkanı verin."

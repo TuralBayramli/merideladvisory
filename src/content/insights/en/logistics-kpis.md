@@ -3,7 +3,7 @@ title: "OTIF, fill rate and cost per order: the logistics KPIs that matter"
 description: "Most logistics reports show dozens of numbers. A handful, defined well, tell you whether customers get what they ordered, on time, at a sensible cost."
 date: 2026-11-25
 topic: data
-image: road
+image: delivery
 takeaways:
   - "OTIF counts an order only when it arrives on the agreed date and complete, so it is always lower than on-time or in-full alone."
   - "Agree the definitions first: which date, what time window, and whether you count orders or lines."

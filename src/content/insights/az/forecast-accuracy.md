@@ -3,7 +3,7 @@ title: "Proqnoz dəqiqliyi: necə ölçməli və nəticə ilə nə etməli"
 description: "Dəqiqliyin tək faiz göstəricisi göstərdiyi qədər də gizlədir. Xətaların həm ölçüsünü, həm də istiqamətini ölçün, sadə meyarla müqayisə edin və daha yaxşı proqnozun harada fayda verdiyini biləcəksiniz."
 date: 2026-11-25
 topic: inventory
-image: data
+image: analytics
 takeaways:
   - "Proqnoz xətalarının həm ölçüsünü (MAPE və ya WAPE), həm də istiqamətini (meyl) ölçün."
   - "Meyli aradan qaldırmaq olar; təsadüfi xəta isə sığorta ehtiyatı ilə qarşılanmalıdır."

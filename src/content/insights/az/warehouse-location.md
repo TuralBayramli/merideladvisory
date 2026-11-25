@@ -3,7 +3,7 @@ title: "Anbarı harada yerləşdirməli: ağırlıq mərkəzi və ondan sonrası
 description: "Ağırlıq mərkəzi metodu anbarın yeri üçün sürətli, məlumata əsaslanan başlanğıc nöqtəsi verir. Yaxşı qərar isə buna real xərcləri, çatdırılma müddətlərini və həqiqətən mövcud olan məkanları əlavə edir."
 date: 2026-11-25
 topic: strategy
-image: rail
+image: forklift
 takeaways:
   - "Ağırlıq mərkəzi metodu həcmə görə çəkiləndirilmiş müştəri məkanlarından başlanğıc yer tapır."
   - "O, real yolları, tarifləri, çatdırılma müddətlərini və mövcud məkanları nəzərə almır, ona görə ilk addım kimi qəbul edilməlidir."

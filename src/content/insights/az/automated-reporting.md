@@ -3,7 +3,7 @@ title: "Aylıq cədvəldən avtomatlaşdırılmış hesabata"
 description: "Kimsə hər ayın ilk günlərini fayllar arasında məlumat köçürməyə sərf edirsə, hesabat yəqin ki, özü-özünü qura bilər. Ora necə çatmağın addım-addım yolu, bəlkə də artıq əlinizdə olan alətlərlə."
 date: 2026-11-25
 topic: data
-image: workshop
+image: code
 takeaways:
   - "Əl ilə hazırlanan aylıq hesabatlar bacarıqlı insanların vaxtını alır və hər komandaya rəqəmlərin bir az fərqli versiyasını verir."
   - "Avtomatlaşdırma beş addımdan ibarətdir: mənbələri siyahıya almaq, çıxarmanı avtomatlaşdırmaq, təmizləməni bir dəfə yazmaq, vahid məlumat modeli qurmaq və yenilənməni planlaşdırmaq."

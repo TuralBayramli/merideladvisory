@@ -3,7 +3,7 @@ title: "Where to put a warehouse: centre of gravity and beyond"
 description: "The centre of gravity method gives a quick, data-based starting point for a warehouse location. A good decision then adds real costs, delivery times and the sites that are actually available."
 date: 2026-11-25
 topic: strategy
-image: rail
+image: forklift
 takeaways:
   - "The centre of gravity method finds a starting location from customer locations weighted by volume."
   - "It ignores real roads, rates, delivery times and available sites, so treat it as a first step."

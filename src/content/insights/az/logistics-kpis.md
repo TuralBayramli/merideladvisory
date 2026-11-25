@@ -3,7 +3,7 @@ title: "OTIF, doldurulma dərəcəsi və sifariş başına xərc: vacib logistik
 description: "Əksər logistika hesabatlarında onlarla rəqəm olur. Düzgün təyin olunmuş bir neçə göstərici isə müştərilərin sifarişlərini vaxtında, tam və ağlabatan xərclə alıb-almadığını göstərir."
 date: 2026-11-25
 topic: data
-image: road
+image: delivery
 takeaways:
   - "OTIF sifarişi yalnız razılaşdırılmış tarixdə və tam çatdırıldıqda nəzərə alır, ona görə həmişə təkcə vaxtında və ya təkcə tam çatdırılma göstəricisindən aşağı olur."
   - "Əvvəlcə tərifləri razılaşdırın: hansı tarix, hansı vaxt aralığı və sifarişləri, yoxsa sətirləri saydığınız."
