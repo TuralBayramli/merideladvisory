@@ -164,6 +164,10 @@ const en = {
       note: 'Every step runs on a schedule, with no copying by hand.',
     },
   },
+  social: {
+    title: 'Follow us',
+    text: 'Articles, short videos and news from our work.',
+  },
   rss: {
     title: 'Meridel Advisory insights',
     description: 'Practical articles on supply chain, logistics, inventory and data analytics.',
@@ -333,6 +337,10 @@ const az: Extra = {
       ],
       note: 'Hər addım əl ilə köçürmə olmadan, cədvəl üzrə işləyir.',
     },
+  },
+  social: {
+    title: 'Bizi izləyin',
+    text: 'Məqalələr, qısa videolar və işimizdən xəbərlər.',
   },
   rss: {
     title: 'Meridel Advisory məqalələri',

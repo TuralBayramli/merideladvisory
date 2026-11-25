@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
-import { t, EMAIL, LINKEDIN, type Lang } from '../i18n/ui';
+import { t, EMAIL, LINKEDIN, SOCIAL, type Lang } from '../i18n/ui';
+import { x } from '../i18n/extra';
 
 interface Props {
   lang: Lang;
@@ -8,6 +9,7 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const c = d.contact;
+const S = x(lang).social;
 ---
 
 <Base lang={lang} title={c.title} description={c.description} path="/contact">
@@ -32,6 +34,19 @@ const c = d.contact;
         </ul>
         <h2>{c.locationTitle}</h2>
         <p>{c.location}</p>
+        <h2 class="follow">{S.title}</h2>
+        <p>{S.text}</p>
+        <ul class="social">
+          {
+            SOCIAL.map((s) => (
+              <li>
+                <a href={s.href} rel="noopener" target="_blank">
+                  {s.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </div>
   </section>
@@ -54,7 +69,7 @@ const c = d.contact;
     font-family: var(--serif);
     font-size: clamp(1.5rem, 1rem + 2.4vw, 2.6rem);
     color: var(--ink);
-    text-decoration-color: var(--madder);
+    text-decoration-color: var(--gold);
     text-decoration-thickness: 1.5px;
     overflow-wrap: anywhere;
   }
@@ -81,6 +96,29 @@ const c = d.contact;
   .side p {
     color: var(--slate);
     margin: 0;
+  }
+  .follow {
+    margin-top: 2rem;
+  }
+  .social {
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .social a {
+    display: inline-block;
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 2rem;
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .social a:hover {
+    border-color: var(--gold);
+    color: var(--gold-ink);
   }
   @media (max-width: 52rem) {
     .contact-grid {

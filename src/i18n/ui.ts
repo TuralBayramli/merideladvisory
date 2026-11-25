@@ -4,7 +4,15 @@ export const defaultLang: Lang = 'en';
 
 export const EMAIL = 'hello@merideladvisory.com';
 export const FOUNDER = 'Tural Bayramli';
+/** Tural Bayramli's own LinkedIn profile (founder block, contact page). */
 export const LINKEDIN = 'https://www.linkedin.com/in/turalbayramli/';
+/** Meridel Advisory's company pages. */
+export const COMPANY_LINKEDIN = 'https://www.linkedin.com/company/145515249/';
+export const INSTAGRAM = 'https://www.instagram.com/merideladvisory/';
+export const SOCIAL = [
+  { name: 'LinkedIn', href: COMPANY_LINKEDIN },
+  { name: 'Instagram', href: INSTAGRAM },
+];
 
 /** Build a URL for a language-neutral path such as "/services". */
 export function localePath(lang: Lang, path = '/'): string {

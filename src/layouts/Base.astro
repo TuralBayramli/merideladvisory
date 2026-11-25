@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Logo from '../components/Logo.astro';
 import SearchDialog from '../components/SearchDialog.astro';
 import ChatWidget from '../components/ChatWidget.astro';
-import { t, localePath, type Lang, EMAIL, LINKEDIN } from '../i18n/ui';
+import { t, localePath, type Lang, EMAIL, SOCIAL } from '../i18n/ui';
 import { x } from '../i18n/extra';
 import { TOPICS, topic, topicPath } from '../i18n/topics';
 import { getArticles } from '../i18n/insights';
@@ -64,7 +64,7 @@ const org = {
   url: site.origin + '/',
   logo: new URL('/brand/meridel-profile-1080.png', site).href,
   email: EMAIL,
-  sameAs: [LINKEDIN],
+  sameAs: SOCIAL.map((s) => s.href),
   description: d.home.description,
   areaServed: ['Europe', 'Caucasus', 'Central Asia', 'China'],
   address: [
@@ -315,6 +315,17 @@ const ld = [org, ...jsonLd];
         <div class="drawer-foot">
           <a class="btn btn-solid" href={contactHref}>{d.nav.bookCall}</a>
           <p><a href={`mailto:${EMAIL}`}>{EMAIL}</a></p>
+          <ul class="social drawer-social">
+            {
+              SOCIAL.map((s) => (
+                <li>
+                  <a href={s.href} rel="noopener" target="_blank">
+                    {s.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
           <p><a href={altHref} hreflang={other} lang={other}>{d.switchLabel}</a></p>
         </div>
       </div>
@@ -331,6 +342,18 @@ const ld = [org, ...jsonLd];
         <div class="foot-brand">
           <Logo href={localePath(lang, '/')} />
           <p>{d.footer.tagline}</p>
+          <p class="follow-title">{X.social.title}</p>
+          <ul class="social">
+            {
+              SOCIAL.map((s) => (
+                <li>
+                  <a href={s.href} rel="noopener me" target="_blank">
+                    {s.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
         </div>
         <div class="foot-col">
           <h2>{d.nav.services}</h2>
@@ -373,7 +396,6 @@ const ld = [org, ...jsonLd];
           <h2>{d.nav.contact}</h2>
           <ul>
             <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
-            <li><a href={LINKEDIN} rel="noopener">LinkedIn</a></li>
             <li class="plain">{d.contact.location}</li>
           </ul>
         </div>
@@ -953,6 +975,41 @@ const ld = [org, ...jsonLd];
   }
   .foot-col .plain {
     color: var(--muted);
+  }
+  .follow-title {
+    margin: 1.75rem 0 0.6rem !important;
+    color: var(--ink) !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .social a {
+    display: inline-block;
+    padding: 0.4rem 0.95rem;
+    border: 1px solid rgba(194, 165, 116, 0.55);
+    border-radius: 2rem;
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .social a:hover {
+    border-color: var(--gold);
+    background: rgba(194, 165, 116, 0.12);
+    color: var(--ink);
+  }
+  .drawer-social {
+    margin-top: 1rem;
+  }
+  .drawer-social a {
+    border-color: var(--line);
   }
   .copy {
     grid-column: 1 / -1;
