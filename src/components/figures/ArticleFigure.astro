@@ -6,12 +6,16 @@ import { t, type Lang } from '../../i18n/ui';
 import CtsAnim from './CtsAnim.astro';
 import SafetyAnim from './SafetyAnim.astro';
 import AuditAnim from './AuditAnim.astro';
+import OtifAnim from './OtifAnim.astro';
+import ForecastAnim from './ForecastAnim.astro';
+import PipelineAnim from './PipelineAnim.astro';
 import AbcXyz from '../diagrams/AbcXyz.astro';
+import { x } from '../../i18n/extra';
 import NetworkCog from '../diagrams/NetworkCog.astro';
 import CarbonBars from '../diagrams/CarbonBars.astro';
 import DashboardMock from '../diagrams/DashboardMock.astro';
 
-type Animated = 'cts' | 'safety' | 'audit';
+type Animated = 'cts' | 'safety' | 'audit' | 'otif' | 'forecast' | 'pipeline';
 type Still = 'abc' | 'network' | 'carbon' | 'dash';
 interface Props {
   kind: Animated | Still | string;
@@ -19,7 +23,14 @@ interface Props {
 }
 const { kind, lang } = Astro.props;
 const d = t(lang);
-const animated = kind === 'cts' || kind === 'safety' || kind === 'audit';
+const animated = ['cts', 'safety', 'audit', 'otif', 'forecast', 'pipeline'].includes(kind);
+const figs = x(lang).figs;
+const title =
+  kind === 'otif' || kind === 'forecast' || kind === 'pipeline'
+    ? figs[kind].title
+    : kind === 'cts' || kind === 'safety' || kind === 'audit'
+      ? d.anim[kind].title
+      : '';
 ---
 
 {
@@ -36,12 +47,15 @@ const animated = kind === 'cts' || kind === 'safety' || kind === 'audit';
 {animated && (
 <figure class="figure anim-fig" data-anim data-pagefind-ignore>
   <figcaption>
-    <strong>{d.anim[kind as Animated].title}</strong>
+    <strong>{title}</strong>
     <span>{d.diagrams.example}</span>
   </figcaption>
   {kind === 'cts' && <CtsAnim lang={lang} />}
   {kind === 'safety' && <SafetyAnim lang={lang} />}
   {kind === 'audit' && <AuditAnim lang={lang} />}
+  {kind === 'otif' && <OtifAnim lang={lang} />}
+  {kind === 'forecast' && <ForecastAnim lang={lang} />}
+  {kind === 'pipeline' && <PipelineAnim lang={lang} />}
   <div class="anim-foot">
     <button class="replay" type="button" data-replay hidden>
       <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.6 11.2a5.6 5.6 0 1 0 1.3-4.9M5.4 2.8l.5 3.6-3.5.6"></path></svg>

@@ -1,0 +1,202 @@
+---
+// Automated reporting, animated: the four steps appear in turn, then data
+// keeps flowing along the arrows between them.
+import type { Lang } from '../../i18n/ui';
+import { x } from '../../i18n/extra';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = x(lang).figs.pipeline;
+---
+
+<div class="pipe">
+  <ol class="steps">
+    {
+      L.steps.map((s, i) => (
+        <li class="step" style={`--d:${(0.2 + i * 0.6).toFixed(2)}s`}>
+          <span class="num" aria-hidden="true">
+            {i + 1}
+          </span>
+          <strong>{s.title}</strong>
+          <ul>
+            {s.items.map((it) => (
+              <li>{it}</li>
+            ))}
+          </ul>
+          {i < L.steps.length - 1 && (
+            <span class="link" aria-hidden="true">
+              <span class="dot" />
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+  <p class="note">{L.note}</p>
+</div>
+
+<style>
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.6rem;
+  }
+  .step {
+    position: relative;
+    padding: 1rem 0.95rem 1.05rem;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--signal);
+    border-radius: 10px;
+    background: var(--paper);
+  }
+  .step:last-child {
+    border-top-color: var(--gold);
+    background: var(--mist);
+  }
+  .num {
+    display: inline-grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 50%;
+    background: var(--signal-soft);
+    color: var(--signal-ink);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  strong {
+    display: block;
+    font: 500 1.1rem / 1.2 var(--serif);
+    margin-bottom: 0.5rem;
+  }
+  .step ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--ink-2);
+  }
+  /* Arrow to the next step, with a dot of data running along it. */
+  .link {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 1.6rem;
+    height: 2px;
+    background: var(--signal-mid);
+  }
+  .link::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -4px;
+    border: 5px solid transparent;
+    border-left: 6px solid var(--signal-mid);
+    border-right: 0;
+  }
+  .dot {
+    position: absolute;
+    top: -3px;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--signal);
+    opacity: 0;
+  }
+  .note {
+    margin: 1.1rem 0 0;
+    font-size: 0.825rem;
+    color: var(--muted);
+  }
+  @media (max-width: 40rem) {
+    .steps {
+      grid-template-columns: 1fr;
+      gap: 1.4rem;
+    }
+    .link {
+      top: 100%;
+      left: 1.6rem;
+      width: 2px;
+      height: 1.4rem;
+    }
+    .link::after {
+      right: auto;
+      left: -4px;
+      top: auto;
+      bottom: -1px;
+      border: 5px solid transparent;
+      border-top: 6px solid var(--signal-mid);
+      border-bottom: 0;
+    }
+    .dot {
+      left: -3px;
+      top: 0;
+    }
+  }
+
+  :global(.is-ready) .step {
+    opacity: 0;
+  }
+  :global(.is-on) .step {
+    animation: pipe-in 0.55s ease var(--d) both;
+  }
+  :global(.is-on) .dot {
+    animation: pipe-flow 1.4s linear calc(var(--d) + 0.8s) infinite;
+  }
+  @keyframes pipe-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes pipe-flow {
+    0% {
+      opacity: 0;
+      left: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      left: calc(100% - 8px);
+    }
+  }
+  @media (max-width: 40rem) {
+    @keyframes pipe-flow-v {
+      0% {
+        opacity: 0;
+        top: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      85% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        top: calc(100% - 8px);
+      }
+    }
+    :global(.is-on) .dot {
+      animation-name: pipe-flow-v;
+    }
+  }
+</style>

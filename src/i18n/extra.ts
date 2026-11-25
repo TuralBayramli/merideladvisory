@@ -138,6 +138,32 @@ const en = {
     errQuota: 'The assistant has answered all the questions it can for today. Please try again tomorrow, or email us.',
     errGeneric: 'Something went wrong. Please try again, or email us.',
   },
+  figs: {
+    otif: {
+      title: 'From orders to OTIF',
+      rows: ['All orders', 'Delivered on time', 'Delivered in full', 'On time and in full (OTIF)'],
+      note: 'Example month with 1,000 orders. OTIF is lower than either measure, because an order has to pass both tests.',
+    },
+    forecast: {
+      title: 'Forecast against actual demand',
+      forecast: 'Forecast',
+      actual: 'Actual',
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      bias: 'Bias',
+      over: 'forecast slightly too high',
+      note: 'Units per month. The number above each month is the error: forecast minus actual.',
+    },
+    pipeline: {
+      title: 'How an automated report flows',
+      steps: [
+        { title: 'Sources', items: ['ERP', 'Transport system', 'Warehouse system', 'Excel files'] },
+        { title: 'Prepare', items: ['Power Query', 'Alteryx', 'SQL or Python'] },
+        { title: 'Model', items: ['One data model', 'Star schema', 'Automatic checks'] },
+        { title: 'Report', items: ['Power BI or Tableau', 'Daily refresh', 'Alerts'] },
+      ],
+      note: 'Every step runs on a schedule, with no copying by hand.',
+    },
+  },
   rss: {
     title: 'Meridel Advisory insights',
     description: 'Practical articles on supply chain, logistics, inventory and data analytics.',
@@ -281,6 +307,32 @@ const az: Extra = {
     errRate: 'Qısa müddətdə çox sual verildi. Bir dəqiqə gözləyib yenidən cəhd edin.',
     errQuota: 'Köməkçi bu gün üçün cavab limitinə çatıb. Sabah yenidən cəhd edin və ya bizə yazın.',
     errGeneric: 'Xəta baş verdi. Yenidən cəhd edin və ya bizə yazın.',
+  },
+  figs: {
+    otif: {
+      title: 'Sifarişlərdən OTIF-ə',
+      rows: ['Bütün sifarişlər', 'Vaxtında çatdırılan', 'Tam çatdırılan', 'Vaxtında və tam (OTIF)'],
+      note: '1 000 sifarişli nümunə ay. OTIF hər iki göstəricidən aşağıdır, çünki sifariş hər iki yoxlamadan keçməlidir.',
+    },
+    forecast: {
+      title: 'Proqnoz və faktiki tələb',
+      forecast: 'Proqnoz',
+      actual: 'Faktiki',
+      months: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn'],
+      bias: 'Meyl',
+      over: 'proqnoz bir az yüksəkdir',
+      note: 'Aylıq ədəd. Hər ayın üstündəki rəqəm xətadır: proqnoz çıxılsın faktiki.',
+    },
+    pipeline: {
+      title: 'Avtomatlaşdırılmış hesabat necə axır',
+      steps: [
+        { title: 'Mənbələr', items: ['ERP', 'Daşıma sistemi', 'Anbar sistemi', 'Excel faylları'] },
+        { title: 'Hazırlıq', items: ['Power Query', 'Alteryx', 'SQL və ya Python'] },
+        { title: 'Model', items: ['Vahid məlumat modeli', 'Ulduz sxemi', 'Avtomatik yoxlamalar'] },
+        { title: 'Hesabat', items: ['Power BI və ya Tableau', 'Gündəlik yenilənmə', 'Xəbərdarlıqlar'] },
+      ],
+      note: 'Hər addım əl ilə köçürmə olmadan, cədvəl üzrə işləyir.',
+    },
   },
   rss: {
     title: 'Meridel Advisory məqalələri',
