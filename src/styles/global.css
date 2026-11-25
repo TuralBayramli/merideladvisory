@@ -1,8 +1,9 @@
 @import '@fontsource-variable/newsreader/opsz.css';
 @import '@fontsource-variable/ibm-plex-sans/wght.css';
 
-/* Light theme only: white pages with navy text, a gold brand accent and one
-   bright blue for things people click and for highlights in diagrams. */
+/* Two brand colours, navy and gold, on white. Navy carries text, data and
+   dark sections; gold marks what matters: links, buttons on dark grounds,
+   highlights. Red appears only for losses in charts. */
 :root {
   --ink: #14213a;
   --ink-2: #33415c;
@@ -18,10 +19,11 @@
   --gold: #b08a50;
   --gold-ink: #8a6a37;
   --gold-light: #c2a574;
-  --signal: #1f5fff;
-  --signal-ink: #1748d6;
-  --signal-soft: #e9efff;
-  --signal-mid: #a9c0ff;
+  /* Navy tones for data, active states and highlights (names kept from v1). */
+  --signal: #1f3a63;
+  --signal-ink: #8a6a37;
+  --signal-soft: #eef1f6;
+  --signal-mid: #a9b6cb;
   --neg: #c8453c;
   --logo-gold: #9a7a48;
 
@@ -120,17 +122,19 @@ p {
 }
 
 a {
-  color: var(--signal-ink);
-  text-underline-offset: 0.18em;
+  color: var(--ink);
+  text-decoration-color: var(--gold);
+  text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
 }
 
 a:hover {
+  color: var(--gold-ink);
   text-decoration-thickness: 2px;
 }
 
 :focus-visible {
-  outline: 3px solid var(--signal);
+  outline: 3px solid var(--gold);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -179,12 +183,23 @@ a:hover {
 }
 
 .btn-solid {
-  background: var(--signal);
+  background: var(--navy);
   color: #ffffff;
 }
 
 .btn-solid:hover {
-  background: var(--signal-ink);
+  background: var(--navy-2);
+}
+
+.navy .btn-solid,
+.on-deep .btn-solid {
+  background: var(--gold-light);
+  color: var(--navy);
+}
+
+.navy .btn-solid:hover,
+.on-deep .btn-solid:hover {
+  background: #d3ba90;
 }
 
 .btn-line {
@@ -235,7 +250,7 @@ a:hover {
 }
 
 .navy a:not(.btn) {
-  color: var(--signal-mid);
+  color: var(--gold-light);
 }
 
 .navy a:not(.btn):hover {
@@ -251,7 +266,28 @@ a:hover {
 }
 
 .navy :focus-visible {
-  outline-color: var(--signal-mid);
+  outline-color: var(--gold-light);
+}
+
+/* Back to the light tokens, for white panels inside a navy area (menus). */
+.light {
+  --ink: #14213a;
+  --ink-2: #33415c;
+  --muted: #5d6882;
+  --slate: #5d6882;
+  --line: #dde3ec;
+  --rule: #dde3ec;
+  --gold: #b08a50;
+  --logo-gold: #9a7a48;
+  color: var(--ink);
+}
+
+.light a:not(.btn) {
+  color: var(--ink);
+}
+
+.light a:not(.btn):hover {
+  color: var(--gold-ink);
 }
 
 .section-head {

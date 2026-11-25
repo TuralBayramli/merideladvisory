@@ -95,7 +95,7 @@ const ld = [org, ...jsonLd];
     }
     <link rel="alternate" type="application/rss+xml" title={X.rss.title} href={localePath(lang, '/rss.xml')} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#14213a" />
     <meta property="og:type" content={type} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -111,7 +111,7 @@ const ld = [org, ...jsonLd];
   <body>
     <a class="skip" href="#main">{d.skip}</a>
 
-    <header class="site-header">
+    <header class="site-header navy">
       <div class="bar">
         <button
           class="menu-btn"
@@ -136,7 +136,7 @@ const ld = [org, ...jsonLd];
                 <span class="visually-hidden">{X.menu.toggle} {d.nav.services}</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d={chevron}></path></svg>
               </button>
-              <div class="mega" id="mega-services" hidden>
+              <div class="mega light" id="mega-services" hidden>
                 <div class="wrap mega-inner">
                   <div class="mega-intro">
                     <p class="mega-title">{d.nav.services}</p>
@@ -171,7 +171,7 @@ const ld = [org, ...jsonLd];
                 <span class="visually-hidden">{X.menu.toggle} {d.nav.insights}</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d={chevron}></path></svg>
               </button>
-              <div class="mega" id="mega-insights" hidden>
+              <div class="mega light" id="mega-insights" hidden>
                 <div class="wrap mega-inner mega-insights">
                   <div class="mega-intro">
                     <p class="mega-title">{d.nav.insights}</p>
@@ -223,7 +223,7 @@ const ld = [org, ...jsonLd];
                 <span class="visually-hidden">{X.menu.toggle} {d.nav.about}</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d={chevron}></path></svg>
               </button>
-              <div class="mega" id="mega-about" hidden>
+              <div class="mega light" id="mega-about" hidden>
                 <div class="wrap mega-inner mega-about">
                   <div class="mega-intro">
                     <p class="mega-title">{d.nav.about}</p>
@@ -461,14 +461,18 @@ const ld = [org, ...jsonLd];
 </html>
 
 <style>
+  /* Navy bar, so the logo shows in its ivory and gold colours. */
   .site-header {
     position: sticky;
     top: 0;
     z-index: 20;
-    background: rgba(255, 255, 255, 0.96);
+    background: rgba(20, 33, 58, 0.97);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid rgba(194, 165, 116, 0.3);
+  }
+  .site-header :global(.bar-logo) {
+    color: var(--ivory);
   }
   .bar {
     display: grid;
@@ -497,7 +501,7 @@ const ld = [org, ...jsonLd];
     height: 1.55rem;
   }
   .menu-btn:hover {
-    color: var(--signal-ink);
+    color: var(--gold);
   }
   .bar-actions {
     justify-self: end;
@@ -517,8 +521,8 @@ const ld = [org, ...jsonLd];
     cursor: pointer;
   }
   .icon-btn:hover {
-    background: var(--mist);
-    color: var(--signal-ink);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--gold);
   }
   .icon-btn svg {
     width: 1.3rem;
@@ -542,7 +546,8 @@ const ld = [org, ...jsonLd];
     letter-spacing: 0.02em;
   }
   .lang:hover {
-    border-color: var(--ink);
+    border-color: var(--gold);
+    color: var(--gold);
   }
   @media (max-width: 44rem) {
     .menu-label,
@@ -590,7 +595,7 @@ const ld = [org, ...jsonLd];
     bottom: 0.2rem;
     height: 2px;
     border-radius: 1px;
-    background: var(--signal);
+    background: var(--gold);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 180ms ease;
@@ -600,7 +605,7 @@ const ld = [org, ...jsonLd];
   }
   .tn-link:hover,
   .tn-item.open .tn-link {
-    color: var(--signal-ink);
+    color: var(--gold);
   }
   .tn-link:hover::after,
   .tn-item.open .tn-link::after,
@@ -621,7 +626,7 @@ const ld = [org, ...jsonLd];
     cursor: pointer;
   }
   .tn-toggle:hover {
-    background: var(--mist);
+    background: rgba(255, 255, 255, 0.1);
     color: var(--ink);
   }
   .tn-toggle svg {
@@ -881,7 +886,7 @@ const ld = [org, ...jsonLd];
   }
   .drawer-main > li > a:hover,
   .drawer-main > li > a[aria-current='page'] {
-    color: var(--signal-ink);
+    color: var(--gold-ink);
   }
   .drawer-sub {
     padding: 0 0 0.75rem !important;
@@ -895,8 +900,8 @@ const ld = [org, ...jsonLd];
     font-size: 0.975rem;
   }
   .drawer-sub a:hover {
-    border-left-color: var(--signal);
-    color: var(--signal-ink);
+    border-left-color: var(--gold);
+    color: var(--gold-ink);
   }
   .drawer-foot {
     margin-top: auto;

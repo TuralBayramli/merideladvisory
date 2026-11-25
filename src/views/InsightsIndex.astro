@@ -107,7 +107,7 @@ const letters = [...new Set(terms.map((tm) => tm[lang].term.charAt(0).toLocaleUp
     )
   }
 
-  <section class="section navy resources">
+  <section class="section tint resources">
     <div class="wrap res-grid">
       <a class="res" href={termsHref}>
         <span class="letters" aria-hidden="true">{letters.map((l) => <span>{l}</span>)}</span>
@@ -265,12 +265,12 @@ const letters = [...new Set(terms.map((tm) => tm[lang].term.charAt(0).toLocaleUp
     text-decoration: none;
     color: var(--ink);
   }
-  .navy a.res {
-    color: var(--ink);
+  .res {
+    background: var(--paper);
   }
   .res:hover {
     border-color: var(--gold);
-    background: rgba(255, 255, 255, 0.03);
+    color: var(--ink);
   }
   .res strong {
     font: 440 var(--step-2) / 1.15 var(--serif);
@@ -280,7 +280,7 @@ const letters = [...new Set(terms.map((tm) => tm[lang].term.charAt(0).toLocaleUp
   }
   .res-cta {
     margin-top: 0.5rem;
-    color: var(--gold);
+    color: var(--gold-ink);
     font-weight: 600;
   }
   .letters {
@@ -294,15 +294,15 @@ const letters = [...new Set(terms.map((tm) => tm[lang].term.charAt(0).toLocaleUp
     place-items: center;
     width: 2rem;
     height: 2rem;
-    border: 1px solid rgba(194, 165, 116, 0.5);
+    border: 1px solid rgba(176, 138, 80, 0.5);
     border-radius: 6px;
     font: 500 0.95rem / 1 var(--serif);
-    color: var(--gold);
+    color: var(--gold-ink);
   }
   .formula {
     margin-bottom: 0.75rem;
     font: italic 400 1.6rem / 1.2 var(--serif);
-    color: var(--gold);
+    color: var(--gold-ink);
   }
   @media (max-width: 60rem) {
     .grid {
