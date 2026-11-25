@@ -75,20 +75,25 @@ SANS_FACE = Face(SANS, {'wght': 430})
 
 # The mark, drawn on a 64-unit grid like an engraved globe inside a fine double
 # ring: several meridians in hairline gold, one in full gold, and one point on it
-# at the latitude of Baku. Lines stop at the inner ring and leave a small gap
-# around the point.
+# at the latitude of Baku. The meridians stop short of the inner ring (inset), so
+# they never crowd the ring or knot at the poles, and leave a small gap around the
+# point. The gold meridian is only a little heavier than the others: it stands out
+# by its colour, not its width.
 VARIANTS = {
-    'turning': dict(lons=[-68, -40, -12, 16, 44, 72], gold=44),   # off-centre, as if turning
+    'turning': dict(lons=[-40, -12, 16, 44], gold=44),            # off-centre, as if turning
     'five': dict(lons=[-60, -30, 0, 30, 60], gold=30),             # symmetric
     'three': dict(lons=[-45, 0, 45], gold=45),                     # quietest
 }
 VARIANT = 'turning'
 BAKU = 40.4
 OUTER, INNER, R = 30.0, 27.2, 27.0
+# regular: logo files and banners; medium: the website header (about 50 px tall);
+# profile: profile pictures; bold: the browser tab icon (only one hairline).
 WEIGHTS = {
-    'regular': dict(outer=0.9, inner=0.5, inner_op=0.65, gold=1.45, hair=0.5, hair_op=0.55, dot=1.9, gap=3.4, hairs=True),
-    'medium': dict(outer=1.4, inner=0.8, inner_op=0.7, gold=2.2, hair=0.8, hair_op=0.6, dot=2.5, gap=4.4, hairs=True),
-    'bold': dict(outer=2.4, inner=1.2, inner_op=0.75, gold=3.4, hair=1.3, hair_op=0.6, dot=3.6, gap=6.0, hairs=False),
+    'regular': dict(outer=0.9, inner=0.5, inner_op=0.7, gold=0.85, hair=0.55, hair_op=0.7, dot=2.0, gap=2.7, inset=1.8),
+    'medium': dict(outer=1.4, inner=0.8, inner_op=0.7, gold=1.45, hair=0.9, hair_op=0.75, dot=2.6, gap=3.5, inset=2.2),
+    'profile': dict(outer=1.4, inner=0.8, inner_op=0.7, gold=1.2, hair=0.8, hair_op=0.7, dot=2.6, gap=3.2, inset=2.2),
+    'bold': dict(outer=2.4, inner=1.2, inner_op=0.75, gold=2.4, hair=1.6, hair_op=0.65, dot=3.6, gap=5.0, inset=3.0, only=[-12]),
 }
 
 
@@ -113,12 +118,12 @@ def symbol(uid, ink, gold, weight='regular', tx=0.0, ty=0.0, scale=1.0, variant=
     v = VARIANTS[variant or VARIANT]
     w = WEIGHTS[weight]
     px, py = point_on(v['gold'])
-    lons = v['lons'] if w['hairs'] else [lon for lon in v['lons'] if lon == v['gold'] or lon in (v['lons'][1], v['lons'][-3])]
+    lons = [lon for lon in v['lons'] if lon == v['gold'] or 'only' not in w or lon in w['only']]
     lines = ''.join(meridian(lon, gold, w['gold'] if lon == v['gold'] else w['hair'], 1 if lon == v['gold'] else w['hair_op'])
                     for lon in lons)
     return (
         f'<g transform="translate({num(tx)} {num(ty)}) scale({num(scale)})">'
-        f'<defs><clipPath id="{uid}-in"><circle cx="32" cy="32" r="{num(INNER - w["inner"] / 2)}"/></clipPath>'
+        f'<defs><clipPath id="{uid}-in"><circle cx="32" cy="32" r="{num(INNER - w["inset"])}"/></clipPath>'
         f'<mask id="{uid}-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">'
         f'<rect width="64" height="64" fill="#fff"/><circle cx="{num(px)}" cy="{num(py)}" r="{num(w["gap"])}" fill="#000"/></mask></defs>'
         f'<g clip-path="url(#{uid}-in)"><g mask="url(#{uid}-gap)">{lines}</g></g>'
@@ -217,7 +222,7 @@ def main():
     write('public/brand/meridel-symbol-navy.svg',
           f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">{symbol("e", solid(NAVY), solid(GOLD_DARK))}</svg>')
     write('public/brand/meridel-symbol-profile.svg',
-          f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">{symbol("g", solid(IVORY), solid(GOLD_LIGHT), "medium", 3.2, 3.2, 57.6 / 64)}</svg>')
+          f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">{symbol("g", solid(IVORY), solid(GOLD_LIGHT), "profile")}</svg>')
     write('public/brand/meridel-symbol-ivory.svg',
           f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">{symbol("f", solid(IVORY), solid(GOLD_LIGHT))}</svg>')
 

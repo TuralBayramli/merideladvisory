@@ -42,7 +42,11 @@ PAGES = {
     # name: (width, height, html body)
     'meridel-profile-1080.png': (1080, 1080,
         f'<div style="width:1080px;height:1080px;background:{NAVY};display:flex;align-items:center;justify-content:center">'
-        f'<img src="{data_uri(B / "meridel-symbol-profile.svg")}" style="width:690px;height:690px"></div>'),
+        f'<img src="{data_uri(B / "meridel-symbol-profile.svg")}" style="width:820px;height:820px"></div>'),
+    # LinkedIn asks for 400 x 400: drawn at that size, not shrunk, so the fine lines stay sharp.
+    'meridel-profile-400.png': (400, 400,
+        f'<div style="width:400px;height:400px;background:{NAVY};display:flex;align-items:center;justify-content:center">'
+        f'<img src="{data_uri(B / "meridel-symbol-profile.svg")}" style="width:304px;height:304px"></div>'),
     'meridel-logo-navy.png': (1600, 560,
         f'<div style="width:1600px;height:560px;display:flex;align-items:center;justify-content:center">'
         f'<img src="{data_uri(B / "meridel-logo-navy.svg")}" style="width:1300px"></div>'),
@@ -53,7 +57,7 @@ PAGES = {
         f'<div style="position:relative;overflow:hidden;width:2256px;height:382px;background:{NAVY}">'
         f'{graticule(2256, 382, GOLD, 0.22)}'
         f'<div style="position:absolute;right:430px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right">'
-        f'<div style="font:330 84px/1.05 S;font-variation-settings:\'opsz\' 72;color:{IVORY};letter-spacing:-.005em">Find your position.<br>Choose your direction.</div>'
+        f'<div style="font:330 84px/1.05 S;font-variation-settings:\'opsz\' 72;color:{IVORY};letter-spacing:-.005em">We find your position.<br>Together, we chart the course.</div>'
         f'<div style="font:430 25px/1 P;letter-spacing:.42em;margin-right:-.42em;color:{GOLD};margin-top:30px">SUPPLY CHAIN CONSULTING</div></div></div>'),
 }
 OG = (1200, 630,
