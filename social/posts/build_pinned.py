@@ -20,12 +20,18 @@ LOGO = (ROOT / 'public/brand/meridel-logo-stacked-ivory.svg').read_text(encoding
 W, H, TILE = 3240, 1440, 1080
 GOLD, IVORY, NAVY = '#c2a574', '#efe9dd', '#14213a'
 
-# Cities along the routes (longitude, latitude); Baku sits under the logo.
+# The same cities and lanes as the map on the website (longitude, latitude).
+# Baku sits under the logo.
 CITIES = [
     ('Rotterdam', 4.5, 51.9, 'above'), ('Varşava', 21.0, 52.2, 'above'), ('İstanbul', 29.0, 41.0, 'below'),
-    ('Bakı', 49.9, 40.4, 'below'), ('Almatı', 76.9, 43.2, 'above-left'), ('Sian', 108.9, 34.3, 'above'),
+    ('Tbilisi', 44.8, 41.7, 'above'), ('Bakı', 49.9, 40.4, 'below'), ('Aktau', 51.2, 43.6, 'above-right'),
+    ('Almatı', 76.9, 43.2, 'above-left'), ('Sian', 108.9, 34.3, 'above'), ('Dubay', 55.3, 25.2, 'right'),
 ]
-ROUTE = ['Rotterdam', 'Varşava', 'İstanbul', 'Bakı', 'Almatı', 'Sian']
+# Middle Corridor from China to Europe, and the North-South lane to the Gulf.
+LANES = [
+    (['Sian', 'Almatı', 'Aktau', 'Bakı', 'Tbilisi', 'İstanbul', 'Varşava', 'Rotterdam'], 'route'),
+    (['Bakı', 'Dubay'], 'route south'),
+]
 
 
 def x_of(lon):
@@ -33,7 +39,7 @@ def x_of(lon):
 
 
 def y_of(lat):
-    return 1240 - (lat - 30) * 13.5
+    return 1250 - (lat - 25) * 14
 
 
 def svg():
@@ -47,20 +53,26 @@ def svg():
         if 0 <= y <= H:
             parts.append(f'<line x1="0" y1="{y:.1f}" x2="{W}" y2="{y:.1f}" class="g"/>')
     pts = {n: (x_of(lo), y_of(la)) for n, lo, la, _ in CITIES}
-    # The corridor as a smooth curve through the cities.
-    seq = [pts[n] for n in ROUTE]
-    d = f'M{seq[0][0]:.1f} {seq[0][1]:.1f}'
-    for (x0, y0), (x1, y1) in zip(seq, seq[1:]):
-        mx = (x0 + x1) / 2
-        d += f' C{mx:.1f} {y0:.1f} {mx:.1f} {y1:.1f} {x1:.1f} {y1:.1f}'
-    parts.append(f'<path d="{d}" class="route"/>')
+    # Each lane as a smooth curve through its cities.
+    for names, cls in LANES:
+        seq = [pts[n] for n in names]
+        d = f'M{seq[0][0]:.1f} {seq[0][1]:.1f}'
+        for (x0, y0), (x1, y1) in zip(seq, seq[1:]):
+            if abs(x1 - x0) > abs(y1 - y0):
+                mx = (x0 + x1) / 2
+                d += f' C{mx:.1f} {y0:.1f} {mx:.1f} {y1:.1f} {x1:.1f} {y1:.1f}'
+            else:
+                my = (y0 + y1) / 2
+                d += f' C{x0:.1f} {my:.1f} {x1:.1f} {my:.1f} {x1:.1f} {y1:.1f}'
+        parts.append(f'<path d="{d}" class="{cls}"/>')
     for name, lon, lat, pos in CITIES:
         x, y = pts[name]
         home = name in ('Varşava', 'Bakı')
         if home:
             parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="26" class="halo"/>')
         parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{12 if home else 8}" class="{"home" if home else "dot"}"/>')
-        dx, dy, anchor = {'above': (0, -36, 'middle'), 'below': (0, 58, 'middle'), 'above-left': (-20, -30, 'end')}[pos]
+        dx, dy, anchor = {'above': (0, -36, 'middle'), 'below': (0, 58, 'middle'), 'above-left': (-20, -30, 'end'),
+                          'above-right': (22, -28, 'start'), 'right': (40, 11, 'start')}[pos]
         parts.append(f'<text x="{x + dx:.1f}" y="{y + dy:.1f}" text-anchor="{anchor}" class="{"lbl home-l" if home else "lbl"}">{name}</text>')
     return f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}">{"".join(parts)}</svg>'
 
@@ -75,6 +87,7 @@ PAGE = f'''<!doctype html><html lang="az"><head><meta charset="utf-8">
   svg {{ position: absolute; inset: 0; }}
   .g {{ stroke: {GOLD}; stroke-opacity: .12; stroke-width: 1.5; }}
   .route {{ fill: none; stroke: {GOLD}; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 2 16; }}
+  .route.south {{ stroke: #a9b6cb; }}
   .dot {{ fill: {IVORY}; stroke: {NAVY}; stroke-width: 4; }}
   .home {{ fill: {GOLD}; stroke: {NAVY}; stroke-width: 4; }}
   .halo {{ fill: none; stroke: {GOLD}; stroke-opacity: .45; stroke-width: 2; }}
@@ -92,10 +105,9 @@ PAGE = f'''<!doctype html><html lang="az"><head><meta charset="utf-8">
   .foot {{ position: absolute; bottom: 70px; width: {TILE}px; text-align: center; font-size: 30px; color: #b9c2d3; letter-spacing: .04em; }}
 </style></head><body>
 {svg()}
-<div class="line l"><i class="rule"></i><h2>Mövqeyinizi müəyyən edin.</h2><p>Find your position.</p></div>
+<div class="line l"><i class="rule"></i><h2>Mövqeyinizi müəyyən edirik.</h2><p>We find your position.</p></div>
 <div class="logo">{LOGO}</div>
-<div class="line r"><i class="rule"></i><h2>İstiqamətinizi seçin.</h2><p>Choose your direction.</p></div>
-<div class="foot" style="left:{TILE}px">Avropadan Çinə təchizat zənciri konsaltinqi</div>
+<div class="line r"><i class="rule"></i><h2>İstiqaməti birlikdə qururuq.</h2><p>Together, we chart the course.</p></div>
 </body></html>'''
 
 
