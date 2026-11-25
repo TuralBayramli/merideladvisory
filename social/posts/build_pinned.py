@@ -20,26 +20,40 @@ LOGO = (ROOT / 'public/brand/meridel-logo-stacked-ivory.svg').read_text(encoding
 W, H, TILE = 3240, 1440, 1080
 GOLD, IVORY, NAVY = '#c2a574', '#efe9dd', '#14213a'
 
-# The same cities and lanes as the map on the website (longitude, latitude).
-# Baku sits under the logo.
+# Main hubs (longitude, latitude, label position). Baku sits under the logo.
 CITIES = [
-    ('Rotterdam', 4.5, 51.9, 'above'), ('Varşava', 21.0, 52.2, 'above'), ('İstanbul', 29.0, 41.0, 'below'),
-    ('Tbilisi', 44.8, 41.7, 'above'), ('Bakı', 49.9, 40.4, 'below'), ('Aktau', 51.2, 43.6, 'above-right'),
-    ('Almatı', 76.9, 43.2, 'above-left'), ('Sian', 108.9, 34.3, 'above'), ('Dubay', 55.3, 25.2, 'right'),
+    ('Valensiya', -0.4, 39.5, 'below'), ('Genuya', 8.9, 44.4, 'above-left'), ('Triyest', 13.8, 45.6, 'above-right'),
+    ('Rotterdam', 4.5, 51.9, 'above'), ('Hamburq', 10.0, 53.5, 'above'), ('Varşava', 21.0, 52.2, 'above'),
+    ('İstanbul', 29.0, 41.0, 'below'), ('Tbilisi', 44.8, 41.7, 'above'), ('Bakı', 49.9, 40.4, 'below'),
+    ('Aktau', 51.2, 43.6, 'above-right'), ('Dubay', 55.3, 25.2, 'right'), ('Almatı', 76.9, 43.2, 'above-left'),
+    ('Sian', 108.9, 34.3, 'above'), ('Çunsin', 106.5, 29.6, 'below'), ('Lyanyunqan', 119.2, 34.6, 'above-left'),
+    ('Şanxay', 121.5, 31.2, 'below-left'),
 ]
-# Middle Corridor from China to Europe, and the North-South lane to the Gulf.
+# Rail and multimodal lanes: the Middle Corridor from China, its branches in
+# Europe (rail to the north, Ro-Ro and sea in the Mediterranean) and the
+# North-South lane to the Gulf.
 LANES = [
-    (['Sian', 'Almatı', 'Aktau', 'Bakı', 'Tbilisi', 'İstanbul', 'Varşava', 'Rotterdam'], 'route'),
+    (['Lyanyunqan', 'Sian', 'Almatı', 'Aktau', 'Bakı', 'Tbilisi', 'İstanbul', 'Varşava', 'Hamburq', 'Rotterdam'], 'route'),
+    (['Çunsin', 'Sian'], 'route thin'),
+    (['İstanbul', 'Triyest', 'Genuya', 'Valensiya'], 'route thin'),
     (['Bakı', 'Dubay'], 'route south'),
 ]
 
 
 def x_of(lon):
-    return 170 + lon * 25.4
+    return 150 + (lon + 5) * 24
 
 
 def y_of(lat):
     return 1250 - (lat - 25) * 14
+
+
+def sea_path():
+    """China to the Mediterranean by sea, via Suez: drawn below everything."""
+    sx, sy = x_of(121.5), y_of(31.2)
+    gx, gy = x_of(8.9), y_of(44.4)
+    return (f'M{sx:.1f} {sy:.1f} C{sx:.1f} 1400 {x_of(90):.1f} 1405 {x_of(60):.1f} 1395 '
+            f'S{x_of(25):.1f} 1330 {x_of(16):.1f} 1230 S{gx:.1f} {gy + 60:.1f} {gx:.1f} {gy:.1f}')
 
 
 def svg():
@@ -53,6 +67,8 @@ def svg():
         if 0 <= y <= H:
             parts.append(f'<line x1="0" y1="{y:.1f}" x2="{W}" y2="{y:.1f}" class="g"/>')
     pts = {n: (x_of(lo), y_of(la)) for n, lo, la, _ in CITIES}
+    parts.append(f'<path d="{sea_path()}" class="sea"/>')
+    parts.append(f'<text x="{x_of(84):.1f}" y="1385" class="lbl sea-l">Dəniz yolu, Süveyş kanalı ilə</text>')
     # Each lane as a smooth curve through its cities.
     for names, cls in LANES:
         seq = [pts[n] for n in names]
@@ -72,7 +88,8 @@ def svg():
             parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="26" class="halo"/>')
         parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{12 if home else 8}" class="{"home" if home else "dot"}"/>')
         dx, dy, anchor = {'above': (0, -36, 'middle'), 'below': (0, 58, 'middle'), 'above-left': (-20, -30, 'end'),
-                          'above-right': (22, -28, 'start'), 'right': (40, 11, 'start')}[pos]
+                          'above-right': (22, -28, 'start'), 'right': (40, 11, 'start'),
+                          'below-left': (-10, 58, 'end')}[pos]
         parts.append(f'<text x="{x + dx:.1f}" y="{y + dy:.1f}" text-anchor="{anchor}" class="{"lbl home-l" if home else "lbl"}">{name}</text>')
     return f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}">{"".join(parts)}</svg>'
 
@@ -88,10 +105,13 @@ PAGE = f'''<!doctype html><html lang="az"><head><meta charset="utf-8">
   .g {{ stroke: {GOLD}; stroke-opacity: .12; stroke-width: 1.5; }}
   .route {{ fill: none; stroke: {GOLD}; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 2 16; }}
   .route.south {{ stroke: #a9b6cb; }}
+  .route.thin {{ stroke-width: 4; stroke-opacity: .8; }}
+  .sea {{ fill: none; stroke: #a9b6cb; stroke-opacity: .55; stroke-width: 3; stroke-dasharray: 18 14; }}
+  .sea-l {{ font-size: 26px; fill: #8796b5; font-style: italic; }}
   .dot {{ fill: {IVORY}; stroke: {NAVY}; stroke-width: 4; }}
   .home {{ fill: {GOLD}; stroke: {NAVY}; stroke-width: 4; }}
   .halo {{ fill: none; stroke: {GOLD}; stroke-opacity: .45; stroke-width: 2; }}
-  .lbl {{ font: 500 30px 'IBM Plex Sans Variable', sans-serif; fill: #b9c2d3; }}
+  .lbl {{ font: 500 27px 'IBM Plex Sans Variable', sans-serif; fill: #b9c2d3; }}
   .home-l {{ fill: {IVORY}; font-weight: 600; }}
   .logo {{ position: absolute; left: {TILE + 210}px; top: 250px; width: 660px; }}
   .logo svg {{ position: static; width: 100%; height: auto; display: block; }}
