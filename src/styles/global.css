@@ -1,17 +1,19 @@
 @import '@fontsource-variable/newsreader/opsz.css';
 @import '@fontsource-variable/ibm-plex-sans/wght.css';
 
-/* Two brand colours, navy and gold, on white. Navy carries text, data and
-   dark sections; gold marks what matters: links, buttons on dark grounds,
-   highlights. Red appears only for losses in charts. */
+/* Two brand colours, navy and gold, on a soft ivory ground (from the logo's
+   ivory). Navy carries text, data and dark sections; gold marks what matters:
+   links, buttons on dark grounds, highlights. Cards and panels sit a shade
+   lighter than the page. Red appears only for losses in charts. */
 :root {
   --ink: #14213a;
   --ink-2: #33415c;
   --muted: #5d6882;
-  --paper: #ffffff;
-  --mist: #f1f4f8;
-  --mist-2: #e4eaf2;
-  --line: #dde3ec;
+  --ground: #f7f3ec;
+  --paper: #fffdf9;
+  --mist: #efe9de;
+  --mist-2: #e5ddcd;
+  --line: #e2dacb;
   --navy: #14213a;
   --navy-2: #1d2d4d;
   --ivory: #efe9dd;
@@ -22,7 +24,7 @@
   /* Navy tones for data, active states and highlights (names kept from v1). */
   --signal: #1f3a63;
   --signal-ink: #8a6a37;
-  --signal-soft: #eef1f6;
+  --signal-soft: #f0ebe1;
   --signal-mid: #a9b6cb;
   --neg: #c8453c;
   --logo-gold: #9a7a48;
@@ -71,7 +73,7 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--ground);
   color: var(--ink);
   font: 400 var(--step-0) / 1.62 var(--sans);
   font-feature-settings: 'kern';
@@ -275,8 +277,8 @@ a:hover {
   --ink-2: #33415c;
   --muted: #5d6882;
   --slate: #5d6882;
-  --line: #dde3ec;
-  --rule: #dde3ec;
+  --line: #e2dacb;
+  --rule: #e2dacb;
   --gold: #b08a50;
   --logo-gold: #9a7a48;
   color: var(--ink);

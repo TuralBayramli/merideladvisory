@@ -4,13 +4,13 @@ import type { Lang } from './ui';
 // the calculators and the AI chat. The main page copy is in ui.ts.
 const en = {
   menu: {
-    servicesText: 'We build the models behind supply chain and logistics decisions, from Europe to China.',
+    servicesText: 'We build the models behind supply chain and logistics decisions, from Europe to Asia and the Gulf.',
     insightsText: 'Practical articles, a dictionary of terms and calculators for supply chain and logistics work.',
     aboutText: 'A small, independent team of supply chain, finance and data specialists in Warsaw and Baku.',
     workshops: 'Workshops and training',
     workshopsText: 'Hands-on sessions on your own data',
     blurbs: {
-      transport: 'Modes, routes and corridors from Europe to China',
+      transport: 'Modes, routes and corridors from Europe to Asia and the Gulf',
       network: 'Where your warehouses and hubs should be',
       inventory: 'ABC-XYZ segments and stock policies',
       'cost-to-serve': 'The real profit of each customer and channel',
@@ -178,13 +178,13 @@ type Extra = typeof en;
 
 const az: Extra = {
   menu: {
-    servicesText: 'Avropadan Çinə qədər təchizat zənciri və logistika qərarlarının arxasında duran modelləri qururuq.',
+    servicesText: 'Avropadan Asiyaya və Körfəzə qədər təchizat zənciri və logistika qərarlarının arxasında duran modelləri qururuq.',
     insightsText: 'Təchizat zənciri və logistika işi üçün praktik məqalələr, terminlər lüğəti və kalkulyatorlar.',
     aboutText: 'Varşava və Bakıda təchizat zənciri, maliyyə və məlumat üzrə mütəxəssislərdən ibarət kiçik, müstəqil komanda.',
     workshops: 'Seminarlar və təlimlər',
     workshopsText: 'Öz məlumatlarınızla praktik məşğələlər',
     blurbs: {
-      transport: 'Avropadan Çinə nəqliyyat növləri, marşrutlar və dəhlizlər',
+      transport: 'Avropadan Asiyaya və Körfəzə nəqliyyat növləri, marşrutlar və dəhlizlər',
       network: 'Anbar və logistika mərkəzlərinizin harada olmalı olduğu',
       inventory: 'ABC-XYZ qrupları və ehtiyat siyasəti',
       'cost-to-serve': 'Hər müştəri və kanalın real mənfəəti',

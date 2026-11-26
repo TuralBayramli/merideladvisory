@@ -222,8 +222,8 @@ const en: Dict = {
   home: {
     title: 'Meridel Advisory | Supply chain and logistics consulting',
     description:
-      'Supply chain consulting from Warsaw and Baku. We design transport corridors, warehouse networks and inventory policies, measure cost to serve and logistics emissions, and build the dashboards to run them, from Europe to China.',
-    h1: 'Find your position. Choose your direction.',
+      'Supply chain consulting from Warsaw and Baku. We design transport corridors, warehouse networks and inventory policies, measure cost to serve and logistics emissions, and build the dashboards to run them, from Europe to Asia and the Gulf.',
+    h1: 'We find your position. Together, we chart the course.',
     lead:
       'Meridel Advisory is a supply chain consultancy. We build the models behind better logistics decisions: which corridor and transport mode, where to hold stock, what each customer really costs to serve, and how much carbon your freight emits.',
     ctaPrimary: 'Book a free call',
@@ -234,7 +234,7 @@ const en: Dict = {
     servicesTitle: 'What we work on',
     servicesLead: 'Six areas, one method: get the facts straight, model the options, recommend one direction.',
     servicesMore: 'All services in detail',
-    mapTitle: 'From Europe to China, through the Caucasus and Central Asia',
+    mapTitle: 'From Europe to China and the Gulf, through the Caucasus and Central Asia',
     mapLead:
       'We work along the trade routes that connect Europe with Türkiye, the Caucasus, the Caspian, Central Asia, China and the Gulf. We know the operators and carriers on them, so every option we model is one you can actually book.',
     lanes: {
@@ -600,7 +600,7 @@ const en: Dict = {
     h1: 'About us',
     lead: 'A meridian is the line navigators use to fix their position. We do the same for your supply chain: establish where you stand, then set a clear direction.',
     bio: [
-      'Meridel Advisory is a small, independent team of supply chain, finance and data specialists. We work from Warsaw and Baku with companies that trade across Europe, the Caucasus, Central Asia and China.',
+      'Meridel Advisory is a small, independent team of supply chain, finance and data specialists. We work from Warsaw and Baku with companies that trade across Europe, the Caucasus, Central Asia, China and the Gulf.',
       'We built our experience inside international companies in Poland and Azerbaijan: in banking, healthcare and medical products, retail, building materials manufacturing, and on-demand delivery and ride-hailing. That is where we learned how logistics, cost and service decisions are really made, and what it takes for a model to be used after the consultants leave.',
       'Our work covers logistics network and cost-to-serve models, inventory risk simulations, warehouse location studies, logistics carbon emission calculations, delivery performance analytics and the dashboards that track them. Together these models have delivered over €700,000 in annual savings across Benelux, DACH, Iberia, Italy and the wider EMEA region.',
       'Because our background is in finance as well as operations, every recommendation we make is tied to the profit and loss statement, not only to operational metrics.',
@@ -658,7 +658,7 @@ const en: Dict = {
   },
   footer: {
     rights: 'All rights reserved.',
-    tagline: 'Supply chain and logistics consulting, from Europe to China.',
+    tagline: 'Supply chain and logistics consulting, from Europe to Asia and the Gulf.',
   },
   notFound: {
     title: 'Page not found',
@@ -688,8 +688,8 @@ const az: Dict = {
   home: {
     title: 'Meridel Advisory | Təchizat zənciri və logistika üzrə konsaltinq',
     description:
-      'Varşava və Bakıdan təchizat zənciri üzrə konsaltinq. Daşıma dəhlizlərini, anbar şəbəkələrini və ehtiyat siyasətini qurur, xidmət xərcini və logistika emissiyalarını ölçür, onları idarə etmək üçün panellər hazırlayırıq: Avropadan Çinə qədər.',
-    h1: 'Mövqeyinizi müəyyən edin. İstiqamətinizi seçin.',
+      'Varşava və Bakıdan təchizat zənciri üzrə konsaltinq. Daşıma dəhlizlərini, anbar şəbəkələrini və ehtiyat siyasətini qurur, xidmət xərcini və logistika emissiyalarını ölçür, onları idarə etmək üçün panellər hazırlayırıq: Avropadan Asiyaya və Körfəzə qədər.',
+    h1: 'Mövqeyinizi müəyyən edirik. İstiqaməti birlikdə qururuq.',
     lead:
       'Meridel Advisory təchizat zənciri üzrə konsaltinq şirkətidir. Daha yaxşı logistika qərarlarının arxasındakı modelləri qururuq: hansı dəhliz və daşıma növü, ehtiyatı harada saxlamaq, hər müştəriyə xidmətin real xərci və yüklərinizin nə qədər karbon atdığı.',
     ctaPrimary: 'Ödənişsiz görüş təyin edin',
@@ -700,7 +700,7 @@ const az: Dict = {
     servicesTitle: 'Nə üzərində işləyirik',
     servicesLead: 'Altı sahə, bir metod: faktları dəqiqləşdiririk, variantları modelləşdiririk, bir istiqamət tövsiyə edirik.',
     servicesMore: 'Bütün xidmətlər ətraflı',
-    mapTitle: 'Avropadan Çinə, Qafqaz və Mərkəzi Asiya üzərindən',
+    mapTitle: 'Avropadan Çinə və Körfəzə, Qafqaz və Mərkəzi Asiya üzərindən',
     mapLead:
       'Avropanı Türkiyə, Qafqaz, Xəzər, Mərkəzi Asiya, Çin və Körfəzlə birləşdirən ticarət yolları üzərində işləyirik. Bu yollardakı operatorları və daşıyıcıları tanıyırıq, ona görə modelləşdirdiyimiz hər variant real olaraq sifariş verə biləcəyiniz variantdır.',
     lanes: {
@@ -1066,7 +1066,7 @@ const az: Dict = {
     h1: 'Haqqımızda',
     lead: 'Meridian dənizçilərin öz mövqelərini müəyyən etmək üçün istifadə etdiyi xətdir. Biz də təchizat zənciriniz üçün eyni şeyi edirik: harada dayandığınızı dəqiqləşdirir, sonra aydın istiqamət təyin edirik.',
     bio: [
-      'Meridel Advisory təchizat zənciri, maliyyə və məlumat üzrə mütəxəssislərdən ibarət kiçik, müstəqil komandadır. Varşava və Bakıdan Avropa, Qafqaz, Mərkəzi Asiya və Çin arasında ticarət edən şirkətlərlə işləyirik.',
+      'Meridel Advisory təchizat zənciri, maliyyə və məlumat üzrə mütəxəssislərdən ibarət kiçik, müstəqil komandadır. Varşava və Bakıdan Avropa, Qafqaz, Mərkəzi Asiya, Çin və Körfəz arasında ticarət edən şirkətlərlə işləyirik.',
       'Təcrübəmizi Polşa və Azərbaycanda beynəlxalq şirkətlərin daxilində qazanmışıq: bankçılıq, səhiyyə və tibbi məhsullar, pərakəndə satış, tikinti materialları istehsalı, sifarişlə çatdırılma və taksi xidmətləri. Logistika, xərc və xidmət qərarlarının əslində necə verildiyini və modelin məsləhətçilər gedəndən sonra da istifadə olunması üçün nə lazım olduğunu orada öyrənmişik.',
       'İşimizə logistika şəbəkəsi və xidmət xərci modelləri, ehtiyat risklərinin simulyasiyası, anbar yerləşdirmə tədqiqatları, logistika karbon emissiyalarının hesablanması, çatdırılma performansı analitikası və bunları izləyən panellər daxildir. Bu modellər birlikdə Benilüks, DACH, İberiya, İtaliya və daha geniş EMEA regionunda illik 700 000 avrodan çox qənaət gətirib.',
       'Təcrübəmiz həm maliyyə, həm də əməliyyat sahəsində olduğuna görə hər tövsiyəmiz yalnız əməliyyat göstəriciləri ilə deyil, mənfəət və zərər hesabatı ilə də əlaqələndirilir.',
@@ -1124,7 +1124,7 @@ const az: Dict = {
   },
   footer: {
     rights: 'Bütün hüquqlar qorunur.',
-    tagline: 'Təchizat zənciri və logistika üzrə konsaltinq, Avropadan Çinə qədər.',
+    tagline: 'Təchizat zənciri və logistika üzrə konsaltinq, Avropadan Asiyaya və Körfəzə qədər.',
   },
   notFound: {
     title: 'Səhifə tapılmadı',

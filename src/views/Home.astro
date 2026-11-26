@@ -29,7 +29,7 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
   <section class:list={['hero', 'on-deep', { 'has-video': heroVideo }]}>
     {heroVideo && <BgVideo name="hero" eager pauseLabel={d.home.videoPause} playLabel={d.home.videoPlay} />}
     <div class="wrap hero-inner">
-      <h1>{d.home.h1}</h1>
+      <h1>{d.home.h1.split(/(?<=\.)\s+/).map((line) => <span class="h1-line">{line}</span>)}</h1>
       <p class="hero-lead">{d.home.lead}</p>
       <div class="hero-actions">
         <a class="btn btn-solid" href={localePath(lang, '/contact')}>{d.home.ctaPrimary}</a>
@@ -229,9 +229,15 @@ const bandVideo = fs.existsSync(path.join(videoDir, 'band.mp4'));
     z-index: 1;
   }
   .hero h1 {
-    max-width: 13ch;
+    max-width: 30ch;
+    font-size: clamp(2.3rem, 1.5rem + 3.2vw, 4rem);
     color: #ffffff;
     text-shadow: 0 2px 24px rgba(8, 14, 28, 0.35);
+  }
+  /* The slogan is two sentences: each starts on its own line. */
+  .h1-line {
+    display: block;
+    text-wrap: balance;
   }
   .hero-lead {
     max-width: 36rem;
