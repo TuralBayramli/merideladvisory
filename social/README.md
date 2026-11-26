@@ -1,4 +1,8 @@
-# Meridel social videos
+# Meridel social content
+
+Before making anything, read [`BRAND.md`](BRAND.md) (voice, audiences, rules, formats) and [`CONTENT-LOG.md`](CONTENT-LOG.md) (what is already published). Add every new post to the log.
+
+## Videos
 
 Vertical (1080×1920) animated videos for Instagram Reels and LinkedIn, in the site's colours and fonts. Nothing in this folder is part of the website.
 
