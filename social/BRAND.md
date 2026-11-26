@@ -4,7 +4,7 @@ Read this before making any post, story, video or caption. Read `CONTENT-LOG.md`
 
 ## Who we are
 
-Meridel Advisory is a supply chain and logistics consultancy. We design how goods move; we don't move them. We build the models behind logistics decisions (route and mode, warehouse network, stock, cost to serve, freight emissions) and the dashboards to run them. Founder: Tural Bayramli. Based in Warsaw and Baku; meetings in person or online. Website: https://merideladvisory.com (English) and https://merideladvisory.com/az/ (Azerbaijani).
+Meridel Advisory is a supply chain and logistics consultancy. We design how goods move; we don't move them: we sell no transport, trucks or warehouse space. Our job is to find and fix logistics problems, above all **cost to serve**: what it really costs to deliver to each customer, product and channel, and where the margin leaks. Around that we build the models behind logistics decisions (stock, warehouse network, delivery, route and mode, freight emissions) and the dashboards to run them. Founder: Tural Bayramli. Based in Warsaw and Baku; meetings in person or online. Website: https://merideladvisory.com (English) and https://merideladvisory.com/az/ (Azerbaijani).
 
 Slogan: "We find your position. Together, we chart the course." / "Mövqeyinizi müəyyən edirik. İstiqaməti birlikdə qururuq."
 
@@ -23,10 +23,11 @@ Region wording: "from Europe to Asia and the Gulf" / "Avropadan Asiyaya və Kör
 
 Starter offers to mention in posts and messages:
 
+- **Cost-to-serve snapshot** (the core offer): which customers, products and channels lose money once delivery, warehousing and service costs are counted.
 - **Free mini-analysis:** send 12 months of sales by item; within 5 days we send an ABC-XYZ chart and three findings.
 - **Stock health check:** ABC-XYZ and safety stock review, showing where cash is stuck.
-- **Route and landed-cost comparison** for one trade lane (for example China to Baku, Dubai to Almaty).
-- **Cost-to-serve snapshot:** which customers and products lose money after delivery costs.
+- **Logistics cost check:** cost per order, per drop and per delivery route, and where it can come down.
+- **Route and landed-cost comparison** for one trade lane, only for companies that already ship across borders.
 - **Freight CO₂ baseline** with the GLEC Framework and ISO 14083.
 - **Free first call** (20 minutes).
 
@@ -34,11 +35,13 @@ Starter offers to mention in posts and messages:
 
 | Market | Who | Language | Main channels |
 |---|---|---|---|
-| Azerbaijan (Baku) | Owners and directors of distributors, importers, retail chains, food producers, exporters | Azerbaijani first, English underneath | Instagram, WhatsApp, LinkedIn |
-| UAE (Dubai) | Traders and distributors shipping to the Caucasus and Central Asia | English | LinkedIn |
-| Poland | Companies on China–Europe rail and the Middle Corridor | English (Polish later) | LinkedIn |
+| Azerbaijan (Baku) | Owners and directors of distributors, wholesalers, retail chains, e-commerce sellers, food producers and manufacturers | Azerbaijani first, English underneath | Instagram, WhatsApp, LinkedIn |
+| UAE (Dubai) | Distributors, retailers, e-commerce and trading companies with real delivery and stock costs | English | LinkedIn |
+| Poland | Distributors, manufacturers and e-commerce companies | English (Polish later) | LinkedIn |
 
-Dubai positioning: don't sound like a general consultancy. We are the team that knows the lanes between the Gulf, the Caspian and Central Asia.
+Who we look for: any company where logistics is a big cost or a daily headache, at home or across borders. Trading between countries is a plus, never a requirement.
+
+Positioning everywhere: we find where logistics eats the margin and fix it, starting with cost to serve. Knowing the lanes between Europe, the Caspian, Central Asia and the Gulf is an extra for companies that trade across them, not the whole story. At most one post in three is about routes or corridors.
 
 ## Voice
 
@@ -52,6 +55,7 @@ Dubai positioning: don't sound like a general consultancy. We are the team that 
 
 ## Never
 
+- Sound like a freight forwarder, carrier or 3PL. We don't quote freight, move cargo or rent space.
 - Name clients, past or current employers, or the logistics companies and carriers we work with.
 - Claim results we can't prove, or show client data.
 - Use third-party logos or brand marks, or draw known characters.
