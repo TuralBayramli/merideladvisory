@@ -122,7 +122,7 @@ FRAMES = {
 CSS = f'''
   html, body {{ margin: 0; }}
   body {{ width: {W}px; height: {H}px; position: relative; overflow: hidden; color: {IVORY};
-         background: radial-gradient(ellipse at 50% 30%, #1f3157 0%, {NAVY} 62%);
+         background: {NAVY};
          font-family: 'IBM Plex Sans Variable', sans-serif; }}
   svg.map {{ position: absolute; inset: 0;
     -webkit-mask-image: linear-gradient(180deg, transparent 1170px, #000 1250px, #000 1540px, transparent 1610px); }}
